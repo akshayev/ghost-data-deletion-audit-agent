@@ -37,6 +37,7 @@ without evidence.
   8 digits.
 - [VERIFIED] Resource IDs must be matched exactly on word boundaries:
   `support_864` and `support_8642` are different records.
+- [VERIFIED] email_hash = sha256(lowercase email) for all current and historical emails
 
 ## 3. Evidence formats (all under `dataset/evidence/`)
 
