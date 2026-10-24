@@ -59,6 +59,42 @@ without evidence.
   evidence_02 (09-17) shows account_5684 ACTIVE, but case_26 has
   `audit_at` 09-15 and the answer is COMPLETE. Later evidence must never
   decide state.
+- [VERIFIED] All 2,211 non-empty log lines match exactly one of six formats:
+  key=value, bracket, pipe, JSON-per-line, syslog and cloud (escaped
+  `message="k=\"v\""`). No other line format exists. The ledger-style logs
+  (`notification_delivery_*`, `search_index_diagnostic_*`) use the key=value
+  format with `event=record_lookup`.
+- [VERIFIED] The same resource can appear in several traces of one log with
+  different results. For example, account_1956 in evidence_21 is a 404 on
+  07-03 and a 200 on 07-05. Each trace therefore yields its own observation
+  with its own `observed_at`.
+- [VERIFIED] `lookup_key` is sometimes a resource id rather than an
+  identifier (`analytics_profile_scan_started lookup_key="analytics_257"`),
+  and is sometimes the literal `null`.
+- [VERIFIED] `search_documents_primary.source_resource_id` (evidence_57)
+  ties a search document to its account. account_006 appears in non-PNG
+  evidence only through this reference, so it is emitted as a mention
+  (`present=None`).
+- [VERIFIED] Snapshot bundles hold per-snapshot `captured_at` values up to 8
+  days earlier than the manifest time (91 of 116 snapshots are earlier, none
+  are later). Bundles also embed ledger collections
+  (`operational_record_history` under `support_storage_service`,
+  `privacy_treatment_service` and `backup_restore_service`) keyed by
+  `lookup_value`.
+- [VERIFIED] Ledger results are FOUND, NOT_FOUND, IDENTIFIABLE, ANONYMIZED,
+  ACTIVE, BLOCKED, DISABLED and REDACTED. Only NOT_FOUND means absent.
+- [VERIFIED] `snapshot_scope.captured_at` equals the manifest `captured_at`
+  in all 12 inventory files.
+- [VERIFIED] evidence_53 (cloud log) is a bulk dump of 300 `account_*`
+  lookups with 5-digit ids, logged under `function=profile_service` rather
+  than `account_service`.
+- [VERIFIED] Security audit records carry
+  `integrity_seal="sha256:<64 hex>"`. The hex part looks like an email hash
+  but matches no identity.
+- [VERIFIED] Two PDFs contain user ids but no resource ids: the legal
+  retention register (order ref, user, retain-until per row) and the
+  account history report (user_18, one order). They are stored as file
+  facts for later legal-hold linking.
 
 ## 4. Activity stream (`system_activity.csv`, 4,011 rows)
 

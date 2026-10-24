@@ -97,3 +97,25 @@ branch=main
 repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
 worktree=main
 parent_agent=none
+
+## [2026-10-24T18:53:07Z] P3: evidence parsers (non-PNG) + coverage report
+
+User Prompt (verbatim, secrets redacted):
+Continue logging per AGENTS.md. Spec is final: no brainstorming, no design questions. Use superpowers test-driven-development, systematic-debugging and verification-before-completion. TASK = PLAN.md step P3: evidence parsers for every NON-PNG file (PNG is P4), plus a coverage report. No linking/state/policy logic. [Sections A-G: Observation/Coverage data model; SQL, JSON, text, PDF and six log formats; canonical system_id by prefix; identifier extraction; registry + report + diagnostics parse recall (target 95/111); acceptance tests 1-11; run pytest, ruff, report, diagnostics, evaluation; update FINDINGS section 3; commit "P3: evidence parsers (non-PNG) + coverage report". Full text omitted for length.]
+
+Agent Response Summary:
+Surveyed every evidence family first, then wrote test_parsers.py (RED on missing modules) and implemented observation.py, systems.py, extract.py and parsers/{common,sql,json_records,logs,text,pdf,registry,report}.py plus evaluation/diagnostics.py. Mutation checks confirmed the trace-grouping and absence tests catch real breakage. Systematic debugging of a 94/111 recall found account_006 is referenced only via search source_resource_id; added mention observations (present=None) for *_resource_id references, giving 95/111. Added Coverage.observed_at because bundle snapshots predate the manifest time by up to 8 days. Results: 111 tests pass, ruff clean, 2898 observations, 679 coverage entries, 0 unparsed units, evaluation still baseline 0%.
+
+Actions:
+* Write code/ghost/{observation,systems,extract}.py, code/ghost/parsers/*.py, code/evaluation/diagnostics.py
+* Write code/tests/test_parsers.py, code/tests/test_report_diagnostics.py
+* Edit code/docs/FINDINGS.md section 3
+* pytest -q; ruff check code; python code/ghost/parsers/report.py; python code/evaluation/diagnostics.py; python code/evaluation/main.py; git commit
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
+worktree=main
+parent_agent=none
