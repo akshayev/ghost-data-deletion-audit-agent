@@ -229,6 +229,17 @@ without evidence.
 
 ## 6. Known open questions (resolve with the eval harness)
 
+- [VERIFIED] P6: with gold resource ids (oracle links) the state, policy and planner
+  rules reproduce all 32 sample rows exactly. Question 1 is answered: a resource with no
+  capture <= audit_at is assumed compliant, and a COMPLETE verification cites the latest
+  file <= audit_at with a complete coverage of its system that has >= 1 observation
+  (so the empty inventory evidence_90 never proves anything).
+- [VERIFIED] A reference mention (`source_resource_id`) never decides state: it carries
+  the referencing record's fields, not its own.
+- [VERIFIED] Full split (P6): 1,871 linked resources; treatment from the worker for
+  1,366, prefix default 405, ledger record_type 99, evidence shape 1. 472 resources have
+  no decisive capture <= audit_at and are assumed compliant.
+
 1. The exact evidence-citation rule for absent records that no file
    mentions. case_01, 02 and 04 cite evidence_54, not the later empty
    inventory snapshot evidence_90.

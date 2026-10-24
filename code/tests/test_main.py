@@ -4,7 +4,14 @@ import main as cli
 from ghost import paths
 
 
-def test_baseline_predicts_not_applicable():
+def test_predict_case_returns_a_deletion_decision():
+    req = {"case_id": "case_33", "request_text": "Please delete my account."}
+    status, steps = cli.predict_case(req, cli.build_context(use_llm=False))
+    assert status in ("COMPLETE", "INCOMPLETE") and steps
+
+
+def test_classify_hook_false_gives_not_applicable(monkeypatch):
+    monkeypatch.setattr(cli, "classify", lambda request: False)
     req = {"case_id": "case_33", "request_text": "Please delete my account."}
     assert cli.predict_case(req, cli.build_context(use_llm=False)) == ("NOT_APPLICABLE", [])
 

@@ -3,9 +3,11 @@
     python code/evaluation/main.py               # predict the sample split, then score it
     python code/evaluation/main.py --pred PATH   # score an existing prediction CSV
     python code/evaluation/main.py --custom      # also run custom_cases/ (not built yet)
+    python code/evaluation/main.py --oracle-links  # gold resource ids instead of the linker
 
 Sample answers are read only here; nothing in code/ghost imports from this module.
-Writes code/evaluation/latest_metrics.md and prints a short summary.
+Writes code/evaluation/latest_metrics.md, appends a row to evaluation_report.md and prints
+a short summary.
 """
 
 import argparse
@@ -14,6 +16,7 @@ import importlib.util
 import json
 import sys
 from collections import Counter, defaultdict
+from datetime import UTC, datetime
 from pathlib import Path
 
 CODE_DIR = Path(__file__).resolve().parents[1]
@@ -26,6 +29,7 @@ from ghost.serialize import STATUSES, write_output  # noqa: E402
 GOLD = paths.DATASET / "sample_output.csv"
 METRICS_MD = paths.EVALUATION / "latest_metrics.md"
 SAMPLE_PRED = paths.EVAL_RUNS / "sample_output_pred.csv"
+EVAL_REPORT = paths.EVALUATION / "evaluation_report.md"
 
 FULL_FIELDS = ("phase", "system_id", "resource_id", "operation", "state", "evidence_id")
 ALIGN_FIELDS = ("phase", "system_id", "resource_id", "operation")
@@ -72,6 +76,38 @@ def _multiset_minus(a: list[tuple], b: list[tuple]) -> list[tuple]:
             budget[x] -= 1
         else:
             out.append(x)
+    return out
+
+
+def failure_reasons(gold_steps: list[dict], pred_steps: list[dict]) -> list[tuple]:
+    """(kind, step tuple, reason) for every missing/extra step. Reasons: link miss, link
+    extra, treatment (different verification op), state (same verification, different
+    findings/remediation), evidence (same operations, different evidence_id)."""
+    g_full, p_full = _tuples(gold_steps, FULL_FIELDS), _tuples(pred_steps, FULL_FIELDS)
+    g_res, p_res = {t[2] for t in g_full}, {t[2] for t in p_full}
+
+    def ops(tuples, rid):
+        return Counter(t[:5] for t in tuples if t[2] == rid)
+
+    def verifications(tuples, rid):
+        return {t[3] for t in tuples if t[2] == rid and t[0] == "VERIFICATION"}
+
+    out = []
+    for kind, steps in (("missing", _multiset_minus(g_full, p_full)),
+                        ("extra", _multiset_minus(p_full, g_full))):
+        for t in steps:
+            rid = t[2]
+            if rid not in p_res:
+                why = "link miss"
+            elif rid not in g_res:
+                why = "link extra"
+            elif ops(g_full, rid) == ops(p_full, rid):
+                why = "evidence"
+            elif verifications(g_full, rid) != verifications(p_full, rid):
+                why = "treatment"
+            else:
+                why = "state"
+            out.append((kind, t, why))
     return out
 
 
@@ -126,6 +162,7 @@ def evaluate(pred: Rows, gold: Rows) -> dict:
                 "pred_status": p_status,
                 "missing": _multiset_minus(g_full, p_full),
                 "extra": _multiset_minus(p_full, g_full),
+                "reasons": failure_reasons(g_steps, p_steps),
             }
         )
 
@@ -195,11 +232,59 @@ def render_markdown(m: dict) -> str:
         lines.append("All cases match exactly.")
     for c in wrong:
         lines.append(f"### {c['case_id']}: gold {c['gold_status']}, predicted {c['pred_status']}")
-        for label in ("missing", "extra"):
-            for t in c[label]:
-                lines.append(f"- {label}: `{' | '.join(t)}`")
+        for kind, t, why in c.get("reasons", []):
+            lines.append(f"- {kind} ({why}): `{' | '.join(t)}`")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
+
+
+HISTORY_HEADER = (
+    "| date (UTC) | mode | cases | status acc | step F1 full | step F1 no-evidence | "
+    "state acc | evidence acc | seq exact | mean LCS |\n"
+    "|---|---|---|---|---|---|---|---|---|---|"
+)
+REPORT_TEMPLATE = f"""# Evaluation report
+
+## Metrics history
+
+{HISTORY_HEADER}
+
+## Failures found & fixes
+
+## Custom cases
+
+(placeholder: custom cases are added in a later step)
+"""
+
+
+def append_history(m: dict, mode: str, path: Path = EVAL_REPORT) -> None:
+    """Add one dated metrics row to the history table (creating the report if needed)."""
+    text = path.read_text(encoding="utf-8") if path.exists() else REPORT_TEMPLATE
+    fa = m["field_accuracy"]
+    row = (
+        f"| {datetime.now(UTC).strftime('%Y-%m-%d %H:%M')} | {mode} | {m['n_cases']} | "
+        f"{_pct(m['status_accuracy'])} | {_pct(m['step_full']['f1'])} | "
+        f"{_pct(m['step_no_evidence']['f1'])} | {_pct(fa['state'])} | "
+        f"{_pct(fa['evidence_id'])} | {_pct(m['sequence_exact'])} | {_pct(m['sequence_lcs'])} |"
+    )
+    head, sep, tail = text.partition("\n## Failures found & fixes")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(head.rstrip("\n") + "\n" + row + "\n" + sep + tail, encoding="utf-8")
+
+
+def oracle_predictions() -> Rows:
+    """Plan every sample case from its GOLD resource ids instead of the linker's, so that
+    state/policy/planner errors show up without linker noise."""
+    from ghost import linker, loaders, planner
+
+    lk = linker.build_linker()
+    requests = {r.case_id: r for r in loaders.load_requests("sample")}
+    out: Rows = {}
+    for case_id, (_, steps) in load_rows(GOLD).items():
+        resources = [lk.resource(rid) for rid in sorted({s["resource_id"] for s in steps})]
+        result = planner.plan_case(requests[case_id], resources, lk)
+        out[case_id] = (result.status, result.steps)
+    return out
 
 
 def _load_cli():
@@ -217,10 +302,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--custom", action="store_true", help="also run custom_cases/")
     parser.add_argument("--no-llm", action="store_true", help="predict without LLM calls")
     parser.add_argument("--out", type=Path, default=METRICS_MD)
+    parser.add_argument("--oracle-links", action="store_true",
+                        help="plan from gold resource ids (separates linker from state/policy)")
+    parser.add_argument("--history", type=Path, default=EVAL_REPORT,
+                        help="report whose history table gets a new row")
     args = parser.parse_args(argv)
 
+    mode = "real"
     if args.pred:
-        pred = load_rows(args.pred)
+        pred, mode = load_rows(args.pred), f"pred:{args.pred.name}"
+    elif args.oracle_links:
+        pred, mode = oracle_predictions(), "oracle-links"
     else:
         rows, context = _load_cli().run_split("sample", use_llm=not args.no_llm)
         write_output(rows, SAMPLE_PRED, context.citable)
@@ -229,9 +321,10 @@ def main(argv: list[str] | None = None) -> int:
     m = evaluate(pred, load_rows(GOLD))
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(render_markdown(m), encoding="utf-8")
+    append_history(m, mode, args.history)
 
     sf, se, fa = m["step_full"], m["step_no_evidence"], m["field_accuracy"]
-    print(f"cases={m['n_cases']}  status_acc={_pct(m['status_accuracy'])}")
+    print(f"[{mode}] cases={m['n_cases']}  status_acc={_pct(m['status_accuracy'])}")
     for label, prf in (("full", sf), ("no-evidence", se)):
         print(
             f"step F1 {label}={_pct(prf['f1'])} "

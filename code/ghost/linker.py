@@ -160,6 +160,7 @@ class Linker:
         self.subjects = {c: resolver.resolve(r.email) for c, r in self.requests.items()}
 
         self.activities = sorted(activities, key=lambda a: (a.event_time, a.activity_id))
+        self.activity_by_id = {a.activity_id: a for a in self.activities}
         self.acts_by_resource: dict[str, list[Activity]] = defaultdict(list)
         for a in self.activities:
             self.acts_by_resource[a.resource_id].append(a)
@@ -250,6 +251,23 @@ class Linker:
                         raw_ref=f"{file_id}#alias:{cat.alias}",
                     )
                 )
+
+    def activity(self, activity_id: str) -> Activity:
+        return self.activity_by_id[activity_id]
+
+    def resource(self, resource_id: str, via: tuple = ("oracle",)) -> LinkedResource:
+        """A LinkedResource for any id (evaluation: feed gold ids instead of links)."""
+        return LinkedResource(
+            resource_id=resource_id,
+            system_id=canonical(resource_id) or "",
+            via=(via,),
+            activity_ids=self._activity_ids(resource_id),
+            observations=self.resource_observations(resource_id),
+        )
+
+    def _activity_ids(self, resource_id: str) -> tuple[str, ...]:
+        ids = {a.activity_id for a in self.acts_by_resource.get(resource_id, ())}
+        return tuple(sorted(ids, key=case_num))
 
     def resource_observations(self, resource_id: str) -> tuple[Observation, ...]:
         obs = self.obs_by_resource.get(resource_id, [])
@@ -442,10 +460,7 @@ class Linker:
                     resource_id=rid,
                     system_id=canonical(rid) or "",
                     via=tuple(sorted(vias[rid], key=repr)),
-                    activity_ids=tuple(
-                        sorted({a.activity_id for a in self.acts_by_resource.get(rid, ())},
-                               key=case_num)
-                    ),
+                    activity_ids=self._activity_ids(rid),
                     observations=self.resource_observations(rid),
                     flags=flags,
                 )

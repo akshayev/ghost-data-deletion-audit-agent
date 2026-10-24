@@ -13,7 +13,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from ghost import paths
+from ghost import linker, loaders, paths, planner
 from ghost.serialize import OutputRow, load_citable_ids, write_output
 
 SPLITS = {
@@ -32,10 +32,18 @@ class Context:
 
     citable: dict[str, str]  # file_id / activity_id / audit_id -> timestamp
     use_llm: bool = True
+    lk: linker.Linker | None = None
+    requests: dict[str, loaders.DeletionRequest] | None = None
 
 
 def build_context(use_llm: bool = True) -> Context:
-    return Context(citable=load_citable_ids(), use_llm=use_llm)
+    requests = {r.case_id: r for s in ("sample", "full") for r in loaders.load_requests(s)}
+    return Context(
+        citable=load_citable_ids(),
+        use_llm=use_llm,
+        lk=linker.build_linker(),
+        requests=requests,
+    )
 
 
 def load_requests(split: str) -> list[dict[str, str]]:
@@ -43,13 +51,19 @@ def load_requests(split: str) -> list[dict[str, str]]:
         return list(csv.DictReader(f))
 
 
-def predict_case(request_row: dict[str, str], context: Context) -> tuple[str, list[dict]]:
-    """Decide one case and return (deletion_status, steps).
+def classify(request: loaders.DeletionRequest) -> bool:
+    """Does request_text authorize deletion? P7 replaces this hook (rules + LLM)."""
+    return True
 
-    BASELINE - replaced in P6. Returns NOT_APPLICABLE for every case so the
-    pipeline, validator and evaluation harness can be exercised end to end.
-    """
-    return "NOT_APPLICABLE", []
+
+def predict_case(request_row: dict[str, str], context: Context) -> tuple[str, list[dict]]:
+    """Decide one case and return (deletion_status, steps)."""
+    assert context.lk is not None and context.requests is not None
+    request = context.requests[request_row["case_id"]]
+    if not classify(request):
+        return "NOT_APPLICABLE", []
+    result = planner.plan_case(request, context.lk.link(request.case_id), context.lk)
+    return result.status, result.steps
 
 
 def run_split(split: str, use_llm: bool = True) -> tuple[list[OutputRow], Context]:

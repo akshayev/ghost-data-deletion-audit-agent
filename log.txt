@@ -170,3 +170,29 @@ branch=main
 repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
 worktree=main
 parent_agent=none
+
+## [2026-10-24T21:20:00Z] P6: state, policy, planner — first real predictions
+
+User Prompt (verbatim, secrets redacted):
+Continue logging per AGENTS.md. Spec is final: no brainstorming. Use superpowers test-driven-development, systematic-debugging, verification-before-completion.
+
+TASK = PLAN.md step P6: state + policy + planner wired end to end. main.py's predict_case replaces the BASELINE. Every rule below was checked against the 111 gold records in sample_output.csv (evaluation-side analysis only — do NOT read sample_output.csv from code/ghost).
+
+[Sections A (code/ghost/policy.py: worker action > ledger category via deletion_rules.csv > evidence shape > prefix default; RETAIN with retention; prohibited fields), B (code/ghost/state.py: only captures <= audit_at, coerce present=None, decisive capture, replica drift, unknown = assumed compliant, exposure, data flow ACTIVE, backup RISK, ledger results), C (code/ghost/planner.py: violation table, COMPLETE/INCOMPLETE rules, citation via decisive capture or complete coverage with >=1 observation, classify hook), D (evaluation: --oracle-links, both runs, per-step reasons, evaluation_report.md history), E (tests in code/tests/test_planner.py for case_05, 26, 24, 12, 03, 31, 32, 11, 04) and F (pytest, ruff, both evaluations, full run, commit "P6: state, policy, planner — first real predictions", paste back metrics, confusion matrix, 10 worst cases, full-split status counts) as pasted by the user; full text omitted here for length.]
+
+Agent Response Summary:
+Built policy.py, state.py and planner.py test-first and wired them into main.py (classify hook returns True until P7), plus --oracle-links, per-step failure reasons and the evaluation_report.md history table. One oracle error (case_06 account_006) was debugged to a reference mention carrying the referencing record's fields; references no longer decide state, and oracle-links reproduces all 32 sample rows exactly. Real run: status 100%, step F1 96.9%, every remaining error is a known linker miss/extra; the full split writes 518 valid rows (COMPLETE=164, INCOMPLETE=354).
+
+Actions:
+* code/tests/test_planner.py (21), test_evaluation.py (+4), test_main.py (baseline test replaced) written before code
+* code/ghost/policy.py, state.py, planner.py; linker.py (activity/resource helpers); code/main.py; code/evaluation/main.py
+* pytest (205 passed), ruff, evaluation with and without --oracle-links, python code/main.py --split full, 10 mutation checks
+* code/evaluation/evaluation_report.md created; FINDINGS section 6 updated
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
+worktree=main
+parent_agent=none
