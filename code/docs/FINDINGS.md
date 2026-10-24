@@ -144,6 +144,38 @@ without evidence.
   resources in the case's window, and resources observed without
   identifiers in the cited evidence. Then assign globally by elimination
   across all 550 cases. In case_21 this gives only `account_6440`.
+- [VERIFIED] Worker windows learned from KEY-linked resources (hours relative
+  to `reported_at`; template = event_type + first 40 chars of details):
+  submitted primary profile [-1.35, -0.63] (n=251); Policy action completed
+  [-0.58, +0.05] ANONYMIZE, [-0.58, -0.15] REDACT, [-0.58, -0.37] RETAIN,
+  [-0.35, -0.02] DISABLE_DATA_FLOW, [-0.23, +0.05] BLOCK_RESTORE; received the
+  final result [+0.53, +1.74] DELETE, [+0.54, +1.99] REDACT, [+0.54, +2.32]
+  ANONYMIZE; CHECK_DATA_FLOW [+0.53, +2.27]; CHECK_RESTORE_ACCESS
+  [+0.53, +1.52]; reported the requested operation [-0.16, +0.23]. All
+  windows are in `code/evaluation/runs/link_report.md`.
+- [VERIFIED] "submitted primary profile" reported_result maps to the case's
+  reported_status (COMPLETE->SUCCESS, NOT_STARTED->FAILED,
+  PARTIALLY_COMPLETE->PARTIAL), and that filter is what keeps account_7015
+  (FAILED) out of case_21.
+- [VERIFIED] Linker on the sample split (key + catalog + worker-window +
+  stale filter, global assignment over 550 cases): tp=105, fp=6, fn=6 of 111.
+  Misses: account_004 (no worker event), audit_record_6645 and
+  audit_record_5569 (absent from the inputs), account_410 (window overlap,
+  account_7015 is taken instead), and analytics_1895/analytics_4566 (a true
+  same-minute tie between case_24/25/26, assigned the wrong way round).
+  Extras: analytics_5718, analytics_3264, analytics_2265 and account_7015.
+  audit_record_4902 links through trace grouping.
+- [VERIFIED] 212 of the 403 worker-window assignments over all 550 cases
+  need a tie-break, so this channel is the main precision risk on the full
+  split.
+- [VERIFIED] Full split: no case has 0 linked resources; mean 3.61 resources
+  per case; 4 cases have no account_* resource (case_45, case_53, case_61,
+  case_63). case_46 has two accounts (account_4092, account_6523): it is
+  the same subject as case_17 (leonie.g9352@outlook.com), requested in March.
+- [VERIFIED] Alias bridge: an alias that is the subject's own identifier
+  (tombstone_17's alias is `user_17`) also appears as another resource's
+  lookup key (audit_record_1797 in evidence_01). Such files are not alias
+  sightings; otherwise the stale filter would keep tombstone_17 for case_17.
 - [VERIFIED] Some answer resources appear nowhere in the inputs, for
   example audit_record_6645 (case_18) and audit_record_5569 (case_20). Do
   not chase 100%. Some answer items cannot be recovered.

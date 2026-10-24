@@ -145,3 +145,28 @@ branch=main
 repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
 worktree=main
 parent_agent=none
+
+## [2026-10-24T21:01:00Z] P5: linker (key, catalog, worker-window, stale filter)
+
+User Prompt (verbatim, secrets redacted):
+Continue logging per AGENTS.md. Spec is final: no brainstorming. Use superpowers test-driven-development, systematic-debugging, verification-before-completion.
+
+TASK = PLAN.md step P5: the linker. For each request it decides WHICH resources belong to the subject. No state, policy or planning logic yet. Every rule below was prototyped against the data, and its expected numbers are given in section F so you can verify.
+
+[Sections A (inputs: SubjectIdentity, Observations/Coverages/FileFacts, Activities, all 550 requests, never read sample_output.csv in code/ghost), B (link channels in code/ghost/linker.py: 1 KEY, 2 CATALOG with alias bridge and identity_conflict, 3 WORKER-WINDOW with learned windows, status mapping, type rule, global deterministic assignment and tie-breaks, 4 STALE filter), C (LinkedResource output, link_case cached), D (diagnostics: link recall/precision, channel counts, tie-breaks, full-split stats), E (tests in code/tests/test_linker.py), F (expected numbers: tp~104 fp~6 fn~7 of 111 with listed misses/extras) and G (pytest, ruff, diagnostics, evaluation, FINDINGS section 4, commit "P5: linker (key, catalog, worker-window, stale filter)", paste back results) as pasted by the user; full text omitted here for length.]
+
+Agent Response Summary:
+Wrote tests first (RED), then ghost/linker.py with the four channels and global assignment over both splits, plus link diagnostics in evaluation/diagnostics.py. Debugged one failure systematically: tombstone_17's alias is user_17, which is also another resource's lookup key in evidence_01, so files where the alias is already a link key of another observation are no longer alias sightings. Sample link result tp=105 fp=6 fn=6 (prototype ~104/6/7; the +1 is audit_record_4902 via trace grouping). Added two tests after two mutants survived (name-only linking, held-type rule).
+
+Actions:
+* code/tests/test_linker.py (21 tests), code/tests/test_report_diagnostics.py (+2), code/ghost/linker.py, code/evaluation/diagnostics.py
+* pytest (180 passed), ruff, python code/evaluation/diagnostics.py, python code/evaluation/main.py (baseline), 7 mutation checks
+* code/docs/FINDINGS.md section 4 updated
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
+worktree=main
+parent_agent=none

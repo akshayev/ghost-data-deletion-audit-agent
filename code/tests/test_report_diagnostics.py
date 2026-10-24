@@ -44,3 +44,24 @@ def test_parse_recall_matches_verified_target():
             "audit_record_6645",
         ]
     )
+
+
+def test_link_metrics_counts_add_up():
+    from evaluation.diagnostics import link_metrics
+
+    m = link_metrics()
+    assert m["tp"] + m["fn"] == 111
+    assert len(m["cases"]) == 32
+    assert sum(len(c["missing"]) for c in m["cases"].values()) == m["fn"]
+    assert sum(len(c["extra"]) for c in m["cases"].values()) == m["fp"]
+    assert set(m["channels"]) <= {"key", "catalog", "worker_window"}
+    assert m["tie_breaks"] >= 0
+
+
+def test_full_split_link_stats():
+    from evaluation.diagnostics import full_split_stats
+
+    s = full_split_stats()
+    assert s["cases"] == 518
+    assert s["no_account"] == ["case_45", "case_53", "case_61", "case_63"]
+    assert 3.0 < s["mean_resources"] < 4.2
