@@ -1,0 +1,2 @@
+case_id,email,requested_at,reported_status,reported_at,audit_at,request_text
+case_1,noor.alrashid@example.test,2026-05-02T09:00:00Z,COMPLETE,2026-05-03T09:00:00Z,2026-05-10T12:00:00Z,Please erase my account and every copy of my personal data.

@@ -1,0 +1,1 @@
+Primary no longer has the account but the failover replica still does: replication drift.

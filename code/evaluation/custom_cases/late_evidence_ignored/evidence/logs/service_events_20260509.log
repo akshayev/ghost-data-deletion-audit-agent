@@ -1,0 +1,2 @@
+2026-05-09T10:59:50Z level=INFO service=account_service instance=account-1 pod=account-aa11 region=eu-north-1 trace_id=tr-9400001 event=profile_lookup_started lookup_key="haakon.lindqvist@example.test" attempt=1
+2026-05-09T10:59:51Z level=INFO service=account_service instance=account-1 pod=account-aa11 region=eu-north-1 trace_id=tr-9400001 resource_id=account_6602 event=profile_lookup_completed rows=0 http_status=404 duration_ms=18

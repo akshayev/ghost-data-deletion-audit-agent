@@ -1,0 +1,1 @@
+Request uses a former email; the leftover search hit carries only sha256(old email).

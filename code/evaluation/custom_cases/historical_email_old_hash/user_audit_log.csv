@@ -1,0 +1,3 @@
+audit_id,user_id,event_time,field_name,old_value,new_value
+audit_9001,user_91,2026-03-01T10:00:00Z,email,tomas.v.old@example.test,tomas.verhoeven@example.test
+audit_9002,user_91,2026-03-01T10:00:00Z,email_hash,1f85030ab19cf8bacefbe6035bf339ad8426f7e5942646116c705d30ef639181,870d2153b8ead313e4b19dd066f2f30a40c55fc56a07b477ced7b3fbe9fea247

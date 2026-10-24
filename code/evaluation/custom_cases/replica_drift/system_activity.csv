@@ -1,0 +1,2 @@
+activity_id,event_time,event_type,source_system,target_system,resource_id,reported_result,details
+activity_01,2026-04-20T10:00:00Z,INDEX_RECORD,account_service,search_service,search_9999,SUCCESS,Customer search-index refresh processed search_9999.

@@ -1,0 +1,1 @@
+File A (before audit_at) shows the account missing; file B (after audit_at) shows it ACTIVE.
