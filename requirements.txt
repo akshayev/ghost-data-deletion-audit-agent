@@ -1,0 +1,7 @@
+openai
+python-dotenv
+pypdf
+pillow
+pytest
+ruff
+pyright

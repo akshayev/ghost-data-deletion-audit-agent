@@ -1,0 +1,12 @@
+[tool.pytest.ini_options]
+testpaths = ["code/tests"]
+pythonpath = ["code"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["code"]
+extend-exclude = ["dataset"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
