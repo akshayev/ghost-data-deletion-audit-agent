@@ -1,17 +1,17 @@
 # Latest evaluation metrics (sample split)
 
-Cases: 32 | gold steps: 193 | predicted steps: 193
+Cases: 32 | gold steps: 193 | predicted steps: 189
 
 | Metric | Value |
 |---|---|
 | Status accuracy | 100.0% |
-| Step P / R / F1 (full tuple) | 96.9% / 96.9% / 96.9% |
-| Step P / R / F1 (no evidence_id) | 96.9% / 96.9% / 96.9% |
-| Alignment rate (phase, system, resource, operation) | 96.9% |
+| Step P / R / F1 (full tuple) | 98.4% / 96.4% / 97.4% |
+| Step P / R / F1 (no evidence_id) | 98.4% / 96.4% / 97.4% |
+| Alignment rate (phase, system, resource, operation) | 96.4% |
 | Field accuracy: state | 100.0% |
 | Field accuracy: evidence_id | 100.0% |
 | Sequence exact match | 71.9% |
-| Sequence mean normalized LCS | 94.6% |
+| Sequence mean normalized LCS | 94.0% |
 
 ## Status confusion matrix (rows = gold, columns = predicted)
 
@@ -39,16 +39,14 @@ Cases: 32 | gold steps: 193 | predicted steps: 193
 - missing (link miss): `VERIFICATION | security_service | audit_record_5569 | VERIFY_RECORD_PRESENT | PRESENT | `
 - extra (link extra): `VERIFICATION | analytics_platform | analytics_2265 | VERIFY_RECORD_ANONYMIZED | ANONYMIZED | `
 
+### case_21: gold COMPLETE, predicted COMPLETE
+- missing (link miss): `VERIFICATION | analytics_platform | analytics_5335 | VERIFY_RECORD_ANONYMIZED | ANONYMIZED | evidence_92`
+
 ### case_23: gold INCOMPLETE, predicted INCOMPLETE
 - missing (link miss): `VERIFICATION | account_service | account_410 | VERIFY_RECORD_ABSENT | ABSENT | `
-- extra (link extra): `VERIFICATION | account_service | account_7015 | VERIFY_RECORD_ABSENT | ABSENT | `
-
-### case_24: gold INCOMPLETE, predicted INCOMPLETE
-- extra (link extra): `VERIFICATION | analytics_platform | analytics_1895 | VERIFY_RECORD_ANONYMIZED | ANONYMIZED | `
 
 ### case_25: gold COMPLETE, predicted COMPLETE
 - missing (link miss): `VERIFICATION | analytics_platform | analytics_1895 | VERIFY_RECORD_ANONYMIZED | ANONYMIZED | evidence_92`
-- extra (link extra): `VERIFICATION | analytics_platform | analytics_4566 | VERIFY_RECORD_ANONYMIZED | ANONYMIZED | evidence_92`
 
 ### case_26: gold COMPLETE, predicted COMPLETE
 - missing (link miss): `VERIFICATION | analytics_platform | analytics_4566 | VERIFY_RECORD_ANONYMIZED | ANONYMIZED | evidence_92`

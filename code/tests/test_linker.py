@@ -93,13 +93,19 @@ def test_names_never_link_case_06(lk):
 
 def test_case_21_worker_window_without_tie_break(lk):
     got = linked(lk, "case_21")
-    for rid in ("account_6440", "analytics_5335"):
-        assert "worker_window" in channels(got[rid]), rid
+    assert "worker_window" in channels(got["account_6440"])
     (via,) = [v for v in got["account_6440"].via if v[0] == "worker_window"]
-    assert via[2] is False  # assigned without a tie-break
+    assert via[2] is False  # a unique candidate: assigned without a tie-break
     # PARTIAL / FAILED accounts in the same window cannot belong to a COMPLETE case
     for rid in ("account_294", "account_8832", "account_7015", "account_410", "account_9155"):
         assert rid not in got
+
+
+def test_case_21_analytics_needs_a_tie_break_so_only_order_links_it():
+    order = {r.resource_id: r for r in linker.build_linker(frozenset(), "ORDER").link("case_21")}
+    assert "worker_window" in channels(order["analytics_5335"])
+    skip_multi = linker.build_linker(frozenset(), "SKIP_MULTI").link("case_21")
+    assert "analytics_5335" not in {r.resource_id for r in skip_multi}
 
 
 def test_learned_account_window_case_30_not_case_04(lk):
@@ -216,3 +222,212 @@ def test_worker_window_never_duplicates_a_held_type(lk):
         types = [linker.rtype(r.resource_id) for r in worker]
         assert len(types) == len(set(types)), (case_id, types)
         assert not (set(types) & other_types), case_id
+
+
+# ---------- propagation channel (sync / restore repopulation) ----------
+
+
+def _propagation_linker(events, extra_obs=(), requested_days_before=0):
+    """A one-case linker: the subject's data flow is linked by key; `events` are activities."""
+    from datetime import timedelta
+
+    from ghost.identity import IdentityResolver
+    from ghost.observation import Observation
+
+    r = req("case_06")
+    resolver = IdentityResolver(loaders.load_identities(), loaders.load_audit_changes())
+    subject = resolver.resolve(r.email)
+    email = sorted(k for k in subject.strong_keys if "@" in k)[0]
+    seen = r.requested_at + timedelta(days=1)
+    flow = Observation("evidence_x", seen, seen, "integration_service", "", "data_flow_9001", True,
+                       "primary", "t", fields={"customer_email": email},
+                       link_keys=frozenset({email}))
+    acts = [
+        Activity(f"activity_{9000 + i}", t, "", et, "integration_service", "", src, "SUCCESS", text)
+        for i, (t, et, src, text) in enumerate(events)
+    ]
+    return linker.Linker([r], [flow, *extra_obs], [], acts, resolver, {}, {}), r
+
+
+def _at(r, days):
+    from datetime import timedelta
+
+    return r.audit_at + timedelta(days=days)
+
+
+def test_propagation_links_a_target_without_identifiers():
+    from datetime import UTC, datetime
+
+    r = req("case_06")
+    lk, r = _propagation_linker([
+        (r.requested_at, "SYNC_RECORD", "data_flow_9001",
+         "Active connector repopulated downstream resource search_7001."),
+    ])
+    got = {x.resource_id: x for x in lk.link("case_06")}
+    assert "search_7001" in got
+    assert ("propagation", "activity_9000", "data_flow_9001") in got["search_7001"].via
+    assert lk.propagation_stats["new"] == 1 and datetime.now(UTC)
+
+
+def test_propagation_after_audit_at_is_ignored():
+    r = req("case_06")
+    lk, r = _propagation_linker([
+        (_at(r, 1), "SYNC_RECORD", "data_flow_9001",
+         "Active connector repopulated downstream resource search_7001."),
+    ])
+    assert "search_7001" not in {x.resource_id for x in lk.link("case_06")}
+
+
+def test_propagation_skips_target_owned_by_another_user():
+    from ghost.observation import Observation
+
+    r = req("case_06")
+    other = next(i for i in loaders.load_identities() if i.email.lower() != r.email.lower())
+    t = r.requested_at
+    foreign = Observation("evidence_y", t, t, "search_service", "", "search_7001", True, "primary",
+                          "t", fields={"email": other.email},
+                          link_keys=frozenset({other.email.lower()}))
+    lk, r = _propagation_linker(
+        [(t, "SYNC_RECORD", "data_flow_9001",
+          "Active connector repopulated downstream resource search_7001.")],
+        extra_obs=[foreign],
+    )
+    assert "search_7001" not in {x.resource_id for x in lk.link("case_06")}
+    assert lk.propagation_stats["blocked"] == 1
+
+
+def test_propagation_restore_phrasing_and_one_hop_only():
+    r = req("case_06")
+    lk, r = _propagation_linker([
+        (r.requested_at, "RESTORE_BACKUP", "data_flow_9001",
+         "Restore job repopulated downstream resource search_7001."),
+        (r.requested_at, "SYNC_RECORD", "search_7001",
+         "Active connector repopulated downstream resource search_7002."),
+    ])
+    ids = {x.resource_id for x in lk.link("case_06")}
+    assert "search_7001" in ids and "search_7002" not in ids
+
+
+def test_propagation_target_is_still_subject_to_the_stale_filter():
+    from datetime import timedelta
+
+    from ghost.observation import Observation
+
+    r = req("case_06")
+    old = r.requested_at - timedelta(days=30)
+    seen_before = Observation("evidence_z", old, old, "search_service", "", "search_7001", True,
+                              "primary", "t")
+    lk, r = _propagation_linker(
+        [(r.requested_at, "SYNC_RECORD", "data_flow_9001",
+          "Active connector repopulated downstream resource search_7001.")],
+        extra_obs=[seen_before],
+    )
+    assert "search_7001" not in {x.resource_id for x in lk.link("case_06")}
+
+
+def test_propagation_does_not_change_the_state_decision():
+    # linking only adds the resource; with no evidence <= audit_at it is assumed compliant
+    from ghost import planner
+
+    r = req("case_06")
+    lk, r = _propagation_linker([
+        (r.requested_at, "SYNC_RECORD", "data_flow_9001",
+         "Active connector repopulated downstream resource search_7001."),
+    ])
+    linked = lk.link("case_06")
+    res = next(x for x in linked if x.resource_id == "search_7001")
+    assert planner.decide(res, r, lk).state.unknown
+
+
+# ---------- tie-break strategies ----------
+
+
+def _tie_fixture(n_cases, strategy):
+    """n cases sharing reported_at, two free accounts with in-window worker events.
+    Case ids and requested_at run in OPPOSITE order (case_5 requested last)."""
+    from datetime import timedelta
+
+    from ghost.identity import IdentityResolver
+
+    reported = datetime(2026, 6, 1, 12, tzinfo=UTC)
+    reqs = []
+    for i in range(n_cases):
+        requested = reported - timedelta(days=2 + i)  # case_5 is the most recently requested
+        reqs.append(loaders.DeletionRequest(
+            f"case_{5 + i}", f"nobody{i}@example.test", requested, "", "COMPLETE", reported, "",
+            reported + timedelta(days=7), "", "delete my account",
+        ))
+    acts = [
+        Activity(f"activity_{800 + k}", reported + timedelta(hours=-1 + 0.1 * k), "",
+                 "DELETE_RECORD", "deletion_worker", "account_service", f"account_90{k + 1}",
+                 "SUCCESS",
+                 f"Deletion worker submitted primary profile account_90{k + 1} to account_service.")
+        for k in range(2)
+    ]
+    return linker.Linker(reqs, [], [], acts, IdentityResolver([], []), {}, {}, tiebreak=strategy)
+
+
+def _owner_of(lk, rid):
+    return [c for c in lk.case_ids if any(r.resource_id == rid for r in lk.link(c))]
+
+
+def test_tiebreak_order_pairs_case_ascending_with_event_ascending():
+    lk = _tie_fixture(2, "ORDER")
+    assert _owner_of(lk, "account_901") == ["case_5"]
+    assert _owner_of(lk, "account_902") == ["case_6"]
+    assert lk.tie_breaks == 2
+
+
+def test_tiebreak_requested_pairs_by_requested_at():
+    lk = _tie_fixture(2, "REQUESTED")
+    assert _owner_of(lk, "account_901") == ["case_6"]  # case_6 was requested first
+    assert _owner_of(lk, "account_902") == ["case_5"]
+
+
+def test_tiebreak_skip_all_assigns_nothing_on_a_tie():
+    lk = _tie_fixture(2, "SKIP_ALL")
+    assert _owner_of(lk, "account_901") == [] and _owner_of(lk, "account_902") == []
+    assert lk.tie_breaks == 0
+
+
+def test_tiebreak_skip_multi_assigns_pairs_but_not_three_way_ties():
+    assert lk_owner_count(_tie_fixture(2, "SKIP_MULTI")) == 2
+    assert lk_owner_count(_tie_fixture(3, "SKIP_MULTI")) == 0
+    assert lk_owner_count(_tie_fixture(3, "ORDER")) == 2
+
+
+def lk_owner_count(lk):
+    return sum(len(_owner_of(lk, rid)) for rid in ("account_901", "account_902"))
+
+
+def test_unique_candidate_assignments_ignore_the_strategy():
+    for strategy in linker.TIEBREAKS:
+        lk = _tie_fixture(1, strategy)  # a single candidate case: no tie at all
+        assert _owner_of(lk, "account_901") == ["case_5"], strategy
+        assert lk.tie_breaks == 0
+
+
+def test_unknown_strategy_is_rejected_and_env_selects_the_default(monkeypatch):
+    with pytest.raises(ValueError, match="tie-break"):
+        _tie_fixture(2, "NOPE")
+    monkeypatch.setenv("GHOST_TIEBREAK", "SKIP_ALL")
+    assert linker.default_tiebreak() == "SKIP_ALL"
+    monkeypatch.setenv("GHOST_TIEBREAK", "bogus")
+    with pytest.raises(ValueError, match="tie-break"):
+        linker.default_tiebreak()
+    monkeypatch.delenv("GHOST_TIEBREAK")
+    assert linker.default_tiebreak() in linker.TIEBREAKS
+
+
+def test_real_data_tie_counts_are_monotone_in_strategy():
+    ties = {s: linker.build_linker(frozenset(), s).tie_breaks for s in linker.TIEBREAKS}
+    assert ties["SKIP_ALL"] == 0
+    assert ties["SKIP_ALL"] <= ties["SKIP_MULTI"] <= ties["ORDER"]
+    assert ties["REQUESTED"] == ties["ORDER"] or ties["REQUESTED"] > 0
+
+
+def test_build_linker_follows_the_env_strategy_without_stale_cache(monkeypatch):
+    monkeypatch.setenv("GHOST_TIEBREAK", "SKIP_ALL")
+    assert linker.build_linker().tiebreak == "SKIP_ALL"
+    monkeypatch.setenv("GHOST_TIEBREAK", "ORDER")
+    assert linker.build_linker().tiebreak == "ORDER"

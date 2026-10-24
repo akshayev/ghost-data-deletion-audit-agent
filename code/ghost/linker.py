@@ -8,12 +8,16 @@ Channels, in order:
   3. WORKER_WINDOW: deletion_worker activities on resources nobody owns are assigned to
      cases whose reported_at puts them inside a window learned from KEY-linked resources.
      Assignment is global over both splits (cases compete for the same events).
-  4. STALE filter: drop resources only seen before the request with no worker event in
+  4. PROPAGATION: a sync/restore event that "repopulated downstream resource <T>" from a source
+     linked to the case (event <= audit_at) links T too, unless T belongs to another known
+     user. One hop; state is still decided only by evidence.
+  5. STALE filter: drop resources only seen before the request with no worker event in
      the case's windows.
 """
 
+import os
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -33,6 +37,13 @@ LEARN_RANGE_HOURS = 6.0
 WINDOW_PAD_HOURS = 0.1
 DEFAULT_WINDOW = (-1.5, 2.5)
 SUBMITTED = "submitted primary profile"
+# How a tie (several free resources and cases that cannot be told apart) is resolved:
+#   ORDER      case_id ascending <-> event_time ascending
+#   SKIP_ALL   leave every tie unassigned
+#   SKIP_MULTI ORDER for 2-candidate ties, unassigned for 3 or more
+#   REQUESTED  requested_at ascending (case_id as tiebreak) <-> event_time ascending
+TIEBREAKS = ("ORDER", "SKIP_ALL", "SKIP_MULTI", "REQUESTED")
+DEFAULT_TIEBREAK = "SKIP_MULTI"
 STATUS_RESULT = {"COMPLETE": "SUCCESS", "NOT_STARTED": "FAILED", "PARTIALLY_COMPLETE": "PARTIAL"}
 
 _CATALOG_RES = (
@@ -43,6 +54,7 @@ _CATALOG_RES = (
     ),
 )
 _USER_RE = re.compile(r"^user_\d+$")
+_REPOPULATED_RE = re.compile(r"repopulated downstream resource (\w+?)\.?(?:\s|$)")
 
 
 # ---------- pure helpers ----------
@@ -55,6 +67,23 @@ def template(a: Activity) -> str:
 def family(a: Activity) -> str:
     text = " ".join(RESOURCE_ID_RE.sub("X", a.details).lower().split())
     return text[:FAMILY_CHARS]
+
+
+def check_tiebreak(strategy: str) -> str:
+    if strategy not in TIEBREAKS:
+        raise ValueError(f"unknown tie-break strategy {strategy!r}; expected one of {TIEBREAKS}")
+    return strategy
+
+
+def default_tiebreak() -> str:
+    """GHOST_TIEBREAK (case-insensitive) if set, else the measured default."""
+    return check_tiebreak(os.environ.get("GHOST_TIEBREAK", DEFAULT_TIEBREAK).strip().upper())
+
+
+def parse_repopulation(details: str) -> str | None:
+    """Target resource id of a "repopulated downstream resource <T>" event, else None."""
+    m = _REPOPULATED_RE.search(details)
+    return m.group(1) if m and RESOURCE_ID_RE.fullmatch(m.group(1)) else None
 
 
 def parse_catalog(details: str) -> tuple[str, str, str, str] | None:
@@ -151,7 +180,9 @@ class Linker:
         texts: dict[str, str],
         captured: dict[str, datetime],
         non_deletion: frozenset[str] = frozenset(),
+        tiebreak: str | None = None,
     ) -> None:
+        self.tiebreak = check_tiebreak(tiebreak) if tiebreak else default_tiebreak()
         self.requests = {r.case_id: r for r in requests}
         self.case_ids = sorted(self.requests, key=case_num)
         self.resolver = resolver
@@ -181,10 +212,14 @@ class Linker:
         self.catalog_links = {c: self._catalog_links(c) for c in self.case_ids}
         self.windows = self._learn_windows()
         self.worker_links, self.tie_breaks = self._assign_workers()
+        self.propagation_stats: Counter = Counter()
+        self.propagation_links = self._propagate()
         self._cache: dict[str, list[LinkedResource]] = {}
 
     @classmethod
-    def from_dataset(cls, non_deletion: frozenset[str] = frozenset()) -> "Linker":
+    def from_dataset(
+        cls, non_deletion: frozenset[str] = frozenset(), tiebreak: str | None = None
+    ) -> "Linker":
         from ghost.parsers.registry import parse_all
 
         observations, _, facts = parse_all()
@@ -197,6 +232,7 @@ class Linker:
             texts=file_texts(),
             captured={ef.file_id: ef.captured_at for ef in loaders.load_evidence_files()},
             non_deletion=non_deletion,
+            tiebreak=tiebreak,
         )
 
     # ----- catalog + alias bridge -----
@@ -390,6 +426,7 @@ class Linker:
 
         assigned: dict[str, dict[str, set[tuple]]] = defaultdict(dict)  # case -> rid -> via
         ties = 0
+        skipped: set[str] = set()  # tie groups left unassigned by the strategy
 
         def candidates(rid: str) -> list[str]:
             return [c for c in compat[rid] if rtype(rid) not in held[c]]
@@ -412,11 +449,12 @@ class Linker:
                     elif len(cands) == 1:
                         give(rid, cands[0], tie=False)
                         changed = True
-            if not compat:
+            open_ties = [rid for rid in compat if rid not in skipped]
+            if not open_ties or self.tiebreak == "SKIP_ALL":
                 break
             # one tie group: same type and same candidate set; earliest event first
             groups: dict[tuple, list[str]] = defaultdict(list)
-            for rid in compat:
+            for rid in open_ties:
                 groups[(rtype(rid), tuple(sorted(candidates(rid), key=case_num)))].append(rid)
 
             def first_time(rid: str) -> tuple:
@@ -424,7 +462,15 @@ class Linker:
 
             key = min(groups, key=lambda g: (min(first_time(r) for r in groups[g]), g))
             rids = sorted(groups[key], key=first_time)
-            for case_id, rid in zip(key[1], rids, strict=False):
+            if self.tiebreak == "SKIP_MULTI" and len(key[1]) >= 3:
+                skipped.update(rids)
+                continue
+            case_order = key[1]
+            if self.tiebreak == "REQUESTED":
+                case_order = tuple(
+                    sorted(key[1], key=lambda c: (self.requests[c].requested_at, case_num(c)))
+                )
+            for case_id, rid in zip(case_order, rids, strict=False):
                 give(rid, case_id, tie=True)
                 ties += 1
             for rid in rids:  # leftovers of a saturated group stay free for other cases
@@ -432,11 +478,46 @@ class Linker:
                     del compat[rid]
         return assigned, ties
 
+    # ----- propagation (sync / restore repopulation) -----
+
+    def _propagate(self) -> dict[str, dict[str, set[tuple]]]:
+        """Link the target of every repopulation event whose source is linked to the case.
+        Counts: sources (events with a linked source), already (target linked anyway), new,
+        blocked (target owned by a different known user)."""
+        events = [(a, t) for a in self.activities if (t := parse_repopulation(a.details))]
+        out: dict[str, dict[str, set[tuple]]] = {c: defaultdict(set) for c in self.case_ids}
+        for case_id in self.case_ids:
+            audit_at = self.requests[case_id].audit_at
+            subject = self.subjects[case_id]
+            mine = set(subject.user_ids) if subject else set()
+            direct = (
+                set(self.key_links[case_id])
+                | set(self.catalog_links[case_id])
+                | set(self.worker_links.get(case_id, ()))
+            )
+            for a, target in events:
+                if a.resource_id not in direct or a.event_time > audit_at:
+                    continue
+                self.propagation_stats["sources"] += 1
+                if target in direct:
+                    self.propagation_stats["already"] += 1
+                    continue
+                owners = self.owners.get(target, set())
+                if owners and not (owners & mine):
+                    self.propagation_stats["blocked"] += 1
+                    continue
+                self.propagation_stats["new"] += 1
+                out[case_id][target].add(("propagation", a.activity_id, a.resource_id))
+        return out
+
     # ----- stale filter + output -----
 
     def _stale(self, rid: str, case_id: str) -> bool:
         req = self.requests[case_id]
-        if any(o.captured_at >= req.requested_at for o in self.obs_by_resource.get(rid, ())):
+        observations = self.obs_by_resource.get(rid, ())
+        if not observations:  # nothing seen yet (e.g. a propagation target): not stale
+            return False
+        if any(o.captured_at >= req.requested_at for o in observations):
             return False
         return not any(self.in_window(a, case_id) for a in self._worker_acts(rid))
 
@@ -444,7 +525,9 @@ class Linker:
         if case_id in self._cache:
             return self._cache[case_id]
         vias: dict[str, set[tuple]] = defaultdict(set)
-        for source in (self.key_links, self.catalog_links, self.worker_links):
+        for source in (
+            self.key_links, self.catalog_links, self.worker_links, self.propagation_links
+        ):
             for rid, v in source.get(case_id, {}).items():
                 vias[rid] |= v
         out = []
@@ -469,9 +552,17 @@ class Linker:
         return out
 
 
+def build_linker(
+    non_deletion: frozenset[str] = frozenset(), tiebreak: str | None = None
+) -> Linker:
+    """Cached per (non_deletion, strategy); the strategy is resolved BEFORE caching so a
+    changed GHOST_TIEBREAK is never answered from a stale entry."""
+    return _build(non_deletion, check_tiebreak(tiebreak) if tiebreak else default_tiebreak())
+
+
 @cache
-def build_linker(non_deletion: frozenset[str] = frozenset()) -> Linker:
-    return Linker.from_dataset(non_deletion)
+def _build(non_deletion: frozenset[str], tiebreak: str) -> Linker:
+    return Linker.from_dataset(non_deletion, tiebreak)
 
 
 def link_case(

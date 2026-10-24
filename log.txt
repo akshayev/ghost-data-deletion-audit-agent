@@ -246,3 +246,28 @@ branch=main
 repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
 worktree=main
 parent_agent=none
+
+## [2026-10-24T23:10:00Z] P8b: propagation links + measured tie-break strategy
+
+User Prompt (verbatim, secrets redacted):
+Continue logging per AGENTS.md. Spec is final: no brainstorming. Use superpowers test-driven-development, systematic-debugging, verification-before-completion. No network calls are needed.
+
+TASK = PLAN.md step P8, part 2: two targeted improvements chosen from fullsplit_report.md. Measure each separately: run the sample eval, the custom cases and a full-split diff before and after every change.
+
+[Change 1 (propagation link channel for "repopulated downstream resource <T>" events: link the target when the source is linked and event_time <= audit_at, skip targets owned by another user, one hop, before the stale filter; print counts before implementing; tests with synthetic fixtures) and Change 2 (tie-break strategy via GHOST_TIEBREAK: ORDER, SKIP_ALL, SKIP_MULTI, REQUESTED; compare link tp/fp/fn, step F1, status accuracy, tie counts and full-split step diffs; choose by sample step F1 with a 0.5 pp tolerance and fewer guesses; record the table in evaluation_report.md) plus the finish list (pytest, ruff, sample eval, --custom, full run, fullsplit report, commit "P8b: propagation links + measured tie-break strategy", paste back counts, table, metrics, full-row changes vs P7, pytest) as pasted by the user; full text omitted here for length.]
+
+Agent Response Summary:
+Measured the repopulation events first (32 events; 29 with a linked source on the full split, all targets already linked, 0 new, 0 blocked), then implemented the channel test-first anyway. Added four tie-break strategies behind GHOST_TIEBREAK, compared them on both splits and chose SKIP_MULTI (best sample step F1 97.4%, 109 vs 199 guessed assignments). Sample metrics improved from 96.9% to 97.4% step F1; the full output changed in 84 rows (90 steps removed, none added, no status changes).
+
+Actions:
+* tests first: test_linker.py (propagation and tie-break fixtures), test_tiebreak_report.py, test_report_diagnostics.py
+* ghost/linker.py (propagation channel, stale rule for unobserved resources, tie-break strategies), evaluation/tiebreak_report.py, evaluation/diagnostics.py (pipeline linker)
+* pytest (273 passed), ruff, sample eval, --custom (5/5), main.py --split full, fullsplit report; 5 mutation checks
+
+Context:
+tool=Claude Code
+model=claude-sonnet-5-5
+branch=main
+repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
+worktree=main
+parent_agent=none

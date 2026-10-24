@@ -61,10 +61,13 @@ def test_link_metrics_counts_add_up():
 def test_full_split_link_stats():
     from evaluation.diagnostics import full_split_stats
 
-    s = full_split_stats()
-    assert s["cases"] == 518
-    assert s["no_account"] == ["case_45", "case_53", "case_61", "case_63"]
-    assert 3.0 < s["mean_resources"] < 4.2
+    order = full_split_stats("ORDER")
+    assert order["cases"] == 518
+    assert order["no_account"] == ["case_45", "case_53", "case_61", "case_63"]
+    assert 3.0 < order["mean_resources"] < 4.2
+    default = full_split_stats()  # SKIP_MULTI leaves 3-way account ties unassigned
+    assert set(order["no_account"]) <= set(default["no_account"])
+    assert default["mean_resources"] <= order["mean_resources"]
 
 
 def test_exclusion_effect_counts_changed_assignments():
@@ -74,3 +77,13 @@ def test_exclusion_effect_counts_changed_assignments():
     assert e["excluded"] == [f"case_{n}" for n in range(533, 543)]
     assert e["assignments_with"] >= e["assignments_without"] >= 0
     assert e["changed"] >= e["removed_from_excluded"] >= 0
+
+
+def test_link_metrics_match_the_pipeline_linker_and_the_tiebreak_table():
+    from evaluation import tiebreak_report
+    from evaluation.diagnostics import link_metrics
+    from ghost import linker
+
+    m = link_metrics()
+    row = next(r for r in tiebreak_report.compare() if r["strategy"] == linker.default_tiebreak())
+    assert (m["tp"], m["fp"], m["fn"]) == (row["tp"], row["fp"], row["fn"])

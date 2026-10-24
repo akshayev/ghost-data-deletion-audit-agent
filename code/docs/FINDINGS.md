@@ -239,6 +239,12 @@ without evidence.
 
 ## 6. Known open questions (resolve with the eval harness)
 
+- [VERIFIED] P8b: the 32 "repopulated downstream resource" events add no new links on either
+  split (all 29 linked-source targets were already linked). Tie-break strategies on the
+  sample: ORDER 96.9% step F1 (12 tie-broken links, 6 correct), SKIP_ALL 96.8%, SKIP_MULTI
+  97.4% (8 ties, 5 correct), REQUESTED 95.0%. The default is SKIP_MULTI. Full-split cost: 26
+  more cases without an account_* resource (30 instead of 4).
+
 - [VERIFIED] P8a blind spots (`code/evaluation/runs/fullsplit_report.md`, full split, 508
   deletion cases): 453 of 1,849 linked resources (24.5%) have no capture <= audit_at and are
   assumed compliant (239 have no observation at all, mostly worker-window accounts; 214 are

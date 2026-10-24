@@ -48,8 +48,16 @@ def gold_by_case() -> dict[str, set[str]]:
         }
 
 
+def pipeline_linker(tiebreak: str | None = None) -> linker.Linker:
+    """The linker the real pipeline uses: NOT_DELETION cases excluded from assignment."""
+    from ghost import classifier
+
+    non_deletion = classifier.non_deletion_cases(classifier.classify_requests(use_llm=False))
+    return linker.build_linker(non_deletion, tiebreak)
+
+
 def link_metrics() -> dict:
-    lk = linker.build_linker()
+    lk = pipeline_linker()
     cases, channels, tp, fp, fn = {}, Counter(), 0, 0, 0
     for case_id, gold in sorted(gold_by_case().items(), key=lambda kv: linker.case_num(kv[0])):
         got = {r.resource_id: r for r in lk.link(case_id)}
@@ -68,8 +76,8 @@ def link_metrics() -> dict:
     }
 
 
-def full_split_stats() -> dict:
-    lk = linker.build_linker()
+def full_split_stats(tiebreak: str | None = None) -> dict:
+    lk = pipeline_linker(tiebreak)
     ids = [r.case_id for r in loaders.load_requests("full")]
     linked = {c: [r.resource_id for r in lk.link(c)] for c in ids}
     accounts = {c: [r for r in rs if r.startswith("account_")] for c, rs in linked.items()}
