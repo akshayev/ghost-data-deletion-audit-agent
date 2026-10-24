@@ -151,3 +151,69 @@ def test_history_row_appends(tmp_path):
     for section in ("## Metrics history", "## Failures found & fixes", "## Custom cases"):
         assert section in text
     assert text.count("| real |") == 1 and text.count("| oracle-links |") == 1
+
+
+# ---------- custom cases ----------
+
+
+def _copy_case(tmp_path, name="non_deletion_keep_account"):
+    import shutil
+
+    from evaluation.main import CUSTOM_DIR
+
+    dest = tmp_path / name
+    shutil.copytree(CUSTOM_DIR / name, dest)
+    return dest
+
+
+def test_custom_case_passes_when_output_matches_expected(tmp_path):
+    from evaluation.main import run_custom_case
+
+    result = run_custom_case(_copy_case(tmp_path))
+    assert result["passed"] is True and result["diff"] == []
+    assert result["name"] == "non_deletion_keep_account" and result["purpose"]
+
+
+def test_custom_case_failure_reports_a_diff_and_never_edits_expected(tmp_path):
+    from evaluation.main import run_custom_case
+
+    case = _copy_case(tmp_path)
+    expected = case / "expected_output.csv"
+    expected.write_text(
+        "case_id,deletion_status,steps_json\ncase_1,COMPLETE,"
+        + '"[{""step_no"":1,""phase"":""VERIFICATION"",""system_id"":""account_service"",'
+        + '""resource_id"":""account_1"",""operation"":""VERIFY_RECORD_ABSENT"",'
+        + '""state"":""ABSENT"",""evidence_id"":""evidence_01""}]"\n',
+        encoding="utf-8",
+    )
+    before = expected.read_bytes()
+    result = run_custom_case(case)
+    assert result["passed"] is False
+    assert any("status" in line for line in result["diff"])
+    assert any("missing" in line and "account_1" in line for line in result["diff"])
+    assert expected.read_bytes() == before
+
+
+def test_custom_cases_discovers_every_directory():
+    from evaluation.main import CUSTOM_DIR, custom_case_dirs
+
+    names = [d.name for d in custom_case_dirs()]
+    assert len(names) >= 5 and names == sorted(names)
+    assert all((CUSTOM_DIR / n / "expected_output.csv").exists() for n in names)
+
+
+def test_custom_section_is_written_to_the_report(tmp_path):
+    from evaluation.main import append_custom_section
+
+    report = tmp_path / "r.md"
+    report.write_text("# R\n\n## Custom cases\n\n(placeholder)\n", encoding="utf-8")
+    append_custom_section(
+        [{"name": "a", "purpose": "does a", "passed": True, "diff": []},
+         {"name": "b", "purpose": "does b", "passed": False, "diff": ["status: x -> y"]}],
+        report,
+    )
+    text = report.read_text()
+    assert "| a | does a | PASS |" in text and "| b | does b | FAIL |" in text
+    assert "status: x -> y" in text and "(placeholder)" not in text
+    append_custom_section([{"name": "a", "purpose": "does a", "passed": True, "diff": []}], report)
+    assert text.count("## Custom cases") == 1 == report.read_text().count("## Custom cases")

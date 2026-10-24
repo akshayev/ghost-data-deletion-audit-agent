@@ -239,6 +239,19 @@ without evidence.
 
 ## 6. Known open questions (resolve with the eval harness)
 
+- [VERIFIED] P8a blind spots (`code/evaluation/runs/fullsplit_report.md`, full split, 508
+  deletion cases): 453 of 1,849 linked resources (24.5%) have no capture <= audit_at and are
+  assumed compliant (239 have no observation at all, mostly worker-window accounts; 214 are
+  seen only after audit_at). 23 of the 214 are shown in violation by a later file, so those
+  answers rest entirely on the assume-compliant rule.
+- [VERIFIED] 19 of 40 (prefix, treatment, state, channel) combinations occur only in the full
+  split (legal_hold, marketing, object, catalog links, ...).
+- [VERIFIED] SYNC_RECORD is the only unread activity type that touches linked resources
+  (83 events, 82 after the case's deletion event and before audit_at, e.g. "Active connector
+  repopulated downstream resource search_N"). Not used by any decision yet.
+- [VERIFIED] No retention date is known for 335 of the 439 audit/legal-hold resources, so the
+  retention rule only ever applies when a date is present (104 active, 0 expired).
+
 - [VERIFIED] P6: with gold resource ids (oracle links) the state, policy and planner
   rules reproduce all 32 sample rows exactly. Question 1 is answered: a resource with no
   capture <= audit_at is assumed compliant, and a COMPLETE verification cites the latest

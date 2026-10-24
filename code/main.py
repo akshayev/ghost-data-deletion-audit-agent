@@ -16,10 +16,7 @@ from pathlib import Path
 from ghost import classifier, linker, loaders, paths, planner
 from ghost.serialize import OutputRow, load_citable_ids, write_output
 
-SPLITS = {
-    "full": paths.DATASET / "deletion_requests.csv",
-    "sample": paths.DATASET / "sample_deletion_requests.csv",
-}
+SPLIT_FILES = {"full": "deletion_requests.csv", "sample": "sample_deletion_requests.csv"}
 DEFAULT_OUT = {
     "full": paths.OUTPUT,
     "sample": paths.EVAL_RUNS / "sample_output_pred.csv",
@@ -54,7 +51,7 @@ def build_context(use_llm: bool = True) -> Context:
 
 
 def load_requests(split: str) -> list[dict[str, str]]:
-    with open(SPLITS[split], encoding="utf-8", newline="") as f:
+    with open(paths.DATASET / SPLIT_FILES[split], encoding="utf-8", newline="") as f:
         return list(csv.DictReader(f))
 
 
@@ -84,10 +81,16 @@ def run_split(split: str, use_llm: bool = True) -> tuple[list[OutputRow], Contex
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Ghost Data Still Exists deletion-audit agent")
-    parser.add_argument("--split", choices=sorted(SPLITS), default="full")
+    parser.add_argument("--split", choices=sorted(SPLIT_FILES), default="full")
     parser.add_argument("--out", type=Path, help="output CSV (default depends on --split)")
     parser.add_argument("--no-llm", action="store_true", help="rules and caches only")
+    parser.add_argument("--dataset", type=Path, help="dataset root (default: <repo>/dataset)")
     args = parser.parse_args(argv)
+    if args.dataset:
+        try:
+            paths.use_dataset(args.dataset)
+        except FileNotFoundError as exc:
+            parser.error(str(exc))
 
     rows, context = run_split(args.split, use_llm=not args.no_llm)
     out = args.out or DEFAULT_OUT[args.split]

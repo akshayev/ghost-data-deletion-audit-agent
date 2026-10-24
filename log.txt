@@ -221,3 +221,28 @@ branch=main
 repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
 worktree=main
 parent_agent=none
+
+## [2026-10-24T22:10:00Z] P8a: full-split blind-spot report + custom evaluation cases
+
+User Prompt (verbatim, secrets redacted):
+Continue logging per AGENTS.md. Spec is final: no brainstorming. Use superpowers systematic-debugging and verification-before-completion. Do NOT change any decision logic in this step; this step only measures and builds fixtures. Making no network calls is fine, because everything is cached.
+
+TASK = PLAN.md step P8, part 1: (A) a full-split blind-spot report and (B) the custom evaluation cases.
+
+[Section A (code/evaluation/fullsplit_report.py -> runs/fullsplit_report.md: 1 type x treatment/state/channel table, 2 assumed-compliant breakdown, 3 rare categories, 4 retention, 5 identity conflicts and catalog links, 6 multi-resource cases, 7 unused activity types, 8 status sanity), Section B (configurable dataset root via GHOST_DATASET or --dataset; five hand-written custom cases under code/evaluation/custom_cases with expected_output.csv committed first in a separate commit; evaluation --custom with per-case pass/fail and diff; Custom cases section in evaluation_report.md; do not edit expected files or logic if a case fails) and Section C (pytest, ruff, sample eval unchanged, --custom, fullsplit_report, commit "P8a: full-split blind-spot report + custom evaluation cases", paste back the whole report, custom results and pytest summary) as pasted by the user; full text omitted here for length.]
+
+Agent Response Summary:
+Built five invented custom datasets and hand-wrote their expected outputs from the spec, committing them alone before running the pipeline. Added the configurable dataset root (paths.use_dataset, --dataset, GHOST_DATASET), the --custom runner (subprocess per case) and the full-split report with tests. No decision logic changed: the sample metrics are identical (status 100%, step F1 96.9%) and all five custom cases pass.
+
+Actions:
+* custom_cases/ (5 datasets) committed first; tests test_dataset_root.py, test_evaluation.py (+4), test_fullsplit_report.py written before code
+* ghost/paths.py, main.py (--dataset), evaluation/main.py (--custom), evaluation/fullsplit_report.py
+* pytest (253 passed), ruff, evaluation --custom, fullsplit_report; FINDINGS updated
+
+Context:
+tool=Claude Code
+model=claude-sonnet-5-5
+branch=main
+repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
+worktree=main
+parent_agent=none

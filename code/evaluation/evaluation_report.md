@@ -7,6 +7,7 @@
 | 2026-10-24 21:14 | oracle-links | 32 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
 | 2026-10-24 21:14 | real | 32 | 100.0% | 96.9% | 96.9% | 100.0% | 100.0% | 71.9% | 94.6% |
 | 2026-10-24 21:30 | real | 32 | 100.0% | 96.9% | 96.9% | 100.0% | 100.0% | 71.9% | 94.6% |
+| 2026-10-24 21:43 | real | 32 | 100.0% | 96.9% | 96.9% | 100.0% | 100.0% | 71.9% | 94.6% |
 
 ## Failures found & fixes
 
@@ -22,4 +23,10 @@
 
 ## Custom cases
 
-(placeholder: custom cases are added in a later step)
+| case | purpose | result |
+|---|---|---|
+| flow_before_delete | An enabled connector and a live search document: DISABLE_DATA_FLOW must precede DELETE_RECORD. | PASS |
+| historical_email_old_hash | Request uses a former email; the leftover search hit carries only sha256(old email). | PASS |
+| late_evidence_ignored | File A (before audit_at) shows the account missing; file B (after audit_at) shows it ACTIVE. | PASS |
+| non_deletion_keep_account | A request to update an address while keeping the account must be NOT_APPLICABLE with []. | PASS |
+| replica_drift | Primary no longer has the account but the failover replica still does: replication drift. | PASS |

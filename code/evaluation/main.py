@@ -2,7 +2,7 @@
 
     python code/evaluation/main.py               # predict the sample split, then score it
     python code/evaluation/main.py --pred PATH   # score an existing prediction CSV
-    python code/evaluation/main.py --custom      # also run custom_cases/ (not built yet)
+    python code/evaluation/main.py --custom      # also run custom_cases/ (pass/fail + diff)
     python code/evaluation/main.py --oracle-links  # gold resource ids instead of the linker
 
 Sample answers are read only here; nothing in code/ghost imports from this module.
@@ -14,7 +14,9 @@ import argparse
 import csv
 import importlib.util
 import json
+import subprocess
 import sys
+import tempfile
 from collections import Counter, defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -30,6 +32,7 @@ GOLD = paths.DATASET / "sample_output.csv"
 METRICS_MD = paths.EVALUATION / "latest_metrics.md"
 SAMPLE_PRED = paths.EVAL_RUNS / "sample_output_pred.csv"
 EVAL_REPORT = paths.EVALUATION / "evaluation_report.md"
+CUSTOM_DIR = paths.EVALUATION / "custom_cases"
 
 FULL_FIELDS = ("phase", "system_id", "resource_id", "operation", "state", "evidence_id")
 ALIGN_FIELDS = ("phase", "system_id", "resource_id", "operation")
@@ -272,6 +275,69 @@ def append_history(m: dict, mode: str, path: Path = EVAL_REPORT) -> None:
     path.write_text(head.rstrip("\n") + "\n" + row + "\n" + sep + tail, encoding="utf-8")
 
 
+def custom_case_dirs() -> list[Path]:
+    return sorted(d for d in CUSTOM_DIR.iterdir() if (d / "expected_output.csv").exists())
+
+
+def run_custom_case(case_dir: Path) -> dict:
+    """Run the real CLI on one small self-contained dataset and compare with its
+    hand-written expected_output.csv. Subprocess: every cache starts clean."""
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "pred.csv"
+        done = subprocess.run(
+            [sys.executable, str(CODE_DIR / "main.py"), "--dataset", str(case_dir),
+             "--split", "full", "--no-llm", "--out", str(out)],
+            capture_output=True, text=True,
+        )
+        purpose_file = case_dir / "PURPOSE.txt"
+        result = {
+            "name": case_dir.name,
+            "purpose": (
+                purpose_file.read_text(encoding="utf-8").strip() if purpose_file.exists() else ""
+            ),
+            "passed": False,
+            "diff": [],
+        }
+        if done.returncode != 0:
+            result["diff"] = [f"pipeline failed: {done.stderr.strip().splitlines()[-1:]}"]
+            return result
+        pred, gold = load_rows(out), load_rows(case_dir / "expected_output.csv")
+    m = evaluate(pred, gold)
+    for c in m["cases"]:
+        if c["gold_status"] != c["pred_status"]:
+            result["diff"].append(f"status: expected {c['gold_status']}, got {c['pred_status']}")
+        for kind, t, _why in c["reasons"]:
+            result["diff"].append(f"{kind}: {' | '.join(t)}")
+    steps_equal = all(not c["missing"] and not c["extra"] for c in m["cases"])
+    exact = all(pred[k][1] == gold[k][1] for k in gold if k in pred)
+    if steps_equal and not exact:
+        result["diff"].append("same steps but different order or numbering")
+    result["passed"] = m["status_accuracy"] == 1.0 and steps_equal and exact
+    return result
+
+
+def run_custom_cases() -> list[dict]:
+    return [run_custom_case(d) for d in custom_case_dirs()]
+
+
+def append_custom_section(results: list[dict], path: Path = EVAL_REPORT) -> None:
+    """Replace the body of the report's "Custom cases" section with the latest results."""
+    text = path.read_text(encoding="utf-8") if path.exists() else REPORT_TEMPLATE
+    head, sep, _ = text.partition("## Custom cases")
+    lines = [
+        "| case | purpose | result |",
+        "|---|---|---|",
+        *[
+            f"| {r['name']} | {r['purpose']} | {'PASS' if r['passed'] else 'FAIL'} |"
+            for r in results
+        ],
+    ]
+    for r in results:
+        if not r["passed"]:
+            lines += ["", f"### {r['name']} diff", *[f"- {d}" for d in r["diff"]]]
+    path.write_text((head + "## Custom cases\n\n" + "\n".join(lines) + "\n"), encoding="utf-8")
+
+
 def oracle_predictions() -> Rows:
     """Plan every sample case from its GOLD resource ids instead of the linker's, so that
     state/policy/planner errors show up without linker noise."""
@@ -337,7 +403,13 @@ def main(argv: list[str] | None = None) -> int:
     print(f"sequence exact={_pct(m['sequence_exact'])}  mean LCS={_pct(m['sequence_lcs'])}")
     print(f"details: {args.out}")
     if args.custom:
-        print("custom cases: no custom cases yet")
+        results = run_custom_cases()
+        append_custom_section(results, args.history)
+        for r in results:
+            print(f"custom {r['name']}: {'PASS' if r['passed'] else 'FAIL'}")
+            for d in r["diff"]:
+                print(f"    {d}")
+        print(f"custom cases: {sum(r['passed'] for r in results)}/{len(results)} passed")
     return 0
 
 
