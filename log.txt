@@ -119,3 +119,29 @@ branch=main
 repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
 worktree=main
 parent_agent=none
+
+## [2026-10-24T20:31:00Z] P4: LLM wrapper + screenshot extraction
+
+User Prompt (verbatim, secrets redacted):
+Continue logging per AGENTS.md. Spec is final: no brainstorming. Use superpowers test-driven-development and verification-before-completion. NEVER print, log or echo the value of any API key; only report whether it is set.
+
+TASK = PLAN.md step P4: LLM wrapper + one-time vision extraction of the 11 PNG screenshots → Observations.
+
+[Sections A (code/ghost/llm.py), B (code/ghost/parsers/images.py, prompt in code/prompts/screenshot_extract.md), C (ground-truth checks for evidence_09, 32, 28, 37, 60, 04, 19, 14, 23, 46, 42 as tests on the CACHED extraction) and D (re-run report/diagnostics, pytest, ruff, commit cache files but not .env, commit "P4: LLM wrapper + screenshot extraction", paste back --check output, per-image summary, ground-truth results, ledger totals, pytest output, parse recall) as pasted by the user; full text omitted here for length.]
+
+Agent Response Summary:
+Added ghost/llm.py (OpenAI SDK, gemini/groq providers, disk cache, usage ledger, --check CLI) and ghost/parsers/images.py (vision transcription converted to Observations in code, with id/email guards and OCR/skip fallback). Wrote the tests first and watched them fail, then ran the one-time Gemini extraction of the 11 PNGs (11 calls, cached under code/cache/llm). All 11 ground-truth checks pass on the cached extraction; no key value was printed or committed.
+
+Actions:
+* tests/test_llm.py, tests/test_images.py, tests/conftest.py written first (RED), then ghost/llm.py and ghost/parsers/images.py (GREEN)
+* code/prompts/screenshot_extract.md; registry wired to parse_image; FileFacts gained ticket_refs/file_names; FileParse gained stats
+* python -m ghost.llm --check; python code/ghost/parsers/images.py --extract (11 real Gemini calls)
+* pytest, ruff, mutation checks (5 mutants killed), manual secret scan of staged diff; FINDINGS section 3 updated
+
+Context:
+tool=Claude Code
+model=claude-sonnet-5-5
+branch=main
+repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
+worktree=main
+parent_agent=none

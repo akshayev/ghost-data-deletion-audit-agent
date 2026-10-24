@@ -1,7 +1,7 @@
 """Pick a parser for every evidence file listed in evidence_files.csv.
 
 Dispatch is by extension, then by content (each parser sniffs structure, never
-file names). PNG screenshots are deferred to P4 (vision extraction).
+file names). PNG screenshots go through the cached vision extraction (images.py).
 """
 
 from functools import cache
@@ -9,6 +9,7 @@ from functools import cache
 from ghost import loaders, paths
 from ghost.observation import Coverage, FileFacts, Observation
 from ghost.parsers.common import FileCtx, FileParse, reference_observations
+from ghost.parsers.images import parse_image
 from ghost.parsers.json_records import parse_json
 from ghost.parsers.logs import parse_log
 from ghost.parsers.pdf import parse_pdf
@@ -21,15 +22,13 @@ PARSERS = {
     ".log": parse_log,
     ".txt": parse_text,
     ".pdf": parse_pdf,
+    ".png": parse_image,
 }
-DEFERRED = {".png": "deferred:P4"}
 
 
 def parse_file(ctx: FileCtx) -> FileParse:
     path = paths.DATASET / ctx.path
     ext = path.suffix.lower()
-    if ext in DEFERRED:
-        return FileParse(ctx.file_id, ctx.path, DEFERRED[ext])
     parser = PARSERS.get(ext)
     if parser is None:
         return FileParse(ctx.file_id, ctx.path, f"unknown:{ext}")

@@ -315,15 +315,14 @@ def test_coverages_are_well_formed(coverages):
         assert c.system_id and c.scope and c.captured_at is not None
 
 
-def test_png_files_are_deferred_and_nothing_else_unparsed():
+def test_every_file_has_a_parser_and_nothing_is_unparsed():
     results = registry.parse_results()
     assert len(results) == 94
     for fid, r in results.items():
         if r.path.endswith(".png"):
-            assert r.family == "deferred:P4"
-        else:
-            assert not r.family.startswith(("deferred", "unknown")), (fid, r.family)
-            assert r.unparsed == 0, (fid, r.unparsed)
+            assert r.family == "image:vision", (fid, r.family)
+        assert not r.family.startswith(("deferred", "unknown", "image:skipped")), (fid, r.family)
+        assert r.unparsed == 0, (fid, r.unparsed)
 
 
 def test_parse_all_is_cached():

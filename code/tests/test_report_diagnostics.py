@@ -6,7 +6,7 @@ def test_coverage_rows_one_per_manifest_file():
     rows = coverage_rows()
     assert len(rows) == 94
     assert rows[0]["file_id"] == "evidence_01"
-    png = [r for r in rows if r["family"] == "deferred:P4"]
+    png = [r for r in rows if r["family"] == "image:vision"]
     assert len(png) == 11
     assert all(r["unparsed"] == 0 for r in rows)
 

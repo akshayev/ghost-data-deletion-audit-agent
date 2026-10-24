@@ -50,3 +50,5 @@ class FileFacts:
     order_refs: frozenset[str]
     retain_until: tuple[str, ...]
     emails: frozenset[str] = frozenset()
+    ticket_refs: frozenset[str] = frozenset()
+    file_names: frozenset[str] = frozenset()

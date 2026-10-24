@@ -1,0 +1,15 @@
+{
+  "request": {
+    "provider": "gemini",
+    "purpose": "screenshot_extract",
+    "json_mode": true,
+    "messages_sha256": "764ba8551123b8848d80cd0f24595e4f00471ae04699465672e6a6cdef045be8",
+    "image_sha256": "d5c32ca5b6e1a2b4bbe9f5d41835ef1fd5d4f7061dab9067a4f9f88cea3c1861"
+  },
+  "model": "gemini-3.8-flash",
+  "response_text": "{\"screen\":{\"product\":\"Northstar Shop\",\"title\":\"Haruka Sato\",\"subtitle\":\"user_11 · account_5762\"},\"records\":[{\"resource_id\":\"account_5762\",\"row_source\":\"page_header\",\"fields\":{\"name\":\"Haruka Sato\",\"email\":\"haruka.s1838@zoho.com\",\"phone\":\"+81 90 7610 2507\",\"user_ref\":\"user_11\",\"email_hash\":null},\"status\":\"Silver\",\"attributes\":{\"Signup channel\":\"mobile_app\",\"Market\":\"JP\",\"Preferred language\":\"Japanese\",\"Last contact\":\"24 Sep 2026 09:14 JST\"}},{\"resource_id\":\"ORD-20265762\",\"row_source\":\"table_row\",\"fields\":{\"name\":null,\"email\":null,\"phone\":null,\"user_ref\":null,\"email_hash\":null},\"status\":\"Delivered · 18 Sep\",\"attributes\":{\"Date\":\"12 Sep 2026\",\"Item\":\"Ceramic coffee set\",\"Qty\":\"1\",\"Total\":\"JPY 8,900\"}},{\"resource_id\":\"ORD-20265518\",\"row_source\":\"table_row\",\"fields\":{\"name\":null,\"email\":null,\"phone\":null,\"user_ref\":null,\"email_hash\":null},\"status\":\"Returned · 03 Sep\",\"attributes\":{\"Date\":\"28 Aug 2026\",\"Item\":\"Travel backpack\",\"Qty\":\"1\",\"Total\":\"JPY 12,400\"}},{\"resource_id\":null,\"row_source\":\"detail_panel\",\"fields\":{\"name\":null,\"email\":null,\"phone\":null,\"user_ref\":null,\"email_hash\":null},\"status\":null,\"attributes\":{\"Default address\":\"2-18-4 Kichijoji, Musashino, Tokyo 180-0004\",\"Loyalty tier\":\"Silver\",\"Support\":\"CS-8538 · support_9538\",\"Member since\":\"12 Jan 2024\"}}],\"mentions\":[\"support_9538\"],\"references\":{\"user_refs\":[\"user_11\"],\"order_refs\":[\"ORD-20265762\",\"ORD-20265518\"],\"ticket_refs\":[\"CS-8538\"],\"file_names\":[],\"other\":[]}}",
+  "usage": {
+    "prompt_tokens": 2117,
+    "completion_tokens": 518
+  }
+}

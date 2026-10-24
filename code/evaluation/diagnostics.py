@@ -3,7 +3,7 @@
     python code/evaluation/diagnostics.py
 
 Parse recall = gold resource_ids in sample_output.csv that appear in at least
-one parsed Observation (non-PNG evidence only until P4).
+one parsed Observation (all evidence, PNG screenshots via the cached vision extraction).
 """
 
 import csv

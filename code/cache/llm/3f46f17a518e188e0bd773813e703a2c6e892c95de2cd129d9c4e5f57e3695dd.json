@@ -1,0 +1,15 @@
+{
+  "request": {
+    "provider": "gemini",
+    "purpose": "screenshot_extract",
+    "json_mode": true,
+    "messages_sha256": "764ba8551123b8848d80cd0f24595e4f00471ae04699465672e6a6cdef045be8",
+    "image_sha256": "75afdb0ae53a4510c83399a70d88073cb4fb2747454095756e4ddad1a8c70605"
+  },
+  "model": "gemini-3.8-flash",
+  "response_text": "{\n  \"screen\": {\n    \"product\": \"Search Console\",\n    \"title\": \"Customer Search\",\n    \"subtitle\": \"customer_directory_v3 / prod-eu\"\n  },\n  \"records\": [\n    {\n      \"resource_id\": \"search_428\",\n      \"row_source\": \"table_row\",\n      \"fields\": {\n        \"name\": \"Gabriel Silva\",\n        \"email\": \"g.silva76@gmail.com\",\n        \"phone\": null,\n        \"user_ref\": \"user_13\",\n        \"email_hash\": null\n      },\n      \"status\": null,\n      \"attributes\": {\n        \"Score\": \"9.84\",\n        \"Last indexed\": \"05:58:21 UTC\"\n      }\n    },\n    {\n      \"resource_id\": \"search_1874\",\n      \"row_source\": \"table_row\",\n      \"fields\": {\n        \"name\": null,\n        \"email\": \"g.silva76.jr@gmail.com\",\n        \"phone\": null,\n        \"user_ref\": null,\n        \"email_hash\": null\n      },\n      \"status\": null,\n      \"attributes\": {\n        \"Score\": \"4.12\",\n        \"Last indexed\": \"05:55:03 UTC\"\n      }\n    },\n    {\n      \"resource_id\": \"search_428\",\n      \"row_source\": \"detail_panel\",\n      \"fields\": {\n        \"name\": \"Gabriel Silva\",\n        \"email\": \"g.silva76@gmail.com\",\n        \"phone\": null,\n        \"user_ref\": \"user_13\",\n        \"email_hash\": null\n      },\n      \"status\": null,\n      \"attributes\": {\n        \"_index\": \"customer_directory_v3\",\n        \"_id\": \"search_428\",\n        \"indexed_at\": \"2026-09-01T05:58:21Z\"\n      }\n    }\n  ],\n  \"mentions\": [],\n  \"references\": {\n    \"user_refs\": [\n      \"user_13\",\n      \"user_9842\"\n    ],\n    \"order_refs\": [],\n    \"ticket_refs\": [],\n    \"file_names\": [],\n    \"other\": [\n      \"email:g.silva76@gmail.com\"\n    ]\n  }\n}",
+  "usage": {
+    "prompt_tokens": 2129,
+    "completion_tokens": 590
+  }
+}

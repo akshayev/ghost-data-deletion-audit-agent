@@ -1,0 +1,15 @@
+{
+  "request": {
+    "provider": "gemini",
+    "purpose": "screenshot_extract",
+    "json_mode": true,
+    "messages_sha256": "764ba8551123b8848d80cd0f24595e4f00471ae04699465672e6a6cdef045be8",
+    "image_sha256": "51fa0e6a38f8fa3629ba1b0d0b90b4ed139715956b97bfd09a6f1a6232c15df5"
+  },
+  "model": "gemini-3.8-flash",
+  "response_text": "{\"screen\": {\"product\": \"Northstar Shop\", \"title\": \"Soo-jin Park\", \"subtitle\": \"marketing_001 · sj.park@naver.com · +82 10-5837-9451\"}, \"records\": [{\"resource_id\": \"marketing_001\", \"row_source\": \"page_header\", \"fields\": {\"name\": \"Soo-jin Park\", \"email\": \"sj.park@naver.com\", \"phone\": \"+82 10-5837-9451\", \"user_ref\": null, \"email_hash\": null}, \"status\": \"Live\", \"attributes\": {\"Market\": \"South Korea\", \"Language\": \"Korean\", \"Email opt-in\": \"Yes\", \"SMS opt-in\": \"No\", \"Last refreshed\": \"15 Sep 2026 23:40 UTC\"}}, {\"resource_id\": null, \"row_source\": \"table_row\", \"fields\": {\"name\": null, \"email\": null, \"phone\": null, \"user_ref\": null, \"email_hash\": null}, \"status\": null, \"attributes\": {\"Time\": \"23:40\", \"Activity\": \"Product-category update\", \"Detail\": \"Desk accessories · Drinkware\"}}, {\"resource_id\": null, \"row_source\": \"table_row\", \"fields\": {\"name\": null, \"email\": null, \"phone\": null, \"user_ref\": null, \"email_hash\": null}, \"status\": null, \"attributes\": {\"Time\": \"23:38\", \"Activity\": \"Campaign eligibility check\", \"Detail\": \"Autumn offers · Eligible\"}}, {\"resource_id\": null, \"row_source\": \"table_row\", \"fields\": {\"name\": null, \"email\": null, \"phone\": null, \"user_ref\": null, \"email_hash\": null}, \"status\": null, \"attributes\": {\"Time\": \"23:35\", \"Activity\": \"Profile refresh\", \"Detail\": \"Live profile fields updated\"}}, {\"resource_id\": null, \"row_source\": \"table_row\", \"fields\": {\"name\": null, \"email\": null, \"phone\": null, \"user_ref\": null, \"email_hash\": null}, \"status\": null, \"attributes\": {\"Time\": \"23:32\", \"Activity\": \"Audience evaluation\", \"Detail\": \"Returning customers — East Asia\"}}, {\"resource_id\": null, \"row_source\": \"detail_panel\", \"fields\": {\"name\": null, \"email\": null, \"phone\": null, \"user_ref\": null, \"email_hash\": null}, \"status\": null, \"attributes\": {\"Audience\": \"Returning customers — East Asia\", \"Segments\": \"Repeat customer · Home & lifestyle · Mobile shopper\", \"Preferred categories\": \"Desk accessories · Drinkware\", \"Last campaign\": \"Autumn offers\", \"Open rate\": \"32.4%\", \"Click rate\": \"6.8%\"}}], \"mentions\": [], \"references\": {\"user_refs\": [], \"order_refs\": [], \"ticket_refs\": [], \"file_names\": [], \"other\": []}}",
+  "usage": {
+    "prompt_tokens": 2129,
+    "completion_tokens": 703
+  }
+}

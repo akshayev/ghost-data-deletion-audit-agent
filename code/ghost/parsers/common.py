@@ -81,6 +81,7 @@ class FileParse:
     coverages: list[Coverage] = field(default_factory=list)
     facts: list[FileFacts] = field(default_factory=list)
     unparsed: int = 0  # resource-bearing units that produced no observation
+    stats: dict = field(default_factory=dict)  # parser-specific counts (images: records, ...)
 
 
 def safe_ts(value, default: datetime) -> datetime:

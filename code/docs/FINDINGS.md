@@ -95,6 +95,23 @@ without evidence.
   retention register (order ref, user, retain-until per row) and the
   account history report (user_18, one order). They are stored as file
   facts for later legal-hold linking.
+- [VERIFIED] Screenshots (11 PNGs) are one admin-console layout: a table, a
+  detail/side panel for the selected row, and an activity feed that shows other
+  people's records. The vision model (gemini-3.8-flash, ~95s per image) transcribes
+  them; the same resource can appear as both a table row and a panel, and the panel
+  often carries fields the row lacks (backup_9287's account email). Link keys must
+  come from the record's own row/panel only. The top search box holds a query email
+  (stored in FileFacts.emails), not a record.
+- [VERIFIED] Vision output needs guards: it can emit non-resource ids as
+  `resource_id` (order refs `ORD-...`, a `user_17` page-header key, a bucket
+  name). The resource-id regex drops them (4 of 29 records/mentions); the content
+  survives in `references`. No suspect emails (misreads) in the 11 images.
+- [VERIFIED] Image-only resources: `support_9538` (a mention in evidence_04) and
+  `backup_9281` (feed-only mention in evidence_32). A panel attribute can also name
+  a resource (`Support: CS-8538 · support_9538`); the link is not in `fields`.
+- [VERIFIED] evidence_42 (deleted_account_reference) and evidence_46
+  (object_storage_browser) carry no resource ids; they yield FileFacts only
+  (user_17 + ORD-20263245; eight file names).
 
 ## 4. Activity stream (`system_activity.csv`, 4,011 rows)
 

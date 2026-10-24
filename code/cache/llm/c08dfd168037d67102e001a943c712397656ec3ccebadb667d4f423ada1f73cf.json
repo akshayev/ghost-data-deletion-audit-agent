@@ -1,0 +1,15 @@
+{
+  "request": {
+    "provider": "gemini",
+    "purpose": "screenshot_extract",
+    "json_mode": true,
+    "messages_sha256": "764ba8551123b8848d80cd0f24595e4f00471ae04699465672e6a6cdef045be8",
+    "image_sha256": "68c28a72afd6ed184d5990d15c543f8a516face204f0360f732755a8a63c28be"
+  },
+  "model": "gemini-3.8-flash",
+  "response_text": "{\"screen\":{\"product\":\"Northstar Shop\",\"title\":\"user_17\",\"subtitle\":\"Customer key · Account Platform · eu-west\"},\"records\":[{\"resource_id\":\"user_17\",\"row_source\":\"page_header\",\"fields\":{\"name\":null,\"email\":null,\"phone\":null,\"user_ref\":\"user_17\",\"email_hash\":null},\"status\":\"Retained reference\",\"attributes\":{\"Reference type\":\"Customer key\",\"Created\":\"11 Jan 2024 08:42 UTC\",\"Most recent update\":\"10 Mar 2026 07:18 UTC\",\"Owner team\":\"Account Platform\"}},{\"resource_id\":null,\"row_source\":\"table_row\",\"fields\":{\"name\":null,\"email\":null,\"phone\":null,\"user_ref\":null,\"email_hash\":null},\"status\":\"Active\",\"attributes\":{\"System\":\"Orders\",\"Record reference\":\"ORD-20263245\",\"Relationship\":\"Linked to customer\",\"Created (UTC)\":\"11 Jan 2024 08:45\"}},{\"resource_id\":null,\"row_source\":\"table_row\",\"fields\":{\"name\":null,\"email\":null,\"phone\":null,\"user_ref\":null,\"email_hash\":null},\"status\":\"Active\",\"attributes\":{\"System\":\"Support\",\"Record reference\":\"CS-3245\",\"Relationship\":\"Linked to customer\",\"Created (UTC)\":\"14 Feb 2024 12:16\"}},{\"resource_id\":null,\"row_source\":\"table_row\",\"fields\":{\"name\":null,\"email\":null,\"phone\":null,\"user_ref\":null,\"email_hash\":null},\"status\":\"Active\",\"attributes\":{\"System\":\"Support\",\"Record reference\":\"CS-3378\",\"Relationship\":\"Linked to customer\",\"Created (UTC)\":\"03 Jun 2024 09:27\"}},{\"resource_id\":null,\"row_source\":\"table_row\",\"fields\":{\"name\":null,\"email\":null,\"phone\":null,\"user_ref\":null,\"email_hash\":null},\"status\":\"Active\",\"attributes\":{\"System\":\"Finance\",\"Record reference\":\"FIN-7742\",\"Relationship\":\"Linked to customer\",\"Created (UTC)\":\"22 Aug 2024 15:03\"}}],\"mentions\":[],\"references\":{\"user_refs\":[\"user_17\"],\"order_refs\":[\"ORD-20263245\"],\"ticket_refs\":[\"CS-3245\",\"CS-3378\"],\"file_names\":[],\"other\":[\"FIN-7742\"]}}",
+  "usage": {
+    "prompt_tokens": 2129,
+    "completion_tokens": 555
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "request": {
+    "provider": "gemini",
+    "purpose": "screenshot_extract",
+    "json_mode": true,
+    "messages_sha256": "764ba8551123b8848d80cd0f24595e4f00471ae04699465672e6a6cdef045be8",
+    "image_sha256": "2c246aa5843bec609b9ddfdf1154cd81e0fd61996f83954735e9856e48c18bf3"
+  },
+  "model": "gemini-3.8-flash",
+  "response_text": "{\"screen\": {\"product\": \"Vault Recovery Manager\", \"title\": \"Customer-platform archives\", \"subtitle\": \"Northstar Production · weekly snapshots\"}, \"records\": [{\"resource_id\": \"backup_9291\", \"row_source\": \"table_row\", \"fields\": {\"name\": null, \"email\": \"bluepeakco@outlook.com\", \"phone\": null, \"user_ref\": null, \"email_hash\": null}, \"status\": null, \"attributes\": {\"Region\": \"ap-southeast-1\", \"Created\": \"26 Apr 02:00\", \"Size\": \"102.3 GB\", \"Encryption\": \"AES-256\", \"Tier\": \"Archive\"}}, {\"resource_id\": \"backup_9288\", \"row_source\": \"table_row\", \"fields\": {\"name\": null, \"email\": \"miller.logistics@company.com\", \"phone\": null, \"user_ref\": null, \"email_hash\": null}, \"status\": null, \"attributes\": {\"Region\": \"us-west-2\", \"Created\": \"26 Apr 02:00\", \"Size\": \"67.1 GB\", \"Encryption\": \"AES-256\", \"Tier\": \"Archive\"}}, {\"resource_id\": \"backup_9287\", \"row_source\": \"table_row\", \"fields\": {\"name\": null, \"email\": \"areed1433@gmail.com\", \"phone\": null, \"user_ref\": null, \"email_hash\": null}, \"status\": null, \"attributes\": {\"Region\": \"eu-west-1\", \"Created\": \"26 Apr 02:00\", \"Size\": \"84.7 GB\", \"Encryption\": \"AES-256\", \"Tier\": \"Archive\"}}, {\"resource_id\": \"backup_9286\", \"row_source\": \"table_row\", \"fields\": {\"name\": null, \"email\": \"summit-retail@company.com\", \"phone\": null, \"user_ref\": null, \"email_hash\": null}, \"status\": null, \"attributes\": {\"Region\": \"us-east-1\", \"Created\": \"26 Apr 02:00\", \"Size\": \"91.4 GB\", \"Encryption\": \"AES-256\", \"Tier\": \"Archive\"}}, {\"resource_id\": \"backup_9287\", \"row_source\": \"detail_panel\", \"fields\": {\"name\": null, \"email\": \"areed1433@gmail.com\", \"phone\": null, \"user_ref\": null, \"email_hash\": null}, \"status\": null, \"attributes\": {\"Path\": \"s3://northstar-backups/customer-platform/weekly/segment-42-20260426.tar.zst\", \"Region\": \"eu-west-1\", \"Created\": \"26 Apr 2026 02:00 UTC\", \"Encryption\": \"AES-256\", \"Checksum\": \"Verified\", \"Last drill\": \"29 Mar 2026\", \"Retention end\": \"26 Jul 2026\"}}], \"mentions\": [\"backup_9281\"], \"references\": {\"user_refs\": [], \"order_refs\": [], \"ticket_refs\": [], \"file_names\": [\"segment-42-20260426.tar.zst\"], \"other\": []}}",
+  "usage": {
+    "prompt_tokens": 2103,
+    "completion_tokens": 773
+  }
+}
