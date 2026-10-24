@@ -82,6 +82,35 @@ def full_split_stats() -> dict:
     }
 
 
+def exclusion_effect() -> dict:
+    """Worker-window assignments with vs without excluding the classifier's NOT_DELETION
+    cases (global assignment over both splits)."""
+    from ghost import classifier
+
+    excluded = classifier.non_deletion_cases(classifier.classify_requests(use_llm=False))
+    with_all = linker.build_linker()
+    without = linker.build_linker(excluded)
+
+    def pairs(lk):
+        return {
+            (c, rid, v[1])
+            for c, links in lk.worker_links.items()
+            for rid, vias in links.items()
+            for v in vias
+        }
+
+    a, b = pairs(with_all), pairs(without)
+    moved = {(rid, act) for _, rid, act in a - b} & {(rid, act) for _, rid, act in b - a}
+    return {
+        "excluded": sorted(excluded, key=linker.case_num),
+        "assignments_with": len(a),
+        "assignments_without": len(b),
+        "removed_from_excluded": len({t for t in a - b if t[0] in excluded}),
+        "changed": len(a ^ b),
+        "reassigned_to_other_case": len(moved),
+    }
+
+
 def window_rows() -> list[tuple[str, float, float, str, int]]:
     lk = linker.build_linker()
     return sorted((t, lo, hi, src, n) for t, (lo, hi, src, n) in lk.windows.items())
@@ -123,6 +152,15 @@ def main() -> int:
     print(f"  zero linked ({len(s['zero_linked'])}): {s['zero_linked']}")
     print(f"  no account_* ({len(s['no_account'])}): {s['no_account']}")
     print(f"  >1 account_* ({len(s['multi_account'])}): {s['multi_account']}")
+    e = exclusion_effect()
+    print()
+    print(
+        f"classifier exclusion ({len(e['excluded'])} cases): worker-window assignments "
+        f"{e['assignments_with']} -> {e['assignments_without']}; "
+        f"{e['removed_from_excluded']} taken from excluded cases, "
+        f"{e['reassigned_to_other_case']} resources reassigned to other cases, "
+        f"{e['changed']} (case, resource) pairs changed"
+    )
     LINK_REPORT.parent.mkdir(parents=True, exist_ok=True)
     LINK_REPORT.write_text(render_link_report(m, s), encoding="utf-8")
     print(f"written: {LINK_REPORT}")

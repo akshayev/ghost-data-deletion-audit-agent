@@ -235,3 +235,13 @@ def test_offline_replay_writes_no_ledger_line(env, monkeypatch):
     llm.chat(MSGS, purpose="t")
     llm.chat(MSGS, purpose="t", offline=True)
     assert len(ledger(env)) == 1  # replays are free and must not grow the committed ledger
+
+
+def test_online_call_reuses_entry_made_under_another_model_name(env, monkeypatch):
+    install(monkeypatch, gemini=FakeClient([completion(OK)]))
+    llm.chat(MSGS, purpose="t")
+    monkeypatch.setenv("GEMINI_MODEL", "some-other-model")
+    gem = FakeClient([])  # any network call would pop from an empty script
+    install(monkeypatch, gemini=gem)
+    res = llm.chat(MSGS, purpose="t")
+    assert res.cache_hit and gem.calls == []

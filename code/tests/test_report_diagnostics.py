@@ -65,3 +65,12 @@ def test_full_split_link_stats():
     assert s["cases"] == 518
     assert s["no_account"] == ["case_45", "case_53", "case_61", "case_63"]
     assert 3.0 < s["mean_resources"] < 4.2
+
+
+def test_exclusion_effect_counts_changed_assignments():
+    from evaluation.diagnostics import exclusion_effect
+
+    e = exclusion_effect()
+    assert e["excluded"] == [f"case_{n}" for n in range(533, 543)]
+    assert e["assignments_with"] >= e["assignments_without"] >= 0
+    assert e["changed"] >= e["removed_from_excluded"] >= 0

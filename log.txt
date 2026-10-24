@@ -196,3 +196,28 @@ branch=main
 repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
 worktree=main
 parent_agent=none
+
+## [2026-10-24T21:45:00Z] P7: request classifier (LLM + rules) + linker exclusion
+
+User Prompt (verbatim, secrets redacted):
+Continue logging per AGENTS.md. Spec is final: no brainstorming. Use superpowers test-driven-development and verification-before-completion. Never print API key values.
+
+TASK = PLAN.md step P7: the request-intent classifier, plus wiring it into the linker and the planner.
+
+[Sections A (code/ghost/classifier.py: multilingual KEEP/DELETION rules, LLM batches of 40 with purpose classify_request, prompt in code/prompts/request_classify.md, validation/retry/rule fallback, report), B (wiring: NOT_DELETION -> NOT_APPLICABLE, exclusion in linker assignment, classify before linking, --no-llm uses cache), C (expected: exactly case_533..case_542 NOT_DELETION, 0 in samples), D (tests in code/tests/test_classifier.py), E (run sample/evaluation/full, diagnostics on changed assignments, commit "P7: request classifier (LLM + rules) + linker exclusion", paste back results) as pasted by the user; full text omitted here for length.]
+
+Agent Response Summary:
+Wrote classifier tests first, then classifier.py, the prompt and the main.py wiring (classification before linking; NOT_DELETION cases excluded from worker-window assignment). The Gemini free tier hit its 20 requests/day limit on gemini-3.8-flash, so the remaining batches ran under gemini-3.5-flash via GEMINI_TEXT_MODEL, and the cache lookup now matches by prompt/image metadata regardless of model name. Rules and LLM agree on all 398 texts: exactly case_533..542 are NOT_DELETION.
+
+Actions:
+* code/tests/test_classifier.py (written first), test_llm.py (+1), test_report_diagnostics.py (+1)
+* code/ghost/classifier.py, code/prompts/request_classify.md, ghost/llm.py (model_env, model-agnostic cache), main.py, evaluation/diagnostics.py
+* python -m ghost.classifier (real Gemini calls), main.py sample/full, evaluation, pytest, ruff
+
+Context:
+tool=Claude Code
+model=claude-sonnet-5-5
+branch=main
+repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
+worktree=main
+parent_agent=none

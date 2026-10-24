@@ -13,7 +13,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from ghost import linker, loaders, paths, planner
+from ghost import classifier, linker, loaders, paths, planner
 from ghost.serialize import OutputRow, load_citable_ids, write_output
 
 SPLITS = {
@@ -34,15 +34,22 @@ class Context:
     use_llm: bool = True
     lk: linker.Linker | None = None
     requests: dict[str, loaders.DeletionRequest] | None = None
+    decisions: dict[str, classifier.Decision] | None = None
+    non_deletion: frozenset[str] = frozenset()
 
 
 def build_context(use_llm: bool = True) -> Context:
     requests = {r.case_id: r for s in ("sample", "full") for r in loaders.load_requests(s)}
+    # classify first: NOT_DELETION cases must not compete for worker-window resources
+    decisions = classifier.classify_requests(use_llm=use_llm)
+    non_deletion = classifier.non_deletion_cases(decisions)
     return Context(
         citable=load_citable_ids(),
         use_llm=use_llm,
-        lk=linker.build_linker(),
+        lk=linker.build_linker(non_deletion),
         requests=requests,
+        decisions=decisions,
+        non_deletion=non_deletion,
     )
 
 
@@ -51,16 +58,16 @@ def load_requests(split: str) -> list[dict[str, str]]:
         return list(csv.DictReader(f))
 
 
-def classify(request: loaders.DeletionRequest) -> bool:
-    """Does request_text authorize deletion? P7 replaces this hook (rules + LLM)."""
-    return True
+def classify(request: loaders.DeletionRequest, context: Context) -> bool:
+    """Does request_text authorize deletion (or ask to verify one)?"""
+    return request.case_id not in context.non_deletion
 
 
 def predict_case(request_row: dict[str, str], context: Context) -> tuple[str, list[dict]]:
     """Decide one case and return (deletion_status, steps)."""
     assert context.lk is not None and context.requests is not None
     request = context.requests[request_row["case_id"]]
-    if not classify(request):
+    if not classify(request, context):
         return "NOT_APPLICABLE", []
     result = planner.plan_case(request, context.lk.link(request.case_id), context.lk)
     return result.status, result.steps

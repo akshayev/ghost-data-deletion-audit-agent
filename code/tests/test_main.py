@@ -11,7 +11,7 @@ def test_predict_case_returns_a_deletion_decision():
 
 
 def test_classify_hook_false_gives_not_applicable(monkeypatch):
-    monkeypatch.setattr(cli, "classify", lambda request: False)
+    monkeypatch.setattr(cli, "classify", lambda request, context: False)
     req = {"case_id": "case_33", "request_text": "Please delete my account."}
     assert cli.predict_case(req, cli.build_context(use_llm=False)) == ("NOT_APPLICABLE", [])
 

@@ -23,6 +23,16 @@ without evidence.
   "classified ... as non-deletion". These are claims only and must not be
   used as the decision.
 
+- [VERIFIED] P7: rules alone and the LLM (Gemini Flash, 398 unique texts, batches of 40)
+  agree on all 398 texts: exactly 10 NOT_DELETION (case_533 to case_542, all in the test
+  split) and 0 among the 32 samples. Excluding them from the global worker-window
+  assignment changes 2 of 403 assignments (taken from the excluded cases, none
+  reassigned); sample link results are unchanged.
+- [VERIFIED] Gemini free tier allows 20 requests per day per model. The 11 vision calls and
+  the classifier batches exhausted gemini-3.8-flash; the remaining batches ran under
+  gemini-3.5-flash (GEMINI_TEXT_MODEL). The cache therefore matches by prompt/image
+  metadata, not by model name.
+
 ## 2. Identity
 
 - [VERIFIED] 418 requests match a current email in `user_identities.csv`,

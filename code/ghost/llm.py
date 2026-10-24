@@ -17,7 +17,7 @@ import re
 import sys
 import time
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 
 import openai
@@ -172,16 +172,17 @@ def _read_cache(path) -> dict | None:
 
 
 def _find_cached(
-    provider: Provider, purpose: str, messages: list[dict], image_sha: str, offline: bool
+    provider: Provider, purpose: str, messages: list[dict], image_sha: str
 ) -> dict | None:
-    """Exact key first; offline mode also accepts an entry made under another model name."""
+    """Exact key first, then an entry for the same prompt/image made under another model
+    name (a model switch, e.g. after a quota limit, must not invalidate the cache)."""
     model = provider.model
     if model:
         key = _cache_key(provider.name, model, purpose, messages, image_sha)
         hit = _read_cache(CACHE_DIR / f"{key}.json")
         if hit:
             return hit
-    if not offline or not CACHE_DIR.is_dir():
+    if not CACHE_DIR.is_dir():
         return None
     want = {
         "provider": provider.name,
@@ -238,6 +239,7 @@ def chat(
     image_bytes: bytes | None = None,
     providers: tuple[str, ...] = ("gemini", "groq"),
     offline: bool = False,
+    model_env: str | None = None,
 ) -> LLMResult:
     """Ask the first provider that can answer. Cache is consulted before keys, so a
     committed cache works without credentials. offline=True never calls the network."""
@@ -246,9 +248,11 @@ def chat(
     failures: list[str] = []
     for name in providers:
         provider = PROVIDERS[name]
+        if model_env and os.getenv(model_env) and name == "gemini":
+            provider = replace(provider, model_env=model_env)  # e.g. GEMINI_TEXT_MODEL
         if image_bytes and not provider.vision:
             continue
-        cached = _find_cached(provider, purpose, messages, image_sha, offline)
+        cached = _find_cached(provider, purpose, messages, image_sha)
         if cached:
             result = _result_from_cache(provider, cached, json_mode)
             if not offline:  # offline replays are free; they must not grow the ledger
