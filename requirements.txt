@@ -5,3 +5,4 @@ pillow
 pytest
 ruff
 pyright
+pyyaml

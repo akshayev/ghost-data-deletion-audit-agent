@@ -1,0 +1,22 @@
+# Ghost Data Still Exists - run configuration.
+# Precedence: CLI flags > environment variables > this file > built-in defaults.
+# Paths are relative to the repository root. Never put API keys here: they are read from the
+# environment (GEMINI_API_KEY, GROQ_API_KEY), e.g. via an uncommitted .env file.
+
+dataset: dataset                 # env GHOST_DATASET, CLI --dataset
+output: output.csv               # full-split submission file (CLI --out)
+runs_dir: code/evaluation/runs   # traces, run_summary.json, reports (gitignored)
+cache_dir: code/cache            # LLM + vision caches and the usage ledger (committed)
+trace: true                      # env GHOST_TRACE=0 turns per-case traces off
+
+llm:
+  providers: [gemini, groq]      # tried in order; groq is text-only
+  gemini_model: gemini-3.8-flash # env GEMINI_MODEL
+  gemini_text_model: null        # env GEMINI_TEXT_MODEL (classifier); null = gemini_model
+  groq_model: null               # env GROQ_MODEL
+
+linker:
+  tiebreak: SKIP_MULTI           # env GHOST_TIEBREAK: ORDER | SKIP_ALL | SKIP_MULTI | REQUESTED
+  learn_range_hours: 6.0         # worker events farther than this from reported_at never teach a window
+  window_pad_hours: 0.1          # padding around each learned window
+  default_window: [-1.5, 2.5]    # window for templates with no learned samples

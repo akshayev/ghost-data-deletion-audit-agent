@@ -17,6 +17,7 @@ import re
 import sys
 import time
 import uuid
+from collections import Counter
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 
@@ -33,6 +34,7 @@ BACKOFF_SECONDS = 2.0
 
 _ENV_LOADED = False
 _sleep = time.sleep
+CALLS: Counter = Counter()  # this process: "fresh" network calls vs "cached" replays
 
 
 class LLMError(RuntimeError):
@@ -255,6 +257,7 @@ def chat(
         cached = _find_cached(provider, purpose, messages, image_sha)
         if cached:
             result = _result_from_cache(provider, cached, json_mode)
+            CALLS["cached"] += 1
             if not offline:  # offline replays are free; they must not grow the ledger
                 _ledger(
                     provider=name,
@@ -278,6 +281,7 @@ def chat(
             failures.append(f"{name}: {type(exc).__name__}: {_redact(str(exc))[:200]}")
             continue
         latency_ms = int((time.monotonic() - started) * 1000)
+        CALLS["fresh"] += 1
         prompt_tokens, completion_tokens = _usage(response)
         key = _cache_key(name, provider.model, purpose, messages, image_sha)
         CACHE_DIR.mkdir(parents=True, exist_ok=True)

@@ -113,8 +113,15 @@ def decide(res: LinkedResource, request: DeletionRequest, lk: Linker) -> Decisio
     return Decision(res.resource_id, res.system_id, t, s, violated(t, s))
 
 
-def plan_case(request: DeletionRequest, linked: list[LinkedResource], lk: Linker) -> PlanResult:
-    decisions = [decide(r, request, lk) for r in linked]
+def plan_case(
+    request: DeletionRequest,
+    linked: list[LinkedResource],
+    lk: Linker,
+    decisions: list[Decision] | None = None,
+) -> PlanResult:
+    """decisions: precomputed decide() results for `linked` (same order), else computed here."""
+    if decisions is None:
+        decisions = [decide(r, request, lk) for r in linked]
     flags: list[str] = []
     steps: list[dict] = []
     if any(d.violation for d in decisions):

@@ -271,3 +271,28 @@ branch=main
 repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
 worktree=main
 parent_agent=none
+
+## [2026-10-25T00:20:00Z] P9: agent architecture (orchestrator, agents, tool registry, traces)
+
+User Prompt (verbatim, secrets redacted):
+Continue logging per AGENTS.md. Spec is final: no brainstorming. Use superpowers test-driven-development and verification-before-completion.
+
+TASK = P9: restructure the solution into a visible agent architecture (orchestrator + specialist agents + tool registry + trace). This is a BEHAVIOR-PRESERVING refactor: decisions must not change.
+
+[Sections 0 (golden lock: golden outputs + SHA256SUMS + test_golden_lock first), 1 (keep the domain layer; add ghost/context.py, ghost/tools/registry.py with the listed tools, ghost/agents/ with Intake/Evidence/Identity/Investigator/Assessor/Planner/Verifier agents that only use the registry, ghost/orchestrator.py with global/per-case/write phases, per-case error isolation with one retry and run_summary.json, ghost/trace.py with per-case JSONL traces under 1.5x wall time), 2 (code/config.yaml + ghost/config.py with CLI > env > yaml > defaults), 3 (CLI subcommands run/eval/tools/explain with the old flags as aliases), 4 (tests) and 5 (finish: pytest, ruff, golden byte-identical, tools, eval, --custom; commit "P9: agent architecture (orchestrator, agents, tool registry, traces) — behavior-preserving"; paste back the tree, TOOLS.md, run_summary.json, golden result, wall time before/after, pytest) as pasted by the user; full text omitted here for length.]
+
+Agent Response Summary:
+Locked the P8b outputs as golden first (separate commit), then added config, context, trace, a validating tool registry (14 thin tools), seven agents that reach the domain only through bound tool callers, and an orchestrator with per-case isolation and retry. The full and sample outputs are byte-identical to golden; wall time is 1.38 s vs 1.19 s before (1.16x). Two behavior-neutral domain additions: planner.plan_case(decisions=...) and in-process LLM call counters.
+
+Actions:
+* code/evaluation/golden/ + test_golden_lock.py (committed first); test_agents.py written before the new modules
+* code/config.yaml, ghost/config.py, context.py, trace.py, tools/registry.py, agents/*, orchestrator.py; main.py subcommands; requirements.txt (+pyyaml); code/docs/TOOLS.md
+* pytest (289 passed), ruff, run full/sample (golden byte-identical), tools, eval, eval --custom (5/5)
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
+worktree=main
+parent_agent=none
