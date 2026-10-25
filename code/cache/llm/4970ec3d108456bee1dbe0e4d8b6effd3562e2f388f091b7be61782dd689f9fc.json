@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "c6e6d23d75eb3de3fe0247c8dc00b64940bd229578b3bb941b7027248fa29707",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_172",
+    "turn": 4
+  },
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "message": {
+    "content": "The evidence shows analytics_6980 has no identifiers, shares evidence_85 with all three competing cases equally, and has identical timing (-0.47h) for all three. No unique tie to this case — the default EXCLUDE is correct.\n\n",
+    "tool_calls": [
+      {
+        "id": "y2xeybwa5",
+        "name": "propose_plan",
+        "arguments": "{\"case_id\":\"case_172\",\"decisions\":[]}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2361,
+    "completion_tokens": 288
+  }
+}

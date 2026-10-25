@@ -1,0 +1,122 @@
+{
+ "case_id": "case_188",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "A1 kept default INCLUDE: analytics_8767 has no identifiers, shares evidence_83 with both cases (not unique), and timing -0.48h is equal for case_188 and case_190 (not unique). No criterion for exclusion met.",
+ "provider": "groq",
+ "model": "qwen/qwen3.8-27b",
+ "models": [
+  "openai/gpt-oss-20b",
+  "qwen/qwen3.8-27b"
+ ],
+ "tool_calls": 5,
+ "turns": 5,
+ "rejections": 0,
+ "prompt_tokens": 8957,
+ "completion_tokens": 1105,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_188:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_188. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_3a1897a7-09dd-4348-9d41-74a59af81270",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_188\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_3a1897a7-09dd-4348-9d41-74a59af81270",
+   "content": "{\"case_id\":\"case_188\",\"requested_at\":\"2026-07-02T11:00:00Z\",\"reported_status_CLAIM\":\"PARTIALLY_COMPLETE\",\"reported_at\":\"2026-07-03T11:00:00Z\",\"audit_at\":\"2026-07-18T11:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>I no longer use this account and would like it permanently deleted. Please follow the applicable retention and deletion requirements for the account. Please confirm the result after completing the required checks.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":2,\"phones\":1,\"hashes\":2,\"historical_changes\":2,\"matched_via\":\"historical\"},\"linked_resources\":4,\"ambiguity_points\":1}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "s7kbbjc5w",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_188\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "s7kbbjc5w",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_break\",\"resource_id\":\"analytics_8767\",\"competing_case_ids\":[\"case_190\"],\"evidence_summary\":\"no identifier links analytics_8767 to anyone; worker event activity_2639 (ANONYMIZE_RECORD SUCCESS) is -0.48h from this case's reported_at; same fit for: case_190 -0.48h. Group: 1 analytics resource(s) for 2 cases; currently assigned to case_188 by event order.\",\"default\":\"INCLUDE\",\"source\":\"tie_break\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "bq827cr0b",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_188\",\"resource_id\":\"analytics_8767\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "bq827cr0b",
+   "content": "{\"resource_id\":\"analytics_8767\",\"ambiguity_id\":\"A1\",\"observations\":[{\"file_id\":\"evidence_83\",\"captured_at\":\"2026-07-18T10:43:35+00:00\",\"copy\":\"export\",\"present\":true,\"prohibited_set\":[],\"identifiers\":\"none\"}],\"observations_after_audit_at_hidden\":0,\"files_shared_with_this_case_mandatory_resources\":[\"evidence_83\"],\"files_shared_with_competing_cases\":{\"case_190\":[\"evidence_83\"]},\"activities\":[{\"id\":\"activity_2639\",\"time\":\"2026-07-03T10:31:04+00:00\",\"type\":\"ANONYMIZE_RECORD\",\"result\":\"SUCCESS\",\"offset_hours_from_reported_at\":-0.48,\"details\":\"Policy action completed for analytics_8767.\"}]}"
+  },
+  {
+   "role": "assistant",
+   "content": "Based on my analysis of ambiguity A1:\n\n- **analytics_8767** has no identifiers linking it to any subject\n- It shares file \"evidence_83\" with **both** this case's mandatory resources AND case_190's resources (not unique to this case)\n- The timing fit (-0.48h) is **equal** for both case_188 and case_190 (not unique)\n\nNone of the three criteria for INCLUDE are met (no identifier, no unique shared file, no unique timing). Per the rules, I keep the default (INCLUDE).\n\n",
+   "tool_calls": [
+    {
+     "id": "mj7269h13",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_188\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "mj7269h13",
+   "content": "{\"plan_id\":\"case_188:P1\",\"status\":\"INCOMPLETE\",\"changes_vs_default\":[],\"n_steps\":8,\"steps\":[\"1. F REPORT_REMAINING_RECORD search_3223 @evidence_83\",\"2. F REPORT_ACTIVE_DATA_FLOW data_flow_707 @evidence_83\",\"3. R DISABLE_DATA_FLOW data_flow_707\",\"4. R DELETE_RECORD search_3223\",\"5. V VERIFY_RECORD_ABSENT account_796\",\"6. V VERIFY_RECORD_ABSENT search_3223\",\"7. V VERIFY_RECORD_ANONYMIZED analytics_8767\",\"8. V VERIFY_DATA_FLOW_DISABLED data_flow_707\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "The plan passed the verifier. Submitting now.\n\n",
+   "tool_calls": [
+    {
+     "id": "t8vg2m10p",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_188\",\"plan_id\":\"case_188:P1\",\"rationale\":\"A1 kept default INCLUDE: analytics_8767 has no identifiers, shares evidence_83 with both cases (not unique), and timing -0.48h is equal for case_188 and case_190 (not unique). No criterion for exclusion met.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "t8vg2m10p",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_188:P1\",\"status\":\"INCOMPLETE\"}"
+  }
+ ]
+}

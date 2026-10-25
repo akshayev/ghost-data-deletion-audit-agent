@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "9444f85bc2bbb412fde40cfae0bb3fcda699e206e893b7d4b7511ea9899b5759",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_75",
+    "turn": 7
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_0cd5b126-c119-4420-938e-3b97b2f57dbb",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_75\",\"plan_id\":\"case_75:P1\",\"rationale\":\"No ambiguity changes: evidence shows no identifiers linking accounts 1495 or 9051 uniquely to this case; timing ties are shared, so defaults (exclude 1495, include 9051) remain.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2085,
+    "completion_tokens": 116
+  }
+}

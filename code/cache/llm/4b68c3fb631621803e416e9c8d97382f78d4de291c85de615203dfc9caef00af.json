@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "73c3815d4fa33c7a1e1676e106aa8ad68e2fce500e92cc7762bdc42a76ee2003",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_127",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "jhketyen2",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_127\",\"plan_id\":\"case_127:P1\",\"rationale\":\"Both analytics resources (1402, 7150) share evidence_87 with both this case and case_126, carry no identifiers, and have equal -0.47h timing with case_126. No unique tie to this case; defaults kept (A1 EXCLUDE, A2 INCLUDE).\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2963,
+    "completion_tokens": 182
+  }
+}

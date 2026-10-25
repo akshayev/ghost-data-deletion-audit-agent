@@ -1,0 +1,19 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "bbb9246c43b087d6d56ceb5d9c27da6a3495e43e03a029d8aee7bf367773e0ad",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_151",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "message": {
+    "content": "{\"case_id\":\"case_151\",\"plan_id\":\"case_151:P1\",\"rationale\":\"analytics_1626 has no identifiers and its ANONYMIZE_RECORD event aligns equally with case_150; no unique tie to case_151, so exclude per tie_break rule. analytics_7254 already excluded by default and shares no identifiers, so keep excluded.\"}",
+    "tool_calls": []
+  },
+  "usage": {
+    "prompt_tokens": 2002,
+    "completion_tokens": 111
+  }
+}

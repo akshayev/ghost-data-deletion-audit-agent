@@ -1,0 +1,19 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "4568c579471a7e3ae31c5345f15aed7768b888452e8c7b04092208714348efe9",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_44",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "Plan case_44:P1 approved. Rationale: analytics_5589 lacks any identifier linking it to this user; the only tie (ANONYMIZE_RECORD event) matches both case_44 and case_03 equally, so it must be excluded.",
+    "tool_calls": []
+  },
+  "usage": {
+    "prompt_tokens": 1989,
+    "completion_tokens": 56
+  }
+}

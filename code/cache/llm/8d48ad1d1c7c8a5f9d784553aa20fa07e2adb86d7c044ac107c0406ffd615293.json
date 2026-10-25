@@ -1,0 +1,19 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "2c627e4bbe7bf20724d7d63e4a9849f7b8447adcf52256364cafd0fe8b7462a7",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_150",
+    "turn": 6
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "message": {
+    "content": "{\"case_id\":\"case_150\",\"plan_id\":\"case_150:P1\",\"rationale\":\"analytics_1626 has no identifiers and same timing as case_151; default EXCLUDE. analytics_7254 shares evidence_86 with mandatory resources and is tied to case_150 by event order; include.\"}",
+    "tool_calls": []
+  },
+  "usage": {
+    "prompt_tokens": 2164,
+    "completion_tokens": 86
+  }
+}

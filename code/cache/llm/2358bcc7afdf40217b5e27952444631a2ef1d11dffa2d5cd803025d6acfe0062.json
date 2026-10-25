@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "1388593f97c36679ebe162460fd6bc8efa830312f5b6bff48f1b355a13ad5735",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_171",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "message": {
+    "content": "The plan passed the verifier. Submitting now.\n\n",
+    "tool_calls": [
+      {
+        "id": "9kevf2t3m",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_171\",\"plan_id\":\"case_171:P1\",\"rationale\":\"A1 (analytics_6980): EXCLUDE (default). No identifiers link it to this subject; shared file evidence_85 is equally shared with case_170 and case_172; timing -0.47h is identical across all three cases. Equal timing is not a unique tie per rule 6.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2672,
+    "completion_tokens": 168
+  }
+}

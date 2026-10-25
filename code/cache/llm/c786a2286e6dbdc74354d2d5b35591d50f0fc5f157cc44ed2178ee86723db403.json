@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "2a067e38d9e439547397055e500e8ce0d6c43ae85f0464b4567ac5986d3a68f8",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_107",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_718f1883-0703-4839-b5e4-5a11d03a3473",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_107\",\"plan_id\":\"case_107:P1\",\"rationale\":\"A1 excluded because evidence shows no identifier links account_687; activity timing matches both cases, not unique to this case (evidence_summary).\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2003,
+    "completion_tokens": 83
+  }
+}

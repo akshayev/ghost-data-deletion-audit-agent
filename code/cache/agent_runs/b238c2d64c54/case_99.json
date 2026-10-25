@@ -1,0 +1,121 @@
+{
+ "case_id": "case_99",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "No evidence ties any ambiguous resource to this case; defaults (EXCLUDE) remain unchanged.",
+ "provider": "groq",
+ "model": "openai/gpt-oss-120b",
+ "models": [
+  "openai/gpt-oss-120b"
+ ],
+ "tool_calls": 5,
+ "turns": 5,
+ "rejections": 0,
+ "prompt_tokens": 8511,
+ "completion_tokens": 251,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_99:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_99. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_76752e93-ebd0-4539-a700-bcef7f1aa49e",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_99\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_76752e93-ebd0-4539-a700-bcef7f1aa49e",
+   "content": "{\"case_id\":\"case_99\",\"requested_at\":\"2026-08-05T06:00:00Z\",\"reported_status_CLAIM\":\"COMPLETE\",\"reported_at\":\"2026-08-07T06:00:00Z\",\"audit_at\":\"2026-09-01T06:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>Please permanently delete the account associated with this email address. Please follow the applicable retention and deletion requirements for the account. I would appreciate confirmation of the final outcome.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":1,\"phones\":1,\"hashes\":1,\"historical_changes\":0,\"matched_via\":\"current\"},\"linked_resources\":1,\"ambiguity_points\":4}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_263ec56a-f497-4ba5-99ae-0620c00df246",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_99\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_263ec56a-f497-4ba5-99ae-0620c00df246",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_candidate\",\"resource_id\":\"account_1034\",\"competing_case_ids\":[\"case_98\",\"case_100\"],\"evidence_summary\":\"no identifier links account_1034 to anyone; worker event activity_3136 (DELETE_RECORD SUCCESS) is -0.96h from this case's reported_at; same fit for: case_98 -0.96h, case_100 -0.96h. Group: 3 account resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A2\",\"kind\":\"tie_candidate\",\"resource_id\":\"account_7927\",\"competing_case_ids\":[\"case_98\",\"case_100\"],\"evidence_summary\":\"no identifier links account_7927 to anyone; worker event activity_3135 (DELETE_RECORD SUCCESS) is -1.14h from this case's reported_at; same fit for: case_98 -1.14h, case_100 -1.14h. Group: 3 account resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A3\",\"kind\":\"tie_candidate\",\"resource_id\":\"account_9511\",\"competing_case_ids\":[\"case_98\",\"case_100\"],\"evidence_summary\":\"no identifier links account_9511 to anyone; worker event activity_3137 (DELETE_RECORD SUCCESS) is -0.77h from this case's reported_at; same fit for: case_98 -0.77h, case_100 -0.77h. Group: 3 account resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A4\",\"kind\":\"tie_candidate\",\"resource_id\":\"legal_hold_668\",\"competing_case_ids\":[\"case_98\",\"case_100\"],\"evidence_summary\":\"no identifier links legal_hold_668 to anyone; worker event activity_3138 (RETAIN_RECORD SUCCESS) is -0.48h from this case's reported_at; same fit for: case_98 -0.48h, case_100 -0.48h. Group: 1 legal_hold resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_8eab9693-a36b-47d6-9e82-fc9bb980b73f",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_99\",\"resource_id\":\"account_1034\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_8eab9693-a36b-47d6-9e82-fc9bb980b73f",
+   "content": "{\"resource_id\":\"account_1034\",\"ambiguity_id\":\"A1\",\"observations\":[],\"observations_after_audit_at_hidden\":0,\"files_shared_with_this_case_mandatory_resources\":[],\"files_shared_with_competing_cases\":{\"case_98\":[],\"case_100\":[]},\"activities\":[{\"id\":\"activity_3136\",\"time\":\"2026-08-07T05:02:20+00:00\",\"type\":\"DELETE_RECORD\",\"result\":\"SUCCESS\",\"offset_hours_from_reported_at\":-0.96,\"details\":\"Deletion worker submitted primary profile account_1034 to account_service.\"}]}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_77cb0c27-e6c0-4920-9ee7-5fc7b6fcd478",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_99\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_77cb0c27-e6c0-4920-9ee7-5fc7b6fcd478",
+   "content": "{\"plan_id\":\"case_99:P1\",\"status\":\"INCOMPLETE\",\"changes_vs_default\":[],\"n_steps\":3,\"steps\":[\"1. F REPORT_RESTORE_RISK backup_7804 @evidence_89\",\"2. R BLOCK_RESTORE backup_7804\",\"3. V VERIFY_RESTORE_BLOCKED backup_7804\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_eddb0781-a8ec-4e2f-8382-87c8cced2a2f",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_99\",\"plan_id\":\"case_99:P1\",\"rationale\":\"No evidence ties any ambiguous resource to this case; defaults (EXCLUDE) remain unchanged.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_eddb0781-a8ec-4e2f-8382-87c8cced2a2f",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_99:P1\",\"status\":\"INCOMPLETE\"}"
+  }
+ ]
+}

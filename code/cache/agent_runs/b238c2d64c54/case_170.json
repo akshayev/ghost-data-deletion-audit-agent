@@ -1,0 +1,103 @@
+{
+ "case_id": "case_170",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "A1 (analytics_6980) kept EXCLUDE: no identifier links it to this subject, and the -0.47h timing fit is identical for case_171 and case_172, so it is not unique to this case. All defaults retained.",
+ "provider": "groq",
+ "model": "qwen/qwen3.8-27b",
+ "models": [
+  "openai/gpt-oss-20b",
+  "qwen/qwen3.8-27b"
+ ],
+ "tool_calls": 4,
+ "turns": 4,
+ "rejections": 0,
+ "prompt_tokens": 6276,
+ "completion_tokens": 595,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_170:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_170. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_baf7f320-8f52-4688-af0f-c976d8d521d9",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_170\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_baf7f320-8f52-4688-af0f-c976d8d521d9",
+   "content": "{\"case_id\":\"case_170\",\"requested_at\":\"2026-07-10T06:00:00Z\",\"reported_status_CLAIM\":\"NOT_STARTED\",\"reported_at\":\"2026-07-11T06:00:00Z\",\"audit_at\":\"2026-07-28T06:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>Please erase the account linked to this email address. Please process this under the standard personal-data deletion procedure. Please confirm the result after completing the required checks.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":1,\"phones\":1,\"hashes\":1,\"historical_changes\":0,\"matched_via\":\"current\"},\"linked_resources\":3,\"ambiguity_points\":1}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "qmtt5hjc8",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_170\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "qmtt5hjc8",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_6980\",\"competing_case_ids\":[\"case_171\",\"case_172\"],\"evidence_summary\":\"no identifier links analytics_6980 to anyone; worker event activity_2754 (ANONYMIZE_RECORD SUCCESS) is -0.47h from this case's reported_at; same fit for: case_171 -0.47h, case_172 -0.47h. Group: 1 analytics resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "The ambiguity point A1 involves `analytics_6980` which has no identifier link to this case's subject, and the timing fit (-0.47h) is identical across all three competing cases (case_170, case_171, case_172). Per the rules, equal timing with other cases is not a tie to this case. The default EXCLUDE is correct.\n\nI'll propose the plan keeping all defaults.\n\n",
+   "tool_calls": [
+    {
+     "id": "r47avzgpt",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_170\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "r47avzgpt",
+   "content": "{\"plan_id\":\"case_170:P1\",\"status\":\"COMPLETE\",\"changes_vs_default\":[],\"n_steps\":3,\"steps\":[\"1. V VERIFY_RECORD_ABSENT account_665 @evidence_85\",\"2. V VERIFY_RECORD_ABSENT search_3619 @evidence_17\",\"3. V VERIFY_RECORD_PRESENT audit_record_4443 @evidence_85\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "The plan passed the verifier. Now I'll submit the case.\n\n",
+   "tool_calls": [
+    {
+     "id": "cfb5cexr5",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_170\",\"plan_id\":\"case_170:P1\",\"rationale\":\"A1 (analytics_6980) kept EXCLUDE: no identifier links it to this subject, and the -0.47h timing fit is identical for case_171 and case_172, so it is not unique to this case. All defaults retained.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "cfb5cexr5",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_170:P1\",\"status\":\"COMPLETE\"}"
+  }
+ ]
+}

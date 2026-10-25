@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "1891642d7946ab83da31879b718ef1439dd43e51bda8e31695eccdafd227e4b8",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_80",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "Plan approved. Submitting case.",
+    "tool_calls": [
+      {
+        "id": "fc_21d3bc8b-fbc0-4106-bd87-26a22e025863",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_80\",\"plan_id\":\"case_80:P1\",\"rationale\":\"analytics_5059 excluded; evidence_91 shows no identifiers linking it to this case, and the activity timing matches both case_80 and case_81, providing no unique tie.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 1812,
+    "completion_tokens": 80
+  }
+}

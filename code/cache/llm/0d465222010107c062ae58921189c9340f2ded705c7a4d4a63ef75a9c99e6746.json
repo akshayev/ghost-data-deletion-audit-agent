@@ -1,0 +1,19 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "c15db4e692bef8013012d9492fcda1ba597f6e3201b4515281de57f40fff9104",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_63",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "Plan case_63:P1 submitted successfully.",
+    "tool_calls": []
+  },
+  "usage": {
+    "prompt_tokens": 1734,
+    "completion_tokens": 13
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "ba1c7fcb845f02601dbeb15df5db199d934241f6c78f7de4ff06edc3c72e2bc6",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_146",
+    "turn": 4
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_1a99a3d8-3495-4acb-8bb0-bb701a2b1d6e",
+        "name": "propose_plan",
+        "arguments": "{\"case_id\":\"case_146\",\"decisions\":[]}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 1922,
+    "completion_tokens": 68
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "dd604320ef1998f13d3ddb188d43eea1a3640a009241a6b77d7af1ce81a7cc40",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_74",
+    "turn": 4
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "Plan case_74:P1 submitted. Rationale: EXCLUDE account_1495 per evidence showing no identifier links it to this case and identical timing to case_75, so tie broken in favor of exclusion.",
+    "tool_calls": []
+  },
+  "usage": {
+    "prompt_tokens": 1737,
+    "completion_tokens": 47
+  }
+}

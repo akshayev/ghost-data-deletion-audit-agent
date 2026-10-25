@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "0023929d60a0772c1b63c4a1e1161b15f2abb8c23adbe133158bef1603614bc8",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_29",
+    "turn": 4
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_9d0def71-1b1a-4cde-8fbb-b770252742ad",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_29\",\"plan_id\":\"case_29:P1\",\"rationale\":\"No changes needed; evidence shows account_7012 already tied to this case (event -0.88h unique) and account_5482 lacks identifier links, default EXCLUDE stands.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 1855,
+    "completion_tokens": 84
+  }
+}

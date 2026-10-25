@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "28a0bd158cf83beaef0aa1530fcb843c22844e7bd8da63461fd84886dd5ec44f",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_96",
+    "turn": 4
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_b86be8d5-e079-4911-8e12-d7175a46829f",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_96\",\"plan_id\":\"case_96:P1\",\"rationale\":\"A1 kept INCLUDE as no identifier ties account_4176 uniquely; timing matches both cases so default stands. A2 remains EXCLUDE for same reason. A3 kept INCLUDE; analytics_9103 lacks identifiers and timing is shared, default is appropriate.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 1892,
+    "completion_tokens": 93
+  }
+}

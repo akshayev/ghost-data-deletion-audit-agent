@@ -1,0 +1,135 @@
+{
+ "case_id": "case_127",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "Both analytics resources (1402, 7150) share evidence_87 with both this case and case_126, carry no identifiers, and have equal -0.47h timing with case_126. No unique tie to this case; defaults kept (A1 EXCLUDE, A2 INCLUDE).",
+ "provider": "groq",
+ "model": "qwen/qwen3.8-27b",
+ "models": [
+  "openai/gpt-oss-20b",
+  "qwen/qwen3.8-27b"
+ ],
+ "tool_calls": 6,
+ "turns": 5,
+ "rejections": 0,
+ "prompt_tokens": 9760,
+ "completion_tokens": 908,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_127:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_127. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_9b2673be-33ce-4504-b18f-2c21b3ad0b51",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_127\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_9b2673be-33ce-4504-b18f-2c21b3ad0b51",
+   "content": "{\"case_id\":\"case_127\",\"requested_at\":\"2026-08-02T10:00:00Z\",\"reported_status_CLAIM\":\"PARTIALLY_COMPLETE\",\"reported_at\":\"2026-08-05T10:00:00Z\",\"audit_at\":\"2026-08-17T10:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>I am requesting deletion of the account registered to this email address. Please follow the applicable retention and deletion requirements for the account. Please let me know once the request has been reviewed.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":1,\"phones\":2,\"hashes\":1,\"historical_changes\":1,\"matched_via\":\"current\"},\"linked_resources\":3,\"ambiguity_points\":2}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "6hnecww7a",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_127\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "6hnecww7a",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_1402\",\"competing_case_ids\":[\"case_126\"],\"evidence_summary\":\"no identifier links analytics_1402 to anyone; worker event activity_3115 (ANONYMIZE_RECORD SUCCESS) is -0.47h from this case's reported_at; same fit for: case_126 -0.47h. Group: 2 analytics resource(s) for 2 cases; currently assigned to case_126 by event order.\",\"default\":\"EXCLUDE\",\"source\":\"tie_break\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A2\",\"kind\":\"tie_break\",\"resource_id\":\"analytics_7150\",\"competing_case_ids\":[\"case_126\"],\"evidence_summary\":\"no identifier links analytics_7150 to anyone; worker event activity_3116 (ANONYMIZE_RECORD SUCCESS) is -0.47h from this case's reported_at; same fit for: case_126 -0.47h. Group: 2 analytics resource(s) for 2 cases; currently assigned to case_127 by event order.\",\"default\":\"INCLUDE\",\"source\":\"tie_break\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "kbd8jce0b",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_127\",\"resource_id\":\"analytics_1402\"}"
+     }
+    },
+    {
+     "id": "hampqsgv8",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_127\",\"resource_id\":\"analytics_7150\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "kbd8jce0b",
+   "content": "{\"resource_id\":\"analytics_1402\",\"ambiguity_id\":\"A1\",\"observations\":[{\"file_id\":\"evidence_87\",\"captured_at\":\"2026-08-17T09:42:50+00:00\",\"copy\":\"primary\",\"present\":true,\"prohibited_set\":[],\"identifiers\":\"none\"}],\"observations_after_audit_at_hidden\":1,\"files_shared_with_this_case_mandatory_resources\":[\"evidence_87\"],\"files_shared_with_competing_cases\":{\"case_126\":[\"evidence_87\"]},\"activities\":[{\"id\":\"activity_3115\",\"time\":\"2026-08-05T09:31:40+00:00\",\"type\":\"ANONYMIZE_RECORD\",\"result\":\"SUCCESS\",\"offset_hours_from_reported_at\":-0.47,\"details\":\"Policy action completed for analytics_1402.\"}]}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "hampqsgv8",
+   "content": "{\"resource_id\":\"analytics_7150\",\"ambiguity_id\":\"A2\",\"observations\":[{\"file_id\":\"evidence_87\",\"captured_at\":\"2026-08-17T09:42:50+00:00\",\"copy\":\"primary\",\"present\":true,\"prohibited_set\":[],\"identifiers\":\"none\"}],\"observations_after_audit_at_hidden\":1,\"files_shared_with_this_case_mandatory_resources\":[\"evidence_87\"],\"files_shared_with_competing_cases\":{\"case_126\":[\"evidence_87\"]},\"activities\":[{\"id\":\"activity_3116\",\"time\":\"2026-08-05T09:31:56+00:00\",\"type\":\"ANONYMIZE_RECORD\",\"result\":\"SUCCESS\",\"offset_hours_from_reported_at\":-0.47,\"details\":\"Policy action completed for analytics_7150.\"}]}"
+  },
+  {
+   "role": "assistant",
+   "content": "Both resources share the same file (evidence_87) with both this case and case_126, have no identifiers, and have equal timing (-0.47h) with case_126. Neither is specifically tied to this case. Per rule 6, I keep both defaults (A1=EXCLUDE, A2=INCLUDE).\n\n",
+   "tool_calls": [
+    {
+     "id": "hww4q5x5b",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_127\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "hww4q5x5b",
+   "content": "{\"plan_id\":\"case_127:P1\",\"status\":\"COMPLETE\",\"changes_vs_default\":[],\"n_steps\":3,\"steps\":[\"1. V VERIFY_RECORD_ABSENT account_6805 @evidence_87\",\"2. V VERIFY_RECORD_PRESENT audit_record_9649 @evidence_87\",\"3. V VERIFY_RECORD_ANONYMIZED analytics_7150 @evidence_87\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "jhketyen2",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_127\",\"plan_id\":\"case_127:P1\",\"rationale\":\"Both analytics resources (1402, 7150) share evidence_87 with both this case and case_126, carry no identifiers, and have equal -0.47h timing with case_126. No unique tie to this case; defaults kept (A1 EXCLUDE, A2 INCLUDE).\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "jhketyen2",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_127:P1\",\"status\":\"COMPLETE\"}"
+  }
+ ]
+}

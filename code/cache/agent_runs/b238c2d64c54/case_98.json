@@ -1,0 +1,102 @@
+{
+ "case_id": "case_98",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "No ambiguity decisions changed; evidence shows tie candidates lack unique identifiers, so defaults (EXCLUDE) remain.",
+ "provider": "groq",
+ "model": "openai/gpt-oss-120b",
+ "models": [
+  "openai/gpt-oss-120b"
+ ],
+ "tool_calls": 4,
+ "turns": 4,
+ "rejections": 0,
+ "prompt_tokens": 6310,
+ "completion_tokens": 222,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_98:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_98. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_5fe2562b-7b6d-48fc-ac9c-40165850071e",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_98\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_5fe2562b-7b6d-48fc-ac9c-40165850071e",
+   "content": "{\"case_id\":\"case_98\",\"requested_at\":\"2026-08-06T06:00:00Z\",\"reported_status_CLAIM\":\"COMPLETE\",\"reported_at\":\"2026-08-07T06:00:00Z\",\"audit_at\":\"2026-09-01T06:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>Please treat this message as a request for permanent account deletion. Please include records associated with the account under your privacy process. Please confirm the result after completing the required checks.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":2,\"phones\":1,\"hashes\":2,\"historical_changes\":2,\"matched_via\":\"historical\"},\"linked_resources\":1,\"ambiguity_points\":4}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_370e4238-1b30-4f41-a175-de39d666537d",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_98\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_370e4238-1b30-4f41-a175-de39d666537d",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_candidate\",\"resource_id\":\"account_1034\",\"competing_case_ids\":[\"case_99\",\"case_100\"],\"evidence_summary\":\"no identifier links account_1034 to anyone; worker event activity_3136 (DELETE_RECORD SUCCESS) is -0.96h from this case's reported_at; same fit for: case_99 -0.96h, case_100 -0.96h. Group: 3 account resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A2\",\"kind\":\"tie_candidate\",\"resource_id\":\"account_7927\",\"competing_case_ids\":[\"case_99\",\"case_100\"],\"evidence_summary\":\"no identifier links account_7927 to anyone; worker event activity_3135 (DELETE_RECORD SUCCESS) is -1.14h from this case's reported_at; same fit for: case_99 -1.14h, case_100 -1.14h. Group: 3 account resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A3\",\"kind\":\"tie_candidate\",\"resource_id\":\"account_9511\",\"competing_case_ids\":[\"case_99\",\"case_100\"],\"evidence_summary\":\"no identifier links account_9511 to anyone; worker event activity_3137 (DELETE_RECORD SUCCESS) is -0.77h from this case's reported_at; same fit for: case_99 -0.77h, case_100 -0.77h. Group: 3 account resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A4\",\"kind\":\"tie_candidate\",\"resource_id\":\"legal_hold_668\",\"competing_case_ids\":[\"case_99\",\"case_100\"],\"evidence_summary\":\"no identifier links legal_hold_668 to anyone; worker event activity_3138 (RETAIN_RECORD SUCCESS) is -0.48h from this case's reported_at; same fit for: case_99 -0.48h, case_100 -0.48h. Group: 1 legal_hold resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_7c4bdfdf-7ca4-4bc0-8c49-795250e23def",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_98\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_7c4bdfdf-7ca4-4bc0-8c49-795250e23def",
+   "content": "{\"plan_id\":\"case_98:P1\",\"status\":\"INCOMPLETE\",\"changes_vs_default\":[],\"n_steps\":3,\"steps\":[\"1. F REPORT_ACTIVE_DATA_FLOW data_flow_3165 @evidence_89\",\"2. R DISABLE_DATA_FLOW data_flow_3165\",\"3. V VERIFY_DATA_FLOW_DISABLED data_flow_3165\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_6f200d39-204a-463b-bff4-03328488b5ff",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_98\",\"plan_id\":\"case_98:P1\",\"rationale\":\"No ambiguity decisions changed; evidence shows tie candidates lack unique identifiers, so defaults (EXCLUDE) remain.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_6f200d39-204a-463b-bff4-03328488b5ff",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_98:P1\",\"status\":\"INCOMPLETE\"}"
+  }
+ ]
+}

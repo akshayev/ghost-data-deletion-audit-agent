@@ -1,0 +1,102 @@
+{
+ "case_id": "case_220",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "Both analytics resources lack identifiers and share identical timing with competing cases; default EXCLUDE per skip_multi rule.",
+ "provider": "groq",
+ "model": "openai/gpt-oss-20b",
+ "models": [
+  "openai/gpt-oss-20b"
+ ],
+ "tool_calls": 4,
+ "turns": 4,
+ "rejections": 0,
+ "prompt_tokens": 5871,
+ "completion_tokens": 276,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_220:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_220. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_fa6c92d9-f940-49d3-856c-9e35d4e68d8f",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_220\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_fa6c92d9-f940-49d3-856c-9e35d4e68d8f",
+   "content": "{\"case_id\":\"case_220\",\"requested_at\":\"2026-06-05T08:00:00Z\",\"reported_status_CLAIM\":\"PARTIALLY_COMPLETE\",\"reported_at\":\"2026-06-08T08:00:00Z\",\"audit_at\":\"2026-07-03T08:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>I am asking you to remove my account and the personal information linked to it. Please review the account data that is eligible for deletion or de-identification. Please let me know once the request has been reviewed.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":2,\"phones\":1,\"hashes\":2,\"historical_changes\":2,\"matched_via\":\"historical\"},\"linked_resources\":5,\"ambiguity_points\":2}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_391962e9-108f-48c8-8fd7-c56a32e04454",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_220\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_391962e9-108f-48c8-8fd7-c56a32e04454",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_257\",\"competing_case_ids\":[\"case_218\",\"case_219\"],\"evidence_summary\":\"no identifier links analytics_257 to anyone; worker event activity_2262 (ANONYMIZE_RECORD SUCCESS) is -0.48h from this case's reported_at; same fit for: case_218 -0.48h, case_219 -0.48h. Group: 2 analytics resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A2\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_7004\",\"competing_case_ids\":[\"case_218\",\"case_219\"],\"evidence_summary\":\"no identifier links analytics_7004 to anyone; worker event activity_2263 (ANONYMIZE_RECORD SUCCESS) is -0.47h from this case's reported_at; same fit for: case_218 -0.47h, case_219 -0.47h. Group: 2 analytics resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_d1354ff9-a077-465a-baa7-2b012e24529b",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_220\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_d1354ff9-a077-465a-baa7-2b012e24529b",
+   "content": "{\"plan_id\":\"case_220:P1\",\"status\":\"INCOMPLETE\",\"changes_vs_default\":[],\"n_steps\":9,\"steps\":[\"1. F REPORT_REMAINING_RECORD search_941 @evidence_81\",\"2. F REPORT_EXPOSED_PII support_4529 @evidence_81\",\"3. R DELETE_RECORD search_941\",\"4. R REDACT_RECORD support_4529\",\"5. V VERIFY_RECORD_ABSENT account_1007\",\"6. V VERIFY_RECORD_ABSENT search_941\",\"7. V VERIFY_RECORD_PRESENT legal_hold_4961\",\"8. V VERIFY_RECORD_PRESENT audit_record_3698\",\"9. V VERIFY_RECORD_REDACTED support_4529\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_5d64e32e-c794-4e1c-bba9-6a4a1354f30f",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_220\",\"plan_id\":\"case_220:P1\",\"rationale\":\"Both analytics resources lack identifiers and share identical timing with competing cases; default EXCLUDE per skip_multi rule.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_5d64e32e-c794-4e1c-bba9-6a4a1354f30f",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_220:P1\",\"status\":\"INCOMPLETE\"}"
+  }
+ ]
+}

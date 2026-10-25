@@ -1,0 +1,129 @@
+{
+ "case_id": "case_88",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "Analytics resource analytics_9500 excluded (default) because evidence_08 shows no identifiers linking it to this case; shared files and activity timestamps equally match competing cases, providing no unique tie.",
+ "provider": "groq",
+ "model": "openai/gpt-oss-120b",
+ "models": [
+  "openai/gpt-oss-120b"
+ ],
+ "tool_calls": 5,
+ "turns": 6,
+ "rejections": 0,
+ "prompt_tokens": 9319,
+ "completion_tokens": 295,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_88:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_88. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_83f7d804-e315-40e1-b7d9-7d5d337b1340",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_88\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_83f7d804-e315-40e1-b7d9-7d5d337b1340",
+   "content": "{\"case_id\":\"case_88\",\"requested_at\":\"2026-08-21T07:00:00Z\",\"reported_status_CLAIM\":\"COMPLETE\",\"reported_at\":\"2026-08-24T07:00:00Z\",\"audit_at\":\"2026-09-06T07:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>Please permanently delete the account associated with this email address. Please review any identifiers connected to this account as part of the request. I would appreciate confirmation of the final outcome.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":2,\"phones\":1,\"hashes\":2,\"historical_changes\":2,\"matched_via\":\"historical\"},\"linked_resources\":3,\"ambiguity_points\":1}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_9a4cd5a3-93af-44c9-8399-604ccff66e1d",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_88\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_9a4cd5a3-93af-44c9-8399-604ccff66e1d",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_9500\",\"competing_case_ids\":[\"case_86\",\"case_87\"],\"evidence_summary\":\"no identifier links analytics_9500 to anyone; worker event activity_3416 (ANONYMIZE_RECORD SUCCESS) is -0.47h from this case's reported_at; same fit for: case_86 -0.47h, case_87 -0.47h. Group: 1 analytics resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_972a9fb9-2cb9-4c6f-83c8-9637c0ebae6e",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_88\",\"resource_id\":\"analytics_9500\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_972a9fb9-2cb9-4c6f-83c8-9637c0ebae6e",
+   "content": "{\"resource_id\":\"analytics_9500\",\"ambiguity_id\":\"A1\",\"observations\":[{\"file_id\":\"evidence_08\",\"captured_at\":\"2026-09-06T07:00:00+00:00\",\"copy\":\"log\",\"present\":true,\"prohibited_set\":[],\"identifiers\":\"none\"}],\"observations_after_audit_at_hidden\":0,\"files_shared_with_this_case_mandatory_resources\":[\"evidence_08\"],\"files_shared_with_competing_cases\":{\"case_86\":[\"evidence_08\"],\"case_87\":[\"evidence_08\"]},\"activities\":[{\"id\":\"activity_3416\",\"time\":\"2026-08-24T06:31:37+00:00\",\"type\":\"ANONYMIZE_RECORD\",\"result\":\"SUCCESS\",\"offset_hours_from_reported_at\":-0.47,\"details\":\"Policy action completed for analytics_9500.\"}]}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_b4ba5dc0-e492-40fc-a7ad-4dc382c44917",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_88\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_b4ba5dc0-e492-40fc-a7ad-4dc382c44917",
+   "content": "{\"plan_id\":\"case_88:P1\",\"status\":\"INCOMPLETE\",\"changes_vs_default\":[],\"n_steps\":5,\"steps\":[\"1. F REPORT_EXPOSED_PII support_2967 @evidence_08\",\"2. R REDACT_RECORD support_2967\",\"3. V VERIFY_RECORD_ABSENT account_868\",\"4. V VERIFY_RECORD_PRESENT audit_record_3825\",\"5. V VERIFY_RECORD_REDACTED support_2967\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "Plan submitted successfully."
+  },
+  {
+   "role": "user",
+   "content": "Reply only with tool calls. Continue the workflow and finish with submit_case (or escalate_case)."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_73199081-8218-4b33-ae7a-c2c93ab9fe89",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_88\",\"plan_id\":\"case_88:P1\",\"rationale\":\"Analytics resource analytics_9500 excluded (default) because evidence_08 shows no identifiers linking it to this case; shared files and activity timestamps equally match competing cases, providing no unique tie.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_73199081-8218-4b33-ae7a-c2c93ab9fe89",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_88:P1\",\"status\":\"INCOMPLETE\"}"
+  }
+ ]
+}

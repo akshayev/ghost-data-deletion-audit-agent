@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "1c4e9d14c50e5a1e39b7c8260a6b826d5ccec150d26125344e5d431e5da30ea4",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_58",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_a357c78d-4d97-4e96-9dbb-0e11fda68ca1",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_58\",\"plan_id\":\"case_58:P1\",\"rationale\":\"All defaults align with evidence: A1 EXCLUDE (no identifier, tie to case_56); A2 INCLUDE (no identifier, tie to case_58); A3 EXCLUDE (skip_multi); A4 EXCLUDE (skip_multi).\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2014,
+    "completion_tokens": 120
+  }
+}

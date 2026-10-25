@@ -1,0 +1,122 @@
+{
+ "case_id": "case_171",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "A1 (analytics_6980): EXCLUDE (default). No identifiers link it to this subject; shared file evidence_85 is equally shared with case_170 and case_172; timing -0.47h is identical across all three cases. Equal timing is not a unique tie per rule 6.",
+ "provider": "groq",
+ "model": "qwen/qwen3.8-27b",
+ "models": [
+  "openai/gpt-oss-20b",
+  "qwen/qwen3.8-27b"
+ ],
+ "tool_calls": 5,
+ "turns": 5,
+ "rejections": 0,
+ "prompt_tokens": 9072,
+ "completion_tokens": 805,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_171:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_171. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_c5df5fa0-1949-42a6-8905-b6800ffdd41c",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_171\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_c5df5fa0-1949-42a6-8905-b6800ffdd41c",
+   "content": "{\"case_id\":\"case_171\",\"requested_at\":\"2026-07-09T06:00:00Z\",\"reported_status_CLAIM\":\"NOT_STARTED\",\"reported_at\":\"2026-07-11T06:00:00Z\",\"audit_at\":\"2026-07-28T06:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>Solicito a exclusão permanente da conta associada a este e-mail. Verifiquem os identificadores atuais e anteriores conforme o processo de privacidade. Por favor, confirmem o resultado quando a análise terminar.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":1,\"phones\":1,\"hashes\":1,\"historical_changes\":0,\"matched_via\":\"current\"},\"linked_resources\":3,\"ambiguity_points\":1}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "24kngn9cj",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_171\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "24kngn9cj",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_6980\",\"competing_case_ids\":[\"case_170\",\"case_172\"],\"evidence_summary\":\"no identifier links analytics_6980 to anyone; worker event activity_2754 (ANONYMIZE_RECORD SUCCESS) is -0.47h from this case's reported_at; same fit for: case_170 -0.47h, case_172 -0.47h. Group: 1 analytics resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "The ambiguity point A1 involves `analytics_6980` with equal timing (-0.47h) across all three competing cases and no identifier links. Per the rules, equal timing is not a tie to this case. Let me inspect to confirm, then propose the plan.\n\n",
+   "tool_calls": [
+    {
+     "id": "ksebvzdva",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_171\",\"resource_id\":\"analytics_6980\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "ksebvzdva",
+   "content": "{\"resource_id\":\"analytics_6980\",\"ambiguity_id\":\"A1\",\"observations\":[{\"file_id\":\"evidence_85\",\"captured_at\":\"2026-07-28T05:44:17+00:00\",\"copy\":\"log\",\"present\":null,\"prohibited_set\":[],\"identifiers\":\"none\"}],\"observations_after_audit_at_hidden\":1,\"files_shared_with_this_case_mandatory_resources\":[\"evidence_85\"],\"files_shared_with_competing_cases\":{\"case_170\":[\"evidence_85\"],\"case_172\":[\"evidence_85\"]},\"activities\":[{\"id\":\"activity_2754\",\"time\":\"2026-07-11T05:31:49+00:00\",\"type\":\"ANONYMIZE_RECORD\",\"result\":\"SUCCESS\",\"offset_hours_from_reported_at\":-0.47,\"details\":\"Policy action completed for analytics_6980.\"}]}"
+  },
+  {
+   "role": "assistant",
+   "content": "The evidence confirms: no identifiers, the shared file `evidence_85` is shared equally with all three competing cases, and timing is identical (-0.47h) across all. Per rule 6, equal timing is not a tie to this case. The default EXCLUDE is correct.\n\n",
+   "tool_calls": [
+    {
+     "id": "x9zpk1s9r",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_171\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "x9zpk1s9r",
+   "content": "{\"plan_id\":\"case_171:P1\",\"status\":\"INCOMPLETE\",\"changes_vs_default\":[],\"n_steps\":5,\"steps\":[\"1. F REPORT_RESTORE_RISK backup_5520 @evidence_85\",\"2. R BLOCK_RESTORE backup_5520\",\"3. V VERIFY_RECORD_ABSENT account_7947\",\"4. V VERIFY_RECORD_PRESENT audit_record_1665\",\"5. V VERIFY_RESTORE_BLOCKED backup_5520\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "The plan passed the verifier. Submitting now.\n\n",
+   "tool_calls": [
+    {
+     "id": "9kevf2t3m",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_171\",\"plan_id\":\"case_171:P1\",\"rationale\":\"A1 (analytics_6980): EXCLUDE (default). No identifiers link it to this subject; shared file evidence_85 is equally shared with case_170 and case_172; timing -0.47h is identical across all three cases. Equal timing is not a unique tie per rule 6.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "9kevf2t3m",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_171:P1\",\"status\":\"INCOMPLETE\"}"
+  }
+ ]
+}

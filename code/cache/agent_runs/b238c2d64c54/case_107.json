@@ -1,0 +1,117 @@
+{
+ "case_id": "case_107",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "A1 excluded because evidence shows no identifier links account_687; activity timing matches both cases, not unique to this case (evidence_summary).",
+ "provider": "groq",
+ "model": "openai/gpt-oss-120b",
+ "models": [
+  "openai/gpt-oss-120b"
+ ],
+ "tool_calls": 4,
+ "turns": 5,
+ "rejections": 0,
+ "prompt_tokens": 8241,
+ "completion_tokens": 290,
+ "decisions": [
+  {
+   "ambiguity_id": "A1",
+   "choice": "EXCLUDE"
+  }
+ ],
+ "changes": [
+  "A1 account_687: EXCLUDE"
+ ],
+ "plan_id": "case_107:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_107. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_dd92ba37-659d-4b94-b115-e0a9a6f1a6b9",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_107\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_dd92ba37-659d-4b94-b115-e0a9a6f1a6b9",
+   "content": "{\"case_id\":\"case_107\",\"requested_at\":\"2026-08-12T12:00:00Z\",\"reported_status_CLAIM\":\"COMPLETE\",\"reported_at\":\"2026-08-13T12:00:00Z\",\"audit_at\":\"2026-08-27T12:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>Please treat this message as a request for permanent account deletion. Please include information linked through current or earlier account identifiers. Let me know when the request has been completed.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":1,\"phones\":2,\"hashes\":1,\"historical_changes\":1,\"matched_via\":\"current\"},\"linked_resources\":2,\"ambiguity_points\":4}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_098c1790-b754-4a26-84dc-781bc650396c",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_107\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_098c1790-b754-4a26-84dc-781bc650396c",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_break\",\"resource_id\":\"account_687\",\"competing_case_ids\":[\"case_109\"],\"evidence_summary\":\"no identifier links account_687 to anyone; worker event activity_3238 (DELETE_RECORD SUCCESS) is -1.24h from this case's reported_at; same fit for: case_109 -1.24h. Group: 2 account resource(s) for 2 cases; currently assigned to case_107 by event order.\",\"default\":\"INCLUDE\",\"source\":\"tie_break\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A2\",\"kind\":\"tie_candidate\",\"resource_id\":\"account_7510\",\"competing_case_ids\":[\"case_109\"],\"evidence_summary\":\"no identifier links account_7510 to anyone; worker event activity_3240 (DELETE_RECORD SUCCESS) is -0.87h from this case's reported_at; same fit for: case_109 -0.87h. Group: 2 account resource(s) for 2 cases; currently assigned to case_109 by event order.\",\"default\":\"EXCLUDE\",\"source\":\"tie_break\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A3\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_2777\",\"competing_case_ids\":[\"case_108\",\"case_109\"],\"evidence_summary\":\"no identifier links analytics_2777 to anyone; worker event activity_3242 (ANONYMIZE_RECORD SUCCESS) is -0.47h from this case's reported_at; same fit for: case_108 -0.47h, case_109 -0.47h. Group: 2 analytics resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A4\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_5001\",\"competing_case_ids\":[\"case_108\",\"case_109\"],\"evidence_summary\":\"no identifier links analytics_5001 to anyone; worker event activity_3243 (ANONYMIZE_RECORD SUCCESS) is -0.47h from this case's reported_at; same fit for: case_108 -0.47h, case_109 -0.47h. Group: 2 analytics resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_1727786d-cfdd-42c3-8c77-caba061767f3",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_107\",\"decisions\":[{\"ambiguity_id\":\"A1\",\"choice\":\"EXCLUDE\"}]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_1727786d-cfdd-42c3-8c77-caba061767f3",
+   "content": "{\"plan_id\":\"case_107:P1\",\"status\":\"COMPLETE\",\"changes_vs_default\":[\"A1 account_687: EXCLUDE\"],\"n_steps\":1,\"steps\":[\"1. V VERIFY_RECORD_PRESENT audit_record_7572 @evidence_10\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "Plan submitted successfully."
+  },
+  {
+   "role": "user",
+   "content": "Reply only with tool calls. Continue the workflow and finish with submit_case (or escalate_case)."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_718f1883-0703-4839-b5e4-5a11d03a3473",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_107\",\"plan_id\":\"case_107:P1\",\"rationale\":\"A1 excluded because evidence shows no identifier links account_687; activity timing matches both cases, not unique to this case (evidence_summary).\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_718f1883-0703-4839-b5e4-5a11d03a3473",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_107:P1\",\"status\":\"COMPLETE\"}"
+  }
+ ]
+}

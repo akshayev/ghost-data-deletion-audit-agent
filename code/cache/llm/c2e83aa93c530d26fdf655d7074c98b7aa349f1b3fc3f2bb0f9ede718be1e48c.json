@@ -1,0 +1,19 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "ff55bb38a6f01fc0b5dc4331e5db9aa00726a685fa9c2406e6eed3af666fc79b",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_115",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "Plan case_115:P1 submitted. The ambiguity A1 was left at its default EXCLUDE because evidence shows analytics_4800 has no identifiers linking it to this case and the worker event timing matches multiple cases equally. This satisfies the verifier.",
+    "tool_calls": []
+  },
+  "usage": {
+    "prompt_tokens": 1871,
+    "completion_tokens": 53
+  }
+}

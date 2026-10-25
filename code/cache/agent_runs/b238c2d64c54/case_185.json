@@ -1,0 +1,135 @@
+{
+ "case_id": "case_185",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "Both tie candidates (account_3878, account_9579) have no identifiers, no shared files, and equal timing fits with case_186. Equal timing is not a unique tie, so defaults kept: A1 EXCLUDE, A2 INCLUDE.",
+ "provider": "groq",
+ "model": "qwen/qwen3.8-27b",
+ "models": [
+  "openai/gpt-oss-20b",
+  "qwen/qwen3.8-27b"
+ ],
+ "tool_calls": 6,
+ "turns": 5,
+ "rejections": 0,
+ "prompt_tokens": 9518,
+ "completion_tokens": 650,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_185:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_185. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_75b1d457-6442-4296-a7b5-c8c56b4d74bd",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_185\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_75b1d457-6442-4296-a7b5-c8c56b4d74bd",
+   "content": "{\"case_id\":\"case_185\",\"requested_at\":\"2026-07-05T11:00:00Z\",\"reported_status_CLAIM\":\"NOT_STARTED\",\"reported_at\":\"2026-07-06T11:00:00Z\",\"audit_at\":\"2026-07-18T11:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>Please process a permanent account-deletion request for this email address. Please handle any copies that fall within the scope of the deletion request. A short confirmation when the process is complete is sufficient.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":2,\"phones\":1,\"hashes\":2,\"historical_changes\":2,\"matched_via\":\"historical\"},\"linked_resources\":3,\"ambiguity_points\":2}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "xyky4e9y3",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_185\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "xyky4e9y3",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_candidate\",\"resource_id\":\"account_3878\",\"competing_case_ids\":[\"case_186\"],\"evidence_summary\":\"no identifier links account_3878 to anyone; worker event activity_2690 (DELETE_RECORD FAILED) is -0.89h from this case's reported_at; same fit for: case_186 -0.89h. Group: 2 account resource(s) for 2 cases; currently assigned to case_186 by event order.\",\"default\":\"EXCLUDE\",\"source\":\"tie_break\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A2\",\"kind\":\"tie_break\",\"resource_id\":\"account_9579\",\"competing_case_ids\":[\"case_186\"],\"evidence_summary\":\"no identifier links account_9579 to anyone; worker event activity_2688 (DELETE_RECORD FAILED) is -1.22h from this case's reported_at; same fit for: case_186 -1.22h. Group: 2 account resource(s) for 2 cases; currently assigned to case_185 by event order.\",\"default\":\"INCLUDE\",\"source\":\"tie_break\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "9zh3n9bw6",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_185\",\"resource_id\":\"account_3878\"}"
+     }
+    },
+    {
+     "id": "qpfzaw85c",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_185\",\"resource_id\":\"account_9579\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "9zh3n9bw6",
+   "content": "{\"resource_id\":\"account_3878\",\"ambiguity_id\":\"A1\",\"observations\":[],\"observations_after_audit_at_hidden\":0,\"files_shared_with_this_case_mandatory_resources\":[],\"files_shared_with_competing_cases\":{\"case_186\":[]},\"activities\":[{\"id\":\"activity_2690\",\"time\":\"2026-07-06T10:06:21+00:00\",\"type\":\"DELETE_RECORD\",\"result\":\"FAILED\",\"offset_hours_from_reported_at\":-0.89,\"details\":\"Deletion worker submitted primary profile account_3878 to account_service.\"}]}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "qpfzaw85c",
+   "content": "{\"resource_id\":\"account_9579\",\"ambiguity_id\":\"A2\",\"observations\":[],\"observations_after_audit_at_hidden\":0,\"files_shared_with_this_case_mandatory_resources\":[],\"files_shared_with_competing_cases\":{\"case_186\":[]},\"activities\":[{\"id\":\"activity_2688\",\"time\":\"2026-07-06T09:46:35+00:00\",\"type\":\"DELETE_RECORD\",\"result\":\"FAILED\",\"offset_hours_from_reported_at\":-1.22,\"details\":\"Deletion worker submitted primary profile account_9579 to account_service.\"}]}"
+  },
+  {
+   "role": "assistant",
+   "content": "Both resources have no identifiers, no shared files, and equal timing fits with case_186. Per the rules, equal timing is not a unique tie to this case, so I'll keep both defaults (A1: EXCLUDE, A2: INCLUDE).\n\n",
+   "tool_calls": [
+    {
+     "id": "f76dkrfy1",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_185\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "f76dkrfy1",
+   "content": "{\"plan_id\":\"case_185:P1\",\"status\":\"INCOMPLETE\",\"changes_vs_default\":[],\"n_steps\":7,\"steps\":[\"1. F REPORT_REMAINING_RECORD search_8463 @evidence_83\",\"2. F REPORT_EXPOSED_PII analytics_1950 @evidence_83\",\"3. R DELETE_RECORD search_8463\",\"4. R ANONYMIZE_RECORD analytics_1950\",\"5. V VERIFY_RECORD_ABSENT account_9579\",\"6. V VERIFY_RECORD_ABSENT search_8463\",\"7. V VERIFY_RECORD_ANONYMIZED analytics_1950\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "t54fekmxs",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_185\",\"plan_id\":\"case_185:P1\",\"rationale\":\"Both tie candidates (account_3878, account_9579) have no identifiers, no shared files, and equal timing fits with case_186. Equal timing is not a unique tie, so defaults kept: A1 EXCLUDE, A2 INCLUDE.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "t54fekmxs",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_185:P1\",\"status\":\"INCOMPLETE\"}"
+  }
+ ]
+}

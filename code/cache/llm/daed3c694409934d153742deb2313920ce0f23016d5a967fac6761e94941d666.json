@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "04df967773931234cf5abe2bfa617603054a6c3d7e3122caf60a02303a6945d7",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_109",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_38c2521c-f8fc-47c0-aefd-3ce00c2dda92",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_109\",\"plan_id\":\"case_109:P1\",\"rationale\":\"No ambiguity decisions altered; defaults already align with evidence (A1 EXCLUDE, A2 INCLUDE, A3 EXCLUDE, A4 EXCLUDE).\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2081,
+    "completion_tokens": 112
+  }
+}

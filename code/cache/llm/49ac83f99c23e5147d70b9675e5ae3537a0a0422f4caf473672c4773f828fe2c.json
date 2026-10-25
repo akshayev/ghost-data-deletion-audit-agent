@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "fb5fa834d047e74a21303ac728196d5175e503418d2413c4dbd1d466cd905bf9",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_86",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "Plan approved. Submitting case.",
+    "tool_calls": [
+      {
+        "id": "fc_a8b1b89c-b83a-420b-8f59-c29a7e174810",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_86\",\"plan_id\":\"case_86:P1\",\"rationale\":\"No evidence ties analytics_9500 to this case; shared file evidence_08 is also linked to competing cases, so default EXCLUDE stands.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 1812,
+    "completion_tokens": 72
+  }
+}

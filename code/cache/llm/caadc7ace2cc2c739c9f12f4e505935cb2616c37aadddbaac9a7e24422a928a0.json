@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "6aaf33eaf51b05bbf57ad50bf4db87d372ae496276556a7b74112322ed03d83c",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_148",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "t4v0q2vbk",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_148\",\"plan_id\":\"case_148:P1\",\"rationale\":\"All three tie candidates (account_5023, account_7864, account_8632) have no identifiers, no shared files with mandatory resources, and equal timing fit across competing cases. No unique tie to this case; defaults (EXCLUDE) retained.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 3241,
+    "completion_tokens": 145
+  }
+}

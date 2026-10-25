@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "d8ae4cb44aa0c5aa80b006049b4a351c8d3b0dc37876edb5f484f5c606acfe00",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_206",
+    "turn": 3
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_e95bd42c-12bd-499e-9070-a6b37e1ad90f",
+        "name": "inspect_resource",
+        "arguments": "{\"case_id\":\"case_206\",\"resource_id\":\"analytics_9580\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 1482,
+    "completion_tokens": 55
+  }
+}

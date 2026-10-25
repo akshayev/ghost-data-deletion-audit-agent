@@ -1,0 +1,102 @@
+{
+ "case_id": "case_59",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "A1 kept INCLUDE as no identifier ties account_631; timing matches both cases, default stands. A3 kept INCLUDE; analytics_9069 lacks identifiers, default stands. No change needed.",
+ "provider": "groq",
+ "model": "openai/gpt-oss-120b",
+ "models": [
+  "openai/gpt-oss-120b"
+ ],
+ "tool_calls": 4,
+ "turns": 4,
+ "rejections": 0,
+ "prompt_tokens": 5951,
+ "completion_tokens": 255,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_59:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_59. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_41b485db-add7-40c5-9f5b-a85599411101",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_59\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_41b485db-add7-40c5-9f5b-a85599411101",
+   "content": "{\"case_id\":\"case_59\",\"requested_at\":\"2026-08-25T10:00:00Z\",\"reported_status_CLAIM\":\"COMPLETE\",\"reported_at\":\"2026-08-26T10:00:00Z\",\"audit_at\":\"2026-09-21T10:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>I am asking you to remove my account and the personal information linked to it. Please include information linked through current or earlier account identifiers. Let me know when the request has been completed.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":1,\"phones\":1,\"hashes\":1,\"historical_changes\":0,\"matched_via\":\"current\"},\"linked_resources\":3,\"ambiguity_points\":3}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_dd2eb939-4dfc-4498-90da-eb97c57467f0",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_59\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_dd2eb939-4dfc-4498-90da-eb97c57467f0",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_break\",\"resource_id\":\"account_631\",\"competing_case_ids\":[\"case_60\"],\"evidence_summary\":\"no identifier links account_631 to anyone; worker event activity_3444 (DELETE_RECORD SUCCESS) is -1.04h from this case's reported_at; same fit for: case_60 -1.04h. Group: 2 account resource(s) for 2 cases; currently assigned to case_59 by event order.\",\"default\":\"INCLUDE\",\"source\":\"tie_break\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A2\",\"kind\":\"tie_candidate\",\"resource_id\":\"account_5661\",\"competing_case_ids\":[\"case_60\"],\"evidence_summary\":\"no identifier links account_5661 to anyone; worker event activity_3445 (DELETE_RECORD SUCCESS) is -0.85h from this case's reported_at; same fit for: case_60 -0.85h. Group: 2 account resource(s) for 2 cases; currently assigned to case_60 by event order.\",\"default\":\"EXCLUDE\",\"source\":\"tie_break\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A3\",\"kind\":\"tie_break\",\"resource_id\":\"analytics_9069\",\"competing_case_ids\":[\"case_60\"],\"evidence_summary\":\"no identifier links analytics_9069 to anyone; worker event activity_3447 (ANONYMIZE_RECORD SUCCESS) is -0.48h from this case's reported_at; same fit for: case_60 -0.48h. Group: 1 analytics resource(s) for 2 cases; currently assigned to case_59 by event order.\",\"default\":\"INCLUDE\",\"source\":\"tie_break\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_58307efa-d45f-4cdf-a1b0-a450bc80f0db",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_59\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_58307efa-d45f-4cdf-a1b0-a450bc80f0db",
+   "content": "{\"plan_id\":\"case_59:P1\",\"status\":\"COMPLETE\",\"changes_vs_default\":[],\"n_steps\":3,\"steps\":[\"1. V VERIFY_RECORD_ABSENT account_631 @evidence_05\",\"2. V VERIFY_RECORD_PRESENT audit_record_962 @evidence_05\",\"3. V VERIFY_RECORD_ANONYMIZED analytics_9069 @evidence_05\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_ea588136-e8d2-403b-a32e-3516e293de73",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_59\",\"plan_id\":\"case_59:P1\",\"rationale\":\"A1 kept INCLUDE as no identifier ties account_631; timing matches both cases, default stands. A3 kept INCLUDE; analytics_9069 lacks identifiers, default stands. No change needed.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_ea588136-e8d2-403b-a32e-3516e293de73",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_59:P1\",\"status\":\"COMPLETE\"}"
+  }
+ ]
+}

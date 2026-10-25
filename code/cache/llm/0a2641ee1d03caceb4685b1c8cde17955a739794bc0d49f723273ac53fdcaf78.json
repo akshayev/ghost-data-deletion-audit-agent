@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "de259d742dd530a4c5934de1ca120c7b2b958d5e21148fb093e3e1992ee6c1d5",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_106",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_c0a46505-5b21-44c7-b4ff-9b961530a924",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_106\",\"plan_id\":\"case_106:P1\",\"rationale\":\"No evidence ties account_4514 or account_8804 uniquely to this case; defaults (include A1, exclude A2) remain unchanged.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 1880,
+    "completion_tokens": 110
+  }
+}

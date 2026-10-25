@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "af588990c1a149f1c6b2dc28a9d7efe91b0abbdc7fbdf7142c9a994d3199bc42",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_145",
+    "turn": 6
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_d14f7e3c-9bde-4854-b68c-2b0e732e6f31",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_145\",\"plan_id\":\"case_145:P1\",\"rationale\":\"No evidence links account_2900 to this case; default EXCLUDE. account_5572 has no identifiers and no shared files; default INCLUDE. All decisions follow deterministic defaults.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2072,
+    "completion_tokens": 148
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "c63269a6b1e644cd43de4bfe3aa9fd96fc273b419aca60699e78c944b0434f36",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_192",
+    "turn": 8
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_bcc16581-e7c3-48c9-850a-d3ed40f815a6",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_192\",\"plan_id\":\"case_192:P1\",\"rationale\":\"account_9317 included due to shared evidence_83 with mandatory resources; account_6608 excluded as no identifiers or unique file links and same timing as competing case.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2581,
+    "completion_tokens": 114
+  }
+}

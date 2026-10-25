@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "07bc55251662b7d9e6d7c4114bbc790332e83ac85526e4e9e496e66cd8c488b1",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_171",
+    "turn": 4
+  },
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "message": {
+    "content": "The evidence confirms: no identifiers, the shared file `evidence_85` is shared equally with all three competing cases, and timing is identical (-0.47h) across all. Per rule 6, equal timing is not a tie to this case. The default EXCLUDE is correct.\n\n",
+    "tool_calls": [
+      {
+        "id": "x9zpk1s9r",
+        "name": "propose_plan",
+        "arguments": "{\"case_id\":\"case_171\",\"decisions\":[]}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2429,
+    "completion_tokens": 248
+  }
+}

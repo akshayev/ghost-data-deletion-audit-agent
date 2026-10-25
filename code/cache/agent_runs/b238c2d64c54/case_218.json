@@ -1,0 +1,102 @@
+{
+ "case_id": "case_218",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "Both analytics resources lack identifiers and timing matches multiple cases; default EXCLUDE is correct per skip_multi rule.",
+ "provider": "groq",
+ "model": "openai/gpt-oss-20b",
+ "models": [
+  "openai/gpt-oss-20b"
+ ],
+ "tool_calls": 4,
+ "turns": 4,
+ "rejections": 0,
+ "prompt_tokens": 5762,
+ "completion_tokens": 268,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_218:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_218. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_81b68a3c-0613-43e0-940f-21aeedb7f98c",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_218\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_81b68a3c-0613-43e0-940f-21aeedb7f98c",
+   "content": "{\"case_id\":\"case_218\",\"requested_at\":\"2026-06-07T08:00:00Z\",\"reported_status_CLAIM\":\"COMPLETE\",\"reported_at\":\"2026-06-08T08:00:00Z\",\"audit_at\":\"2026-07-03T08:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>I am requesting deletion of the account registered to this email address. Please follow the applicable retention and deletion requirements for the account. Please contact me if you need information to verify the request.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":1,\"phones\":1,\"hashes\":1,\"historical_changes\":0,\"matched_via\":\"current\"},\"linked_resources\":2,\"ambiguity_points\":2}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_8a251fd4-110a-4dd8-8ef7-85b7ed1234a8",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_218\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_8a251fd4-110a-4dd8-8ef7-85b7ed1234a8",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_257\",\"competing_case_ids\":[\"case_219\",\"case_220\"],\"evidence_summary\":\"no identifier links analytics_257 to anyone; worker event activity_2262 (ANONYMIZE_RECORD SUCCESS) is -0.48h from this case's reported_at; same fit for: case_219 -0.48h, case_220 -0.48h. Group: 2 analytics resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A2\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_7004\",\"competing_case_ids\":[\"case_219\",\"case_220\"],\"evidence_summary\":\"no identifier links analytics_7004 to anyone; worker event activity_2263 (ANONYMIZE_RECORD SUCCESS) is -0.47h from this case's reported_at; same fit for: case_219 -0.47h, case_220 -0.47h. Group: 2 analytics resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_e0a1515e-9a0e-4796-be94-9df439495ee2",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_218\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_e0a1515e-9a0e-4796-be94-9df439495ee2",
+   "content": "{\"plan_id\":\"case_218:P1\",\"status\":\"COMPLETE\",\"changes_vs_default\":[],\"n_steps\":2,\"steps\":[\"1. V VERIFY_RECORD_ABSENT account_4066 @evidence_81\",\"2. V VERIFY_RECORD_PRESENT audit_record_8792 @evidence_81\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_52348ea1-4f78-484c-90fc-176b4b7ee047",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_218\",\"plan_id\":\"case_218:P1\",\"rationale\":\"Both analytics resources lack identifiers and timing matches multiple cases; default EXCLUDE is correct per skip_multi rule.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_52348ea1-4f78-484c-90fc-176b4b7ee047",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_218:P1\",\"status\":\"COMPLETE\"}"
+  }
+ ]
+}

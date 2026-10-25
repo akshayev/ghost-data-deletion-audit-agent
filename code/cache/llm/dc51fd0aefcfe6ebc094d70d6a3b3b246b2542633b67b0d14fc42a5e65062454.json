@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "e6b36e45bdf70843c48be60081df0dcc7c46e19a6cc81b7017586388264e3b01",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_20",
+    "turn": 6
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_f389b5cc-d389-47fc-8c83-93b0d55d5d47",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_20\",\"plan_id\":\"case_20:P1\",\"rationale\":\"A1 excluded because inspect_resource shows no identifiers linking analytics_2265 to this user; activity_3735 timing matches both cases, providing no unique tie (evidence_94).\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 1945,
+    "completion_tokens": 87
+  }
+}

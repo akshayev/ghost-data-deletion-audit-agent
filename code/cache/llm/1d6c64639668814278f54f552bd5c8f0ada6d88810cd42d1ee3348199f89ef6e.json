@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "1ce5671e4e76340940e9d9080958bee4ffc3569752bbdd9c4d67698ce51aece6",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_51",
+    "turn": 6
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_aec9205a-5305-4ca3-91e7-1bf4dea7cab6",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_51\",\"plan_id\":\"case_51:P1\",\"rationale\":\"No ambiguity decisions altered; evidence shows analytics_2265 lacks identifiers and ties equally to case_20, so default EXCLUDE stands (evidence_94, activity_3735).\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 1878,
+    "completion_tokens": 98
+  }
+}

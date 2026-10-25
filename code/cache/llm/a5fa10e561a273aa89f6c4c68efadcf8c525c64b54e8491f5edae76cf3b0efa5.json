@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "12879e7f9a6d8a0990aa7853db227bb671e7d5edfa723591ca6b9bb62c0f8add",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_186",
+    "turn": 4
+  },
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "message": {
+    "content": "Both resources have no identifiers, no shared files with mandatory resources, and equal timing with case_185. Per rule 6, equal timing is not a tie to this case, so I keep the defaults for both.\n\n",
+    "tool_calls": [
+      {
+        "id": "4csxdv4cb",
+        "name": "propose_plan",
+        "arguments": "{\"case_id\":\"case_186\",\"decisions\":[]}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2621,
+    "completion_tokens": 615
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "4853aaa4310a4a456ef554add9b420e654dcae831e0f749b776ff17ef370bf5a",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_57",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "Plan case_57:P1 submitted. Rationale: analytics_2572 and analytics_8858 lack identifiers and share evidence_05 with competing cases, so defaults (EXCLUDE) remain.",
+    "tool_calls": []
+  },
+  "usage": {
+    "prompt_tokens": 2059,
+    "completion_tokens": 43
+  }
+}

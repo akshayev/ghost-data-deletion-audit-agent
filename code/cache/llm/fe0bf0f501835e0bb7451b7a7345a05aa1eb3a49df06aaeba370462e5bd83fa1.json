@@ -1,0 +1,19 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "b5e1fa7e6453ce5bd52bdda0bf193c2c76d62728808ce1b7ff4a21fb1f03f49c",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_155",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "message": {
+    "content": "{\n  \"case_id\":\"case_155\",\n  \"plan_id\":\"case_155:P1\",\n  \"rationale\":\"Account_1992 has no identifier links and the DELETE_RECORD event at -0.89h matches both case_155 and case_157. Since the deterministic engine default was INCLUDE, we exclude it to avoid misattribution.\"\n}",
+    "tool_calls": []
+  },
+  "usage": {
+    "prompt_tokens": 2187,
+    "completion_tokens": 94
+  }
+}

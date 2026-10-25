@@ -1,0 +1,148 @@
+{
+ "case_id": "case_147",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "All three tie candidates (account_5023, account_7864, account_8632) have no identifiers, no shared files with mandatory resources, and equal timing fit across cases 146/147/148. No unique tie to case_147; defaults EXCLUDE retained.",
+ "provider": "groq",
+ "model": "qwen/qwen3.8-27b",
+ "models": [
+  "openai/gpt-oss-20b",
+  "qwen/qwen3.8-27b"
+ ],
+ "tool_calls": 7,
+ "turns": 5,
+ "rejections": 0,
+ "prompt_tokens": 10466,
+ "completion_tokens": 829,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_147:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_147. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "fc_a9c2a4c9-268c-4555-9103-b66683a52b29",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_147\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fc_a9c2a4c9-268c-4555-9103-b66683a52b29",
+   "content": "{\"case_id\":\"case_147\",\"requested_at\":\"2026-07-23T08:00:00Z\",\"reported_status_CLAIM\":\"PARTIALLY_COMPLETE\",\"reported_at\":\"2026-07-25T08:00:00Z\",\"audit_at\":\"2026-08-07T08:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>Solicito la eliminación permanente de la cuenta asociada a este correo. Revisen los identificadores actuales y anteriores según su política de privacidad. Por favor, confirmen el resultado cuando termine la revisión.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":1,\"phones\":2,\"hashes\":1,\"historical_changes\":1,\"matched_via\":\"current\"},\"linked_resources\":1,\"ambiguity_points\":3}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "c654gwcmz",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_147\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "c654gwcmz",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_candidate\",\"resource_id\":\"account_5023\",\"competing_case_ids\":[\"case_146\",\"case_148\"],\"evidence_summary\":\"no identifier links account_5023 to anyone; worker event activity_2946 (DELETE_RECORD PARTIAL) is -1.16h from this case's reported_at; same fit for: case_146 -1.16h, case_148 -1.16h. Group: 3 account resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A2\",\"kind\":\"tie_candidate\",\"resource_id\":\"account_7864\",\"competing_case_ids\":[\"case_146\",\"case_148\"],\"evidence_summary\":\"no identifier links account_7864 to anyone; worker event activity_2948 (DELETE_RECORD PARTIAL) is -0.80h from this case's reported_at; same fit for: case_146 -0.80h, case_148 -0.80h. Group: 3 account resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A3\",\"kind\":\"tie_candidate\",\"resource_id\":\"account_8632\",\"competing_case_ids\":[\"case_146\",\"case_148\"],\"evidence_summary\":\"no identifier links account_8632 to anyone; worker event activity_2947 (DELETE_RECORD PARTIAL) is -0.98h from this case's reported_at; same fit for: case_146 -0.98h, case_148 -0.98h. Group: 3 account resource(s) for 3 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "sdwaqrf7s",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_147\",\"resource_id\":\"account_5023\"}"
+     }
+    },
+    {
+     "id": "c1bc56ra8",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_147\",\"resource_id\":\"account_7864\"}"
+     }
+    },
+    {
+     "id": "fwngh4p2v",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_147\",\"resource_id\":\"account_8632\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "sdwaqrf7s",
+   "content": "{\"resource_id\":\"account_5023\",\"ambiguity_id\":\"A1\",\"observations\":[],\"observations_after_audit_at_hidden\":0,\"files_shared_with_this_case_mandatory_resources\":[],\"files_shared_with_competing_cases\":{\"case_146\":[],\"case_148\":[]},\"activities\":[{\"id\":\"activity_2946\",\"time\":\"2026-07-25T06:50:18+00:00\",\"type\":\"DELETE_RECORD\",\"result\":\"PARTIAL\",\"offset_hours_from_reported_at\":-1.16,\"details\":\"Deletion worker submitted primary profile account_5023 to account_service.\"}]}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "c1bc56ra8",
+   "content": "{\"resource_id\":\"account_7864\",\"ambiguity_id\":\"A2\",\"observations\":[],\"observations_after_audit_at_hidden\":0,\"files_shared_with_this_case_mandatory_resources\":[],\"files_shared_with_competing_cases\":{\"case_146\":[],\"case_148\":[]},\"activities\":[{\"id\":\"activity_2948\",\"time\":\"2026-07-25T07:12:16+00:00\",\"type\":\"DELETE_RECORD\",\"result\":\"PARTIAL\",\"offset_hours_from_reported_at\":-0.8,\"details\":\"Deletion worker submitted primary profile account_7864 to account_service.\"}]}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "fwngh4p2v",
+   "content": "{\"resource_id\":\"account_8632\",\"ambiguity_id\":\"A3\",\"observations\":[],\"observations_after_audit_at_hidden\":0,\"files_shared_with_this_case_mandatory_resources\":[],\"files_shared_with_competing_cases\":{\"case_146\":[],\"case_148\":[]},\"activities\":[{\"id\":\"activity_2947\",\"time\":\"2026-07-25T07:01:02+00:00\",\"type\":\"DELETE_RECORD\",\"result\":\"PARTIAL\",\"offset_hours_from_reported_at\":-0.98,\"details\":\"Deletion worker submitted primary profile account_8632 to account_service.\"}]}"
+  },
+  {
+   "role": "assistant",
+   "content": "All three resources have no identifiers, no shared files with this case's mandatory resources, and equal timing fit across all three competing cases. None uniquely ties to case_147. The default EXCLUDE is correct for all.\n\n",
+   "tool_calls": [
+    {
+     "id": "wj7gp6y0s",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_147\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "wj7gp6y0s",
+   "content": "{\"plan_id\":\"case_147:P1\",\"status\":\"INCOMPLETE\",\"changes_vs_default\":[],\"n_steps\":3,\"steps\":[\"1. F REPORT_RESTORE_RISK backup_4244 @evidence_86\",\"2. R BLOCK_RESTORE backup_4244\",\"3. V VERIFY_RESTORE_BLOCKED backup_4244\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "The plan passed the verifier. All three ambiguity points correctly kept their default EXCLUDE since none of the resources have identifiers, shared files, or unique timing that ties them specifically to case_147.\n\n",
+   "tool_calls": [
+    {
+     "id": "g10da5qjp",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_147\",\"plan_id\":\"case_147:P1\",\"rationale\":\"All three tie candidates (account_5023, account_7864, account_8632) have no identifiers, no shared files with mandatory resources, and equal timing fit across cases 146/147/148. No unique tie to case_147; defaults EXCLUDE retained.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "g10da5qjp",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_147:P1\",\"status\":\"INCOMPLETE\"}"
+  }
+ ]
+}

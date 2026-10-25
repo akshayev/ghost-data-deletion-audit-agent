@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "6d304c599f257a4729de5036020b9e5d5a85540400ac62165782373638b69859",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_48",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_677df7dc-96db-4de1-afcc-3c5c591ebc78",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_48\",\"plan_id\":\"case_48:P1\",\"rationale\":\"A1 excluded: inspection shows no identifier linking account_483 to this case; activity timing matches case_47 equally, so not uniquely tied.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 1918,
+    "completion_tokens": 71
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "767edab8a242cfa8539cae37f5d7d4bb3e291c53483530d62a5c5f1c8fb8755d",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_20",
+    "turn": 5
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "Plan case_20:P1 submitted. Evidence: activity_3735 shows the ANONYMIZE_RECORD event ties analytics_2265 equally to case_20 and case_51, with no identifiers, so it is excluded.",
+    "tool_calls": []
+  },
+  "usage": {
+    "prompt_tokens": 1870,
+    "completion_tokens": 50
+  }
+}

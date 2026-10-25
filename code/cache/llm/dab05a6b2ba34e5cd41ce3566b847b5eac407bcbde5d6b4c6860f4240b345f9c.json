@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "0422daaeb837cbefcc1727af4f3297b5acb876a778cd53f9925d44e61a047238",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_23",
+    "turn": 7
+  },
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "fc_9fdfa8cf-2fb6-45b8-9f78-6593ebe66125",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_23\",\"plan_id\":\"case_23:P1\",\"rationale\":\"A1‑A4 excluded: inspections show no identifier links (no observations, no shared files) and activity timestamps match multiple cases equally, providing no unique tie to this case.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2450,
+    "completion_tokens": 89
+  }
+}
