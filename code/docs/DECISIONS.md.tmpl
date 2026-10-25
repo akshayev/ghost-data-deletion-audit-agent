@@ -87,7 +87,8 @@ Each entry: the decision, the evidence behind it, what was rejected and why, and
 
 - **Decision.** The {{evidence.families_md}} evidence mix includes PNG admin screens; a vision model transcribes each screen once into structured rows, detail panels and an activity feed, cached forever.
 - **Evidence.** The same resource appears as a table row and a panel, and the panel often carries fields the row lacks (for example a backup's account email in evidence_32); this needs structure, not text lines. Output is guarded: ids must match the resource-id regex (non-resource ids such as order refs are dropped), and emails within two edits of a known identity email are flagged as possible misreads (`images.suspect_match`, `MAX_EMAIL_EDITS`).
-- **Rejected.** OCR as the primary path: it keeps no row/panel structure, so a link can only be made within one text line (`test_ocr_fallback_links_only_within_the_same_line`); it remains as a fallback when no cached extraction exists.
+- **Design-time OCR comparison** (tesseract 5, run once while choosing; not shipped as a dependency): OCR read `areedt433@gmail.com` for `areed1433@gmail.com`, `ingrid.dahl@outiook.com` for the outlook.com address and `g.siiva76@gmall.com` for `g.silva76@gmail.com`, and extracted no resource ids or file names at all from the object-storage browser screen. Each of those misreads would break or mislead an identity link. The vision extraction passes all 11 ground-truth checks in `tests/test_images.py` (one that all 11 PNGs extract from the cache, ten that check specific screens' records, keys and file names, including the three addresses above).
+- **Rejected.** OCR as the primary path: besides the misreads above it keeps no row/panel structure, so a link can only be made within one text line (`test_ocr_fallback_links_only_within_the_same_line`); it remains as a fallback when no cached extraction exists.
 - **Where.** `parsers/images.py:convert`, `parsers/images.py:load_extraction`, `prompts/screenshot_extract.md`.
 
 ## 13. Per-row link keys in screenshots
@@ -138,3 +139,14 @@ Each entry: the decision, the evidence behind it, what was rejected and why, and
 - **Evidence.** Free-tier limits and a 7K tokens/minute client limit give about one case per 100 seconds; {{agent.full.routed}} routed cases at about {{agent.checkpoints.avg_tokens_per_case}} tokens each is about {{agent.routed_tokens}} tokens. Status now: {{decision.status}}.
 - **Rejected.** Waiting for a full run (not possible in the time), or failing the run on missing agent answers (they have a safe default).
 - **Where.** `agents/case_investigator.py` (checkpoints), `orchestrator.py:_agent_phase`, `config.yaml` (`agent:`).
+
+## 20. Per-model validation gate
+
+- **Decision.** When the quota ran out the chain moved to other models, so the full-split decisions come from several models. A model's decisions are trusted only if that model, alone, passes the sample gate (step F1 at least deterministic minus 0.3 pp, equal status accuracy, every routed sample case answered); decisions from any other model fall back to the deterministic plan (`FALLBACK_UNVALIDATED_MODEL`). A model that cannot be validated (quota, errors) is not accepted.
+- **Evidence.**
+
+{{gate.table_md}}
+
+  Accepted: {{gate.accepted}} (`config.yaml` `agent.accepted_models`: {{gate.config_accepted}}). In the final output, {{agent.full.unvalidated}} routed cases had their decision discarded for this reason.
+- **Rejected.** Trusting every model in the chain (a fallback model was never measured), or re-running all cases on one model (no quota left).
+- **Where.** `evaluation/model_gate.py`; `orchestrator.py:_agent_phase` (`accepted_models`); `llm.py:agent_chain` (`GHOST_AGENT_CHAIN`).

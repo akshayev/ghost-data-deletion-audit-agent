@@ -1,0 +1,34 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "provider": "groq",
+  "how": "live",
+  "routed": 12,
+  "outcomes": {
+    "FALLBACK_LLM_ERROR": 1,
+    "FALLBACK_QUOTA": 11
+  },
+  "deterministic": {
+    "step_f1": 0.9738219895287958,
+    "precision": 0.9841269841269841,
+    "recall": 0.9637305699481865,
+    "status": 1.0
+  },
+  "agent": {
+    "step_f1": 0.9738219895287958,
+    "precision": 0.9841269841269841,
+    "recall": 0.9637305699481865,
+    "status": 1.0
+  },
+  "accepted": false,
+  "reasons": [
+    "12 of 12 routed cases without a decision from openai/gpt-oss-20b"
+  ],
+  "tokens": {
+    "groq:openai/gpt-oss-20b": {
+      "calls": 6,
+      "completion": 330,
+      "prompt": 8473
+    }
+  },
+  "generated_at": "2026-10-25 08:55 UTC"
+}

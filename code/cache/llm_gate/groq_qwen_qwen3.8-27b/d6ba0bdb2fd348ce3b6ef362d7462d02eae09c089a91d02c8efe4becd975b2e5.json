@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "98b87161897982870c6ba3704828084c62ad829b78567f5563f6349380fe4cc0",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_19",
+    "turn": 4
+  },
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "message": {
+    "content": "The plan passed the verifier. Now I'll submit the case.\n\n",
+    "tool_calls": [
+      {
+        "id": "jgywgy2t2",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_19\",\"plan_id\":\"case_19:P1\",\"rationale\":\"analytics_3264 kept at default INCLUDE: no identifiers link it to this subject, no files shared with mandatory resources, and timing (-0.47h) is equal to case_103, not unique to this case. No ambiguity points changed.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2708,
+    "completion_tokens": 153
+  }
+}

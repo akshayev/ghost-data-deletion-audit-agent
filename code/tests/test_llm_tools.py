@@ -63,6 +63,7 @@ def env(tmp_path, monkeypatch):
     monkeypatch.setattr(llm, "EXHAUSTED", set())
     monkeypatch.setattr(llm, "LIMITERS", {})
     monkeypatch.delenv("GROQ_EXTRA_MODELS", raising=False)  # the real .env may define extras
+    monkeypatch.delenv("GHOST_AGENT_CHAIN", raising=False)
     for k, v in {"GROQ_API_KEY": "k1", "GEMINI_API_KEY": "k2", "GROQ_MODEL": "big",
                  "GROQ_FALLBACK_MODEL": "small", "GEMINI_MODEL": "gem"}.items():
         monkeypatch.setenv(k, v)
@@ -186,3 +187,12 @@ def test_rate_limiter_caps_requests_per_minute():
         lim.acquire(10)
         lim.record(10)
     assert now[0] >= 60.0
+
+
+def test_chain_override_selects_exactly_the_named_models(env, monkeypatch):
+    monkeypatch.setenv("GHOST_AGENT_CHAIN", "groq:small")
+    assert llm.agent_chain() == [("groq", "small")]
+    monkeypatch.setenv("GHOST_AGENT_CHAIN", "groq:small, gemini:gem")
+    assert llm.agent_chain() == [("groq", "small"), ("gemini", "gem")]
+    monkeypatch.delenv("GROQ_API_KEY")
+    assert llm.agent_chain() == [("gemini", "gem")]  # still needs the provider's key

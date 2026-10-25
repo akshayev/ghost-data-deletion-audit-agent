@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "813e49432a9b3363e10984fae663de7a7472780525fb7891af7194bcf1e58fcc",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_03",
+    "turn": 4
+  },
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "message": {
+    "content": "The plan passed the verifier. Let me submit.\n\n",
+    "tool_calls": [
+      {
+        "id": "c31xs8kt8",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_03\",\"plan_id\":\"case_03:P1\",\"rationale\":\"Both tie candidates (analytics_5589, analytics_9406) share only evidence_94 with both this case and case_44, carry no identifiers, and have equal timing fits. No unique tie to this case; defaults kept (A1 EXCLUDE, A2 INCLUDE).\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2957,
+    "completion_tokens": 153
+  }
+}

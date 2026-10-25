@@ -8,14 +8,18 @@ output: output.csv               # full-split submission file (CLI --out)
 runs_dir: code/evaluation/runs   # traces, run_summary.json, reports (gitignored)
 cache_dir: code/cache            # LLM + vision caches and the usage ledger (committed)
 trace: true                      # env GHOST_TRACE=0 turns per-case traces off
-mode: auto                       # agent | deterministic | auto (agent when GROQ/GEMINI key set)
-                                 # env GHOST_MODE, CLI --mode
+mode: auto                       # auto: agent mode replayed offline from code/cache (no network,
+                                 #   no keys needed; the default and the submission command)
+                                 # agent: live case agent (new model calls when keys are set)
+                                 # deterministic: no case agent. env GHOST_MODE, CLI --mode
 
 agent:                           # LLM case investigator (routed cases only)
   max_tool_calls: 8              # then FALLBACK_TOOL_CAP (deterministic plan kept)
   max_rejections: 2              # rejected proposals allowed; one more -> FALLBACK_REJECTED
   max_agent_cases: null          # budget (CLI --max-agent-cases); the rest -> FALLBACK_BUDGET
   checkpoint_dir: code/cache/agent_runs   # <config_hash>/<case_id>.json: reruns are free
+  accepted_models:               # only these models' decisions are used (sample gate:
+    - openai/gpt-oss-120b        #   python code/evaluation/model_gate.py --table)
   rate_limits:                   # client-side limits per (provider, model), 60 s window
     groq: {rpm: 25, tpm: 7000}
     gemini: {rpm: 10, tpm: 250000}

@@ -235,9 +235,13 @@ def render_report(ledger: list[dict], summary: dict, numbers: dict, prices: dict
         f"{router['agent']} routed full-split cases need roughly {agent['routed_tokens']} "
         "tokens in total. The 7K tokens/minute client limit also makes the run slow (about one "
         "case per 100 seconds), which is why the run is time-boxed.",
-        "- **Time-boxed agent run:** the full-split agent run stops at 15:00 IST or when the "
-        "daily quota is exhausted. Routed cases without an agent answer use the deterministic "
-        "default (`FALLBACK_QUOTA`). The totals above are provisional until that run ends.",
+        "- **Time-boxed agent run:** the full-split agent runs stopped when the daily quotas were "
+        "exhausted, before the 15:00 IST time box; the checkpoints were then frozen. Routed cases "
+        f"without an agent answer use the deterministic default ({agent['full']['no_checkpoint']} "
+        "cases, `FALLBACK_QUOTA`), and decisions from models that did not pass the sample gate "
+        f"are discarded ({agent['full']['unvalidated']} cases, `FALLBACK_UNVALIDATED_MODEL`): "
+        "their tokens were spent but do not shape `output.csv`. Gate runs (purpose `case_agent`, "
+        "sample case ids) are included in (b).",
         "- Costs are estimates from list prices; nothing was billed."
         + (f" No price is configured for {', '.join(unpriced)}: those rows show \"n/a\" and are "
            "left out of the cost totals (they are connectivity checks)." if unpriced else ""),

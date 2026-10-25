@@ -222,7 +222,8 @@ def test_orchestrator_agent_mode_reverts_conflicts_and_logs_decisions(tmp_path):
     cfg = cfgmod.load_config(cli={"runs_dir": tmp_path / "runs", "no_llm": False,
                                   "mode": "agent"})
     cfg_ckpt = cfgmod.Config(**{**cfg.__dict__,
-                                "agent": {**cfg.agent, "checkpoint_dir": str(tmp_path / "ck")}})
+                                "agent": {**cfg.agent, "checkpoint_dir": str(tmp_path / "ck"),
+                                          "accepted_models": None}})  # gate tested separately
     result = Orchestrator(cfg_ckpt, chat=model).run("sample", write=False)
     det = Orchestrator(cfgmod.load_config(cli={"runs_dir": tmp_path / "r2", "no_llm": True,
                                               "mode": "deterministic"})).run("sample",
@@ -237,3 +238,53 @@ def test_orchestrator_agent_mode_reverts_conflicts_and_logs_decisions(tmp_path):
                                              if c.route == "AGENT")
     rows = (tmp_path / "runs" / "agent_decisions.csv").read_text().splitlines()
     assert rows[0].startswith("case_id,") and len(rows) == 1 + summary["router"]["AGENT"]
+
+
+def test_offline_without_checkpoint_is_fallback_quota(run, tmp_path):
+    chat = Script(llm.CacheMiss("no cached reply (offline)"))
+    case = agent(run, chat, tmp_path, offline=True).run(fresh_case(run))
+    assert case.agent["outcome"] == "FALLBACK_QUOTA"
+    assert not list(tmp_path.rglob("*.json"))
+
+
+def _replay_config(tmp_path, accepted, ckpt):
+    cfg = cfgmod.load_config(cli={"runs_dir": tmp_path / "runs", "no_llm": True})
+    return cfgmod.Config(**{**cfg.__dict__, "agent": {**cfg.agent, "checkpoint_dir": str(ckpt),
+                                                      "accepted_models": accepted}})
+
+
+def test_decisions_from_unvalidated_models_fall_back(run, tmp_path):
+    """Checkpoints made by a model outside agent.accepted_models are not trusted."""
+    def model(messages, tools, **kw):
+        case_id = re.search(r"case_\d+", messages[1]["content"]).group(0)
+        results = [json.loads(m["content"]) for m in messages if m["role"] == "tool"]
+        if not results:
+            return brief_and_points(case_id)
+        if "plan_id" in results[-1]:
+            return submit(case_id)(messages)
+        return propose((), case_id)
+
+    ckpt = tmp_path / "ck"
+    live = cfgmod.load_config(cli={"runs_dir": tmp_path / "r1", "no_llm": False, "mode": "agent"})
+    live = cfgmod.Config(**{**live.__dict__, "agent": {**live.agent, "checkpoint_dir": str(ckpt),
+                                                       "only_cases": ["case_25"]}})
+    Orchestrator(live, chat=model).run("sample", write=False)  # checkpoint by "fake-model"
+    trusted = Orchestrator(_replay_config(tmp_path, ["fake-model"], ckpt)).run("sample",
+                                                                                write=False)
+    assert trusted.cases["case_25"].agent["outcome"] == "AGENT_SUBMITTED"
+    distrusted = Orchestrator(_replay_config(tmp_path, ["other-model"], ckpt)).run(
+        "sample", write=False)
+    out = distrusted.cases["case_25"].agent
+    assert out["outcome"] == "FALLBACK_UNVALIDATED_MODEL" and out["unvalidated"] == ["fake-model"]
+    # case_26 has no checkpoint here, but its whole conversation is in the shared reply cache
+    # (cache-first replay): it replays, and is distrusted because its model is not accepted
+    other = distrusted.cases["case_26"].agent
+    assert other["outcome"] == "FALLBACK_UNVALIDATED_MODEL"
+    assert other["unvalidated"] == ["openai/gpt-oss-120b"]
+
+
+def test_default_mode_is_offline_agent_replay():
+    cfg = cfgmod.load_config()
+    assert cfg.mode == "agent" and cfg.agent_live is False
+    assert cfgmod.load_config(cli={"mode": "agent"}).agent_live is True
+    assert cfgmod.load_config(cli={"mode": "deterministic"}).mode == "deterministic"

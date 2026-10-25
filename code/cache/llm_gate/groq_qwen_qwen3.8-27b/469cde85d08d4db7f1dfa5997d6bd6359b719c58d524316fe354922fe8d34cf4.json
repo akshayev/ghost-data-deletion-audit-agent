@@ -1,0 +1,30 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "82ab2ec31b1b6e233b0ceddca0acdaba230f10c4019b86ba1b782821922fc6d6",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_24",
+    "turn": 2
+  },
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "5x5jwzgkw",
+        "name": "inspect_resource",
+        "arguments": "{\"case_id\":\"case_24\",\"resource_id\":\"analytics_1895\"}"
+      },
+      {
+        "id": "yk3env9fn",
+        "name": "inspect_resource",
+        "arguments": "{\"case_id\":\"case_24\",\"resource_id\":\"analytics_4566\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2272,
+    "completion_tokens": 394
+  }
+}

@@ -1,0 +1,128 @@
+{
+ "case_id": "case_25",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "Both analytics resources lack identifiers tying them to this subject; timing (-0.48h) is identical across 5 cases (not unique); shared file evidence_92 is also shared with competing cases 24 and 26. Defaults (EXCLUDE) retained.",
+ "provider": "groq",
+ "model": "qwen/qwen3.8-27b",
+ "models": [
+  "qwen/qwen3.8-27b"
+ ],
+ "tool_calls": 6,
+ "turns": 4,
+ "rejections": 0,
+ "prompt_tokens": 9778,
+ "completion_tokens": 1011,
+ "decisions": [],
+ "changes": [],
+ "plan_id": "case_25:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_25. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "t41sespv9",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_25\"}"
+     }
+    },
+    {
+     "id": "rddcmc9yy",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_25\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "t41sespv9",
+   "content": "{\"case_id\":\"case_25\",\"requested_at\":\"2026-08-31T12:00:00Z\",\"reported_status_CLAIM\":\"NOT_STARTED\",\"reported_at\":\"2026-09-02T12:00:00Z\",\"audit_at\":\"2026-09-15T12:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>The privacy page still says my request failed. Please inspect the actual systems and tell me whether the account and identifiable analytics data have already been removed.</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":1,\"phones\":2,\"hashes\":1,\"historical_changes\":1,\"matched_via\":\"current\"},\"linked_resources\":2,\"ambiguity_points\":2}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "rddcmc9yy",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_1895\",\"competing_case_ids\":[\"case_24\",\"case_26\",\"case_549\",\"case_550\"],\"evidence_summary\":\"no identifier links analytics_1895 to anyone; worker event activity_3602 (ANONYMIZE_RECORD SUCCESS) is -0.48h from this case's reported_at; same fit for: case_24 -0.48h, case_26 -0.48h, case_549 -0.48h, case_550 -0.48h. Group: 2 analytics resource(s) for 5 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]},{\"id\":\"A2\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_4566\",\"competing_case_ids\":[\"case_24\",\"case_26\",\"case_549\",\"case_550\"],\"evidence_summary\":\"no identifier links analytics_4566 to anyone; worker event activity_3603 (ANONYMIZE_RECORD SUCCESS) is -0.48h from this case's reported_at; same fit for: case_24 -0.48h, case_26 -0.48h, case_549 -0.48h, case_550 -0.48h. Group: 2 analytics resource(s) for 5 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "dncv4www5",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_25\",\"resource_id\":\"analytics_1895\"}"
+     }
+    },
+    {
+     "id": "wm7fqkj6t",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_25\",\"resource_id\":\"analytics_4566\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "dncv4www5",
+   "content": "{\"resource_id\":\"analytics_1895\",\"ambiguity_id\":\"A1\",\"observations\":[{\"file_id\":\"evidence_92\",\"captured_at\":\"2026-09-15T11:44:55+00:00\",\"copy\":\"export\",\"present\":true,\"prohibited_set\":[],\"identifiers\":\"none\"}],\"observations_after_audit_at_hidden\":1,\"files_shared_with_this_case_mandatory_resources\":[\"evidence_92\"],\"files_shared_with_competing_cases\":{\"case_24\":[\"evidence_92\"],\"case_26\":[\"evidence_92\"],\"case_549\":[],\"case_550\":[]},\"activities\":[{\"id\":\"activity_3602\",\"time\":\"2026-09-02T11:31:08+00:00\",\"type\":\"ANONYMIZE_RECORD\",\"result\":\"SUCCESS\",\"offset_hours_from_reported_at\":-0.48,\"details\":\"Policy action completed for analytics_1895.\"}]}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "wm7fqkj6t",
+   "content": "{\"resource_id\":\"analytics_4566\",\"ambiguity_id\":\"A2\",\"observations\":[{\"file_id\":\"evidence_92\",\"captured_at\":\"2026-09-15T11:44:55+00:00\",\"copy\":\"export\",\"present\":true,\"prohibited_set\":[],\"identifiers\":\"none\"}],\"observations_after_audit_at_hidden\":1,\"files_shared_with_this_case_mandatory_resources\":[\"evidence_92\"],\"files_shared_with_competing_cases\":{\"case_24\":[\"evidence_92\"],\"case_26\":[\"evidence_92\"],\"case_549\":[],\"case_550\":[]},\"activities\":[{\"id\":\"activity_3603\",\"time\":\"2026-09-02T11:31:24+00:00\",\"type\":\"ANONYMIZE_RECORD\",\"result\":\"SUCCESS\",\"offset_hours_from_reported_at\":-0.48,\"details\":\"Policy action completed for analytics_4566.\"}]}"
+  },
+  {
+   "role": "assistant",
+   "content": "Both resources share evidence_92 with competing cases (case_24, case_26) and have identical timing fits across all 5 cases. No unique tie to this case. Keeping defaults (EXCLUDE).\n\n",
+   "tool_calls": [
+    {
+     "id": "cskpk42tb",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_25\",\"decisions\":[]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "cskpk42tb",
+   "content": "{\"plan_id\":\"case_25:P1\",\"status\":\"COMPLETE\",\"changes_vs_default\":[],\"n_steps\":2,\"steps\":[\"1. V VERIFY_RECORD_ABSENT account_3136 @evidence_92\",\"2. V VERIFY_RECORD_PRESENT audit_record_451 @evidence_92\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "qk37e4m6t",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_25\",\"plan_id\":\"case_25:P1\",\"rationale\":\"Both analytics resources lack identifiers tying them to this subject; timing (-0.48h) is identical across 5 cases (not unique); shared file evidence_92 is also shared with competing cases 24 and 26. Defaults (EXCLUDE) retained.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "qk37e4m6t",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_25:P1\",\"status\":\"COMPLETE\"}"
+  }
+ ]
+}

@@ -177,7 +177,8 @@ class Orchestrator:
         cfg = self.config.agent
         agent = CaseInvestigatorAgent(
             registry, chat=self.chat, max_tool_calls=int(cfg["max_tool_calls"]),
-            max_rejections=int(cfg["max_rejections"]), offline=self.config.no_llm,
+            max_rejections=int(cfg["max_rejections"]),
+            offline=self.config.no_llm or not self.config.agent_live or not llm.agent_chain(),
             checkpoint_dir=configmod._path(cfg["checkpoint_dir"]),
             salt=f"{self.config.tiebreak}|{self.config.dataset.name}")
         budget = cfg.get("max_agent_cases")
@@ -198,6 +199,15 @@ class Orchestrator:
             except Exception as exc:  # the deterministic plan stands
                 case.agent = {"outcome": "FALLBACK_ERROR", "error": f"{type(exc).__name__}: {exc}"}
                 tracer.emit(case.case_id, agent.name, None, "agent failed", {"error": repr(exc)})
+
+        # per-model validation gate: only models that passed the sample gate are trusted
+        accepted = cfg.get("accepted_models")
+        if accepted is not None:
+            for case in routed:
+                a = case.agent or {}
+                bad = sorted(set(a.get("models", [])) - set(accepted))
+                if a.get("outcome") == "AGENT_SUBMITTED" and bad:
+                    case.agent = {**a, "outcome": "FALLBACK_UNVALIDATED_MODEL", "unvalidated": bad}
 
         # the deterministic gate: global consistency over all submitted plans
         submitted = {c.case_id: env.plans[c.agent["plan_id"]] for c in routed

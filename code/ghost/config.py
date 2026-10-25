@@ -21,12 +21,13 @@ DEFAULTS: dict = {
     "runs_dir": "code/evaluation/runs",
     "cache_dir": "code/cache",
     "trace": True,
-    "mode": "auto",  # agent | deterministic | auto (= agent when a tool-capable key is set)
+    "mode": "auto",  # auto = offline agent replay | agent (live calls) | deterministic
     "agent": {
         "max_tool_calls": 8,
         "max_rejections": 2,
         "max_agent_cases": None,
         "only_cases": None,
+        "accepted_models": None,  # model ids whose decisions are trusted (None = every model)
         "checkpoint_dir": "code/cache/agent_runs",
         "rate_limits": {"groq": {"rpm": 25, "tpm": 7000}, "gemini": {"rpm": 10, "tpm": 250000}},
     },
@@ -80,6 +81,7 @@ class Config:
     linker: dict
     no_llm: bool = False
     mode: str = "deterministic"  # resolved: agent | deterministic
+    agent_live: bool = False  # True only for an explicit --mode agent: new model calls allowed
     agent: dict = field(default_factory=dict)
     raw: dict = field(default_factory=dict, compare=False)
 
@@ -133,22 +135,19 @@ def load_config(path: Path | str | None = None, cli: dict | None = None) -> Conf
         linker=raw["linker"],
         no_llm=bool(cli.get("no_llm", False)),
         mode=resolve_mode(str(raw["mode"]).lower()),
+        agent_live=str(raw["mode"]).lower() == "agent",
         agent=raw["agent"],
         raw=raw,
     )
 
 
 def resolve_mode(mode: str) -> str:
-    """auto -> agent when a tool-capable key (GROQ_API_KEY / GEMINI_API_KEY) is set."""
+    """auto -> agent (offline replay of the committed checkpoints; see Config.agent_live)."""
     if mode in ("agent", "deterministic"):
         return mode
     if mode != "auto":
         raise ValueError(f"unknown mode {mode!r}; expected agent, deterministic or auto")
-    from ghost import llm
-
-    llm._load_env()
-    return "agent" if any(os.environ.get(k) for k in ("GROQ_API_KEY", "GEMINI_API_KEY")) \
-        else "deterministic"
+    return "agent"
 
 
 def apply(config: Config) -> None:

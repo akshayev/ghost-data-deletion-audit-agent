@@ -1,0 +1,120 @@
+{
+ "case_id": "case_21",
+ "outcome": "AGENT_SUBMITTED",
+ "rationale": "analytics_5335 excluded: no identifiers link it to this subject; shared file evidence_92 is also shared with case_23 (not unique); timing fit -0.47h is identical across all 5 competing cases. Default EXCLUDE retained.",
+ "provider": "groq",
+ "model": "qwen/qwen3.8-27b",
+ "models": [
+  "qwen/qwen3.8-27b"
+ ],
+ "tool_calls": 5,
+ "turns": 4,
+ "rejections": 0,
+ "prompt_tokens": 8724,
+ "completion_tokens": 968,
+ "decisions": [
+  {
+   "ambiguity_id": "A1",
+   "choice": "EXCLUDE"
+  }
+ ],
+ "changes": [],
+ "plan_id": "case_21:P1",
+ "config_hash": "b238c2d64c54",
+ "replayed": false,
+ "transcript": [
+  {
+   "role": "user",
+   "content": "Audit case_21. Begin with get_case_brief and get_ambiguities."
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "8y0v1gq4a",
+     "type": "function",
+     "function": {
+      "name": "get_case_brief",
+      "arguments": "{\"case_id\":\"case_21\"}"
+     }
+    },
+    {
+     "id": "w1x1t5zyh",
+     "type": "function",
+     "function": {
+      "name": "get_ambiguities",
+      "arguments": "{\"case_id\":\"case_21\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "8y0v1gq4a",
+   "content": "{\"case_id\":\"case_21\",\"requested_at\":\"2026-09-04T12:00:00Z\",\"reported_status_CLAIM\":\"COMPLETE\",\"reported_at\":\"2026-09-05T12:00:00Z\",\"audit_at\":\"2026-09-15T12:00:00Z\",\"request_text\":\"<UNTRUSTED_CUSTOMER_TEXT>I deleted my account and received the confirmation email. Could you verify that the profile is gone and that anything retained for security is limited to what is required?</UNTRUSTED_CUSTOMER_TEXT>\",\"intake\":\"DELETION\",\"identity\":{\"user_ids\":1,\"emails\":1,\"phones\":1,\"hashes\":1,\"historical_changes\":0,\"matched_via\":\"current\"},\"linked_resources\":2,\"ambiguity_points\":1}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "w1x1t5zyh",
+   "content": "[{\"id\":\"A1\",\"kind\":\"tie_candidate\",\"resource_id\":\"analytics_5335\",\"competing_case_ids\":[\"case_23\",\"case_546\",\"case_547\",\"case_548\"],\"evidence_summary\":\"no identifier links analytics_5335 to anyone; worker event activity_3665 (ANONYMIZE_RECORD SUCCESS) is -0.47h from this case's reported_at; same fit for: case_23 -0.47h, case_546 -0.47h, case_547 -0.47h, case_548 -0.47h. Group: 1 analytics resource(s) for 5 cases; too many candidates, left unassigned (SKIP_MULTI).\",\"default\":\"EXCLUDE\",\"source\":\"skip_multi\",\"options\":[\"INCLUDE\",\"EXCLUDE\"]}]"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "r38bh0nrc",
+     "type": "function",
+     "function": {
+      "name": "inspect_resource",
+      "arguments": "{\"case_id\":\"case_21\",\"resource_id\":\"analytics_5335\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "r38bh0nrc",
+   "content": "{\"resource_id\":\"analytics_5335\",\"ambiguity_id\":\"A1\",\"observations\":[{\"file_id\":\"evidence_92\",\"captured_at\":\"2026-09-15T11:44:55+00:00\",\"copy\":\"export\",\"present\":true,\"prohibited_set\":[],\"identifiers\":\"none\"}],\"observations_after_audit_at_hidden\":1,\"files_shared_with_this_case_mandatory_resources\":[\"evidence_92\"],\"files_shared_with_competing_cases\":{\"case_23\":[\"evidence_92\"],\"case_546\":[],\"case_547\":[],\"case_548\":[]},\"activities\":[{\"id\":\"activity_3665\",\"time\":\"2026-09-05T11:31:34+00:00\",\"type\":\"ANONYMIZE_RECORD\",\"result\":\"SUCCESS\",\"offset_hours_from_reported_at\":-0.47,\"details\":\"Policy action completed for analytics_5335.\"}]}"
+  },
+  {
+   "role": "assistant",
+   "content": "The evidence shows:\n- No identifiers link analytics_5335 to this case's subject\n- The shared file (evidence_92) is also shared with case_23, so it's not unique to this case\n- The timing fit (-0.47h) is identical across all 5 competing cases\n\nNone of the criteria for INCLUDE are met. I'll keep the default EXCLUDE.\n\n",
+   "tool_calls": [
+    {
+     "id": "9d45q3gs6",
+     "type": "function",
+     "function": {
+      "name": "propose_plan",
+      "arguments": "{\"case_id\":\"case_21\",\"decisions\":[{\"ambiguity_id\":\"A1\",\"choice\":\"EXCLUDE\"}]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "9d45q3gs6",
+   "content": "{\"plan_id\":\"case_21:P1\",\"status\":\"COMPLETE\",\"changes_vs_default\":[],\"n_steps\":2,\"steps\":[\"1. V VERIFY_RECORD_ABSENT account_6440 @evidence_92\",\"2. V VERIFY_RECORD_PRESENT audit_record_3737 @evidence_92\"],\"verifier\":{\"ok\":true,\"errors\":[]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "jjr8dadvy",
+     "type": "function",
+     "function": {
+      "name": "submit_case",
+      "arguments": "{\"case_id\":\"case_21\",\"plan_id\":\"case_21:P1\",\"rationale\":\"analytics_5335 excluded: no identifiers link it to this subject; shared file evidence_92 is also shared with case_23 (not unique); timing fit -0.47h is identical across all 5 competing cases. Default EXCLUDE retained.\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "jjr8dadvy",
+   "content": "{\"accepted\":true,\"plan_id\":\"case_21:P1\",\"status\":\"COMPLETE\"}"
+  }
+ ]
+}

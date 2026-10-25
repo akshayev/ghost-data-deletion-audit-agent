@@ -357,3 +357,24 @@ branch=HEAD
 repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
 worktree=main
 parent_agent=none
+
+## [2026-10-25T09:23:25Z] P12: validated final output, reports, audit, package
+
+User Prompt (verbatim, secrets redacted):
+Decision: a model's agent decision are trusted only after it passess the sample gate; unvalidated decisions fall back. Continue logging per AGENTS.md. Spec is final: no brainstorming. Use superpowers verification-before-completion and systematic-debugging. Deadline is 18:00 IST; finish this by 15:45. Never print key values. My decisions: (1) Per-model validation gate: agent decisions count only from models that passed the sample gate. (2) The final output must be reproducible byte-for-byte from code.zip + dataset with NO API keys, using the README's main command. (3) Nothing gets submitted that the audit hasn't verified. TASK = P12: freeze, validate, finalize, audit, package. [Sections A-J: A freeze (no live agent process, checkpoint counts per model/outcome, commit code/cache); B per-model gate on the 12 routed sample cases (gpt-oss-120b reused; every other model that made a full-split decision run alone, separately checkpointed; accepted iff F1 >= 97.4% - 0.3 pp and equal status; unvalidated = not accepted; table in evaluation_report); C final output (offline replay, FALLBACK_UNVALIDATED_MODEL, FALLBACK_QUOTA, consistency check, decision rule, golden copy + sha256 + agent lock test, README main command reproduces it with no keys); D code/evaluation/validate_submission.py (15 independent checks); E reports regenerated, DECISIONS #12 OCR observations; F claims-vs-code audit -> CLAIMS_TRACE.md; G SUBMISSION_CHECKLIST.md; H zip with the given command, content and secret checks, clean-room run + pytest, sha256s; I log.txt audit; J commit "P12: validated final output, reports, audit, package", tag v1.0-submission, paste back. Full text omitted for length.]
+
+Agent Response Summary:
+Froze and committed the cache (1837fb2: 88 checkpoints). Added the per-model gate (evaluation/model_gate.py; GHOST_AGENT_CHAIN, separate reply cache and checkpoints per model): gpt-oss-120b accepted (replay, 12/12, F1 97.6%), gpt-oss-20b not accepted (quota, 0/12 answered), qwen3.8-27b not accepted (8/12 answered, 4 hit the quota). The default mode became an offline agent replay, so the README command reproduces output.csv (sha256 aac6bed1...) with no keys: 39 accepted agent decisions, 37 FALLBACK_UNVALIDATED_MODEL, 176 FALLBACK_QUOTA, 7 rows changed, all inside ambiguity points. Debugged three clean-room failures to root cause: PyPI unreachable here (fresh venv built from uv's offline cache instead), pytest path config only in the unshipped pyproject.toml (added code/pytest.ini), and the validator reading the unshipped problem_statement.md (shipped a verbatim copy of its table plus a match test).
+
+Actions:
+* git commit 1837fb2 (cache freeze); wrote code/evaluation/{model_gate,validate_submission,audit_log,cleanroom,submission_checklist}.py, code/docs/CLAIMS_TRACE.md, code/docs/SUBMISSION_CHECKLIST.md, code/evaluation/allowed_operations.md, code/pytest.ini, code/requirements.txt, tests (test_validate_submission, test_claims_trace, gate/mode tests)
+* edited ghost/{llm,config,orchestrator,explain}.py, agents/case_investigator.py, config.yaml (accepted_models), templates; live gate runs for gpt-oss-20b and qwen3.8-27b; final output via python code/main.py run --split full; golden output_full_agent.csv + SHA256SUMS
+* pytest (374 passed), ruff, validate_submission 15/15, clean room (fresh venv, no keys) byte-identical + 373 passed / 2 skipped, checklist 43/43
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=HEAD
+repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
+worktree=main
+parent_agent=none

@@ -374,16 +374,23 @@ def groq_extra_models() -> list[str]:
     return [m.strip() for m in os.getenv(GROQ_EXTRA_ENV, "").split(",") if m.strip()]
 
 
+CHAIN_ENV = "GHOST_AGENT_CHAIN"  # "provider:model,..." replaces the chain (model gate runs)
+
+
 def agent_chain() -> list[tuple[str, str]]:
     """groq:GROQ_MODEL -> groq:GROQ_FALLBACK_MODEL -> groq:GROQ_EXTRA_MODELS -> gemini:GEMINI_MODEL
-    (key and model set; duplicates dropped)."""
+    (key and model set; duplicates dropped). GHOST_AGENT_CHAIN replaces the whole chain."""
     _load_env()
-    candidates = [("groq", os.getenv("GROQ_MODEL")), ("groq", os.getenv(GROQ_FALLBACK_ENV))]
-    candidates += [("groq", m) for m in groq_extra_models()]
-    candidates.append(("gemini", PROVIDERS["gemini"].model))
+    if os.getenv(CHAIN_ENV):
+        candidates = [tuple(part.strip().split(":", 1)) for part in
+                      os.environ[CHAIN_ENV].split(",") if ":" in part]
+    else:
+        candidates = [("groq", os.getenv("GROQ_MODEL")), ("groq", os.getenv(GROQ_FALLBACK_ENV))]
+        candidates += [("groq", m) for m in groq_extra_models()]
+        candidates.append(("gemini", PROVIDERS["gemini"].model))
     out = []
     for name, model in candidates:
-        if model and PROVIDERS[name].has_key and (name, model) not in out:
+        if name in PROVIDERS and model and PROVIDERS[name].has_key and (name, model) not in out:
             out.append((name, model))
     return out
 

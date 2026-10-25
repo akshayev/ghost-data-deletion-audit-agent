@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "ccf3f41f20c1cb803dadeb0c936cb6365d595db525674c1e5f33b5fcf9480e85",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_23",
+    "turn": 4
+  },
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "message": {
+    "content": "The plan passed the verifier. Submitting the case.\n\n",
+    "tool_calls": [
+      {
+        "id": "ra2czfzt5",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_23\",\"plan_id\":\"case_23:P1\",\"rationale\":\"All four tie candidates kept default EXCLUDE: no identifiers link them to this subject; A1–A3 have no shared files and equal timing with competing cases; A4 shares evidence_92 with case_21 as well, so not unique to this case.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 3854,
+    "completion_tokens": 151
+  }
+}

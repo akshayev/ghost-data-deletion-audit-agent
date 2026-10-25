@@ -1,0 +1,25 @@
+{
+  "request": {
+    "purpose": "case_agent",
+    "messages_sha256": "48a696f0d96acd1e23fa25c3bef28596bf2472cf62ca57c9b5dfe509b3c1f96e",
+    "tools_sha256": "0aa4e3f95566b05ea8f8be4cb06aa69f3fc20433fdf8be813fc38ae98b83bdc0",
+    "case_id": "case_21",
+    "turn": 4
+  },
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "message": {
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "jjr8dadvy",
+        "name": "submit_case",
+        "arguments": "{\"case_id\":\"case_21\",\"plan_id\":\"case_21:P1\",\"rationale\":\"analytics_5335 excluded: no identifiers link it to this subject; shared file evidence_92 is also shared with case_23 (not unique); timing fit -0.47h is identical across all 5 competing cases. Default EXCLUDE retained.\"}"
+      }
+    ]
+  },
+  "usage": {
+    "prompt_tokens": 2625,
+    "completion_tokens": 136
+  }
+}

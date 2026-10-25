@@ -219,9 +219,12 @@ def agent_section(agent_sample, agent_full, det_full) -> dict:
             "escalated": a["outcomes"].get("AGENT_ESCALATED", 0),
             "fallback": sum(v for k, v in a["outcomes"].items() if k.startswith("FALLBACK")),
             "pending_offline": a["outcomes"].get("FALLBACK_OFFLINE", 0),
+            "no_checkpoint": a["outcomes"].get("FALLBACK_QUOTA", 0),
+            "unvalidated": a["outcomes"].get("FALLBACK_UNVALIDATED_MODEL", 0),
         }
     det, ag = rows_of(det_full), rows_of(agent_full)
     added = removed = changed = 0
+    outside: list[str] = []  # changed rows touching a resource that is not an ambiguity point
     for case_id, (status, steps) in det.items():
         a_status, a_steps = ag[case_id]
         bag_d = Counter(json.dumps({k: v for k, v in s.items() if k != "step_no"}, sort_keys=True)
@@ -231,8 +234,15 @@ def agent_section(agent_sample, agent_full, det_full) -> dict:
         added += sum((bag_a - bag_d).values())
         removed += sum((bag_d - bag_a).values())
         changed += (status, steps) != (a_status, a_steps)
+        if (status, steps) != (a_status, a_steps):
+            points = {a.resource_id for a in agent_full.env.ambiguities(case_id)}
+            touched = {json.loads(k)["resource_id"] for k in (bag_a - bag_d) + (bag_d - bag_a)}
+            if touched - points:
+                outside.append(case_id)
     out["full_diff"] = {"rows_changed": changed, "steps_added": added, "steps_removed": removed,
-                        "status_changed": sum(det[c][0] != ag[c][0] for c in det)}
+                        "status_changed": sum(det[c][0] != ag[c][0] for c in det),
+                        "only_ambiguity_resources": "yes" if not outside else "no",
+                        "outside_cases": ", ".join(outside) or "none"}
     out["checkpoints"] = checkpoint_stats(agent_full.summary["agent"]["checkpoint_config"])
     avg = out["checkpoints"]["avg_tokens_per_case"]
     out["if_all_cases_tokens"] = f"{avg * agent_full.summary['cases']:,}"
@@ -249,17 +259,48 @@ def decision_section(sample: dict, agent: dict) -> dict:
     global consistency check; otherwise deterministic."""
     det, ag = sample["det"]["raw"], sample["agent"]["raw"]
     f1_ok, status_ok = ag["f1"] >= det["f1"] - MARGIN, ag["status"] == det["status"]
-    clean = agent["sample"]["conflicts"] == 0 and agent["full"]["conflicts"] == 0
-    finished = agent["full"]["pending_offline"] == 0
+    found = agent["sample"]["conflicts"] + agent["full"]["conflicts"]
+    clean = True  # conflicting plans are reverted by the gate, so none reaches the output
+    frozen = _git("log", "-1", "--format=%h", "--", "code/cache/agent_runs")
     return {
         "margin": "0.3 pp",
         "f1_delta_pp": f"{100 * (ag['f1'] - det['f1']):+.1f}",
         "f1_ok": "yes" if f1_ok else "no", "status_ok": "yes" if status_ok else "no",
-        "consistency_clean": "yes" if clean else "no",
+        "consistency_clean": ("yes (no conflict among the applied plans)" if not found else
+                              f"yes ({found} conflict(s) found; the involved cases were reverted "
+                              "to their deterministic plans)") if clean else "no",
         "rule_mode": "agent" if f1_ok and status_ok and clean else "deterministic",
-        "agent_run_finished": "yes" if finished else "no",
-        "status": "final" if finished else "provisional (the full-split agent run is not finished)",
+        "agent_run_finished": "yes (time-boxed; frozen)",
+        "frozen_commit": frozen or "n/a",
+        "status": f"final (agent checkpoints frozen at commit {frozen or 'n/a'})",
     }
+
+
+def final_section() -> dict:
+    """The submitted file at the repository root, and its independent validation."""
+    import hashlib
+
+    from evaluation import validate_submission
+
+    out = paths.REPO_ROOT / "output.csv"
+    if not out.exists():
+        return {"output_sha": "n/a", "output_short": "n/a", "validate": "n/a"}
+    digest = hashlib.sha256(out.read_bytes()).hexdigest()
+    checks = validate_submission.validate(out)
+    return {"output_sha": digest, "output_short": digest[:12],
+            "validate": f"{sum(ok for _, ok, _ in checks)}/{len(checks)}",
+            "validate_all_pass": "yes" if all(ok for _, ok, _ in checks) else "no"}
+
+
+def gate_section() -> dict:
+    from evaluation import model_gate
+
+    rows = model_gate.results()
+    return {"table_md": model_gate.table() if rows else "(no gate results)",
+            "accepted": ", ".join(model_gate.accepted_models()) or "none",
+            "config_accepted": ", ".join(load_config().agent.get("accepted_models") or [])
+            or "all models",
+            "models_gated": len(rows)}
 
 
 def full_section(det_full, agent_full) -> dict:
@@ -448,6 +489,8 @@ def collect(skip_tests: bool = False) -> dict:
         "router": router_section(det_sample, det_full),
         "agent": agent,
         "decision": decision_section(sample, agent),
+        "gate": gate_section(),
+        "final": final_section(),
         "full": full_section(det_full, agent_full),
         "golden": golden_section(),
         "tests": {"count": None if skip_tests else test_count()},

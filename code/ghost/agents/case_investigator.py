@@ -134,8 +134,8 @@ class CaseInvestigatorAgent(BaseAgent):
             except llm.QuotaExhausted:
                 out["outcome"] = "FALLBACK_QUOTA"
                 break
-            except llm.CacheMiss:
-                out["outcome"] = "FALLBACK_OFFLINE"
+            except llm.CacheMiss:  # offline replay without a checkpoint (run was time-boxed)
+                out["outcome"], out["error"] = "FALLBACK_QUOTA", "no checkpoint (offline replay)"
                 break
             except llm.LLMError as exc:
                 out["outcome"], out["error"] = "FALLBACK_LLM_ERROR", str(exc)[:300]

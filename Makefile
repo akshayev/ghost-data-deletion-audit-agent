@@ -8,7 +8,7 @@ help:  ## list the targets
 
 setup:  ## create .venv and install requirements
 	python -m venv .venv
-	.venv/bin/pip install -r requirements.txt
+	.venv/bin/pip install -r code/requirements.txt
 
 run:  ## full split -> output.csv (agent mode when a GROQ/GEMINI key is set, else deterministic)
 	$(PY) code/main.py run --split full
@@ -37,5 +37,5 @@ reports:  ## numbers -> usage report -> render README / ARCHITECTURE / DECISIONS
 	$(PY) code/evaluation/usage_report.py
 	$(PY) code/docs/render.py
 
-package:  ## build code.zip (README, requirements, code/ without runs, .env, dataset or log)
-	$(PY) code/package.py
+package:  ## build code.zip with the submission zip command, then the clean-room check
+	$(PY) code/evaluation/cleanroom.py

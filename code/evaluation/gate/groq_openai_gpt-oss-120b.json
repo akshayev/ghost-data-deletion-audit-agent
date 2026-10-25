@@ -1,0 +1,25 @@
+{
+  "model": "openai/gpt-oss-120b",
+  "provider": "groq",
+  "how": "replay",
+  "routed": 12,
+  "outcomes": {
+    "AGENT_SUBMITTED": 12
+  },
+  "deterministic": {
+    "step_f1": 0.9738219895287958,
+    "precision": 0.9841269841269841,
+    "recall": 0.9637305699481865,
+    "status": 1.0
+  },
+  "agent": {
+    "step_f1": 0.9761273209549072,
+    "precision": 1.0,
+    "recall": 0.9533678756476683,
+    "status": 1.0
+  },
+  "accepted": true,
+  "reasons": [],
+  "tokens": {},
+  "generated_at": "2026-10-25 08:51 UTC"
+}

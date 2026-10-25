@@ -132,8 +132,12 @@ def _agent_lines(agent: dict | None, route: str, reasons: tuple) -> list[str]:
            + (f"; {agent.get('tool_calls', 0)} tool calls, {agent.get('rejections', 0)} "
               f"rejections" if "tool_calls" in agent else "")
            + ("; replayed from a checkpoint" if agent.get("replayed") else "")]
-    if agent.get("outcome") == "FALLBACK_OFFLINE":
-        out.append("no agent answer is cached for this case: the deterministic plan is used.")
+    if agent.get("outcome") == "FALLBACK_QUOTA":
+        out.append("no agent answer exists for this case (the time-boxed run did not reach it "
+                   "or the quota ran out): the deterministic plan is used.")
+    if agent.get("outcome") == "FALLBACK_UNVALIDATED_MODEL":
+        out.append(f"the answer came from {', '.join(agent.get('unvalidated', []))}, which did "
+                   "not pass the sample gate: the deterministic plan is used.")
     results = {m.get("tool_call_id"): m["content"] for m in agent.get("transcript", ())
                if m.get("role") == "tool"}
     for m in agent.get("transcript", ()):

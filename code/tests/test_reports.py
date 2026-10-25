@@ -106,3 +106,18 @@ def test_package_writes_a_zip_with_the_same_files(tmp_path):
     with zipfile.ZipFile(out) as z:
         names = set(z.namelist())
     assert names == {p.as_posix() for p in package.select_files(REPO)}
+
+
+def test_code_requirements_match_the_root_list():
+    root = REPO / "requirements.txt"
+    if root.exists():  # code.zip ships only code/requirements.txt
+        assert (REPO / "code" / "requirements.txt").read_text() == root.read_text()
+
+
+def test_accepted_models_in_config_are_exactly_the_models_that_passed_the_gate():
+    from evaluation import model_gate
+    from ghost.config import load_config
+
+    if not model_gate.results():
+        pytest.skip("no gate results")
+    assert sorted(load_config().agent["accepted_models"]) == model_gate.accepted_models()

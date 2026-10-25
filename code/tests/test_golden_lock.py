@@ -43,12 +43,11 @@ AGENT_GOLDEN = GOLDEN / "output_full_agent.csv"
 
 @pytest.mark.skipif(not AGENT_GOLDEN.exists(), reason="agent mode not chosen for the submission")
 def test_agent_mode_output_replays_byte_identical_from_checkpoints(tmp_path):
-    """The submitted output.csv came from agent mode: replaying it from the committed
-    checkpoints and caches (--no-llm: no network) must reproduce it exactly."""
+    """The submitted output.csv came from agent mode: the README command (default mode =
+    offline replay of the committed checkpoints and caches) must reproduce it exactly."""
     out = tmp_path / "output_full_agent.csv"
     done = subprocess.run(
-        [sys.executable, str(paths.CODE / "main.py"), "--split", "full", "--no-llm",
-         "--mode", "agent", "--out", str(out)],
+        [sys.executable, str(paths.CODE / "main.py"), "run", "--split", "full", "--out", str(out)],
         capture_output=True, text=True, cwd=paths.REPO_ROOT,
     )
     assert done.returncode == 0, done.stderr
