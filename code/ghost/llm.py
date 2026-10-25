@@ -310,6 +310,7 @@ def chat(
 # ---------------------------------------------------------------------------
 
 GROQ_FALLBACK_ENV = "GROQ_FALLBACK_MODEL"
+GROQ_EXTRA_ENV = "GROQ_EXTRA_MODELS"  # optional, comma-separated groq model ids
 # (provider, model) -> requests/min and tokens/min (sliding 60 s window); config can override
 RATE_LIMITS: dict[str, tuple[int, int]] = {"groq": (25, 7000), "gemini": (10, 250_000)}
 RATE_TRIES = 4  # 429 retries per model before moving on
@@ -369,12 +370,19 @@ def _limiter(provider: str, model: str) -> RateLimiter:
     return LIMITERS[(provider, model)]
 
 
+def groq_extra_models() -> list[str]:
+    return [m.strip() for m in os.getenv(GROQ_EXTRA_ENV, "").split(",") if m.strip()]
+
+
 def agent_chain() -> list[tuple[str, str]]:
-    """groq:GROQ_MODEL -> groq:GROQ_FALLBACK_MODEL -> gemini:GEMINI_MODEL (key and model set)."""
+    """groq:GROQ_MODEL -> groq:GROQ_FALLBACK_MODEL -> groq:GROQ_EXTRA_MODELS -> gemini:GEMINI_MODEL
+    (key and model set; duplicates dropped)."""
     _load_env()
+    candidates = [("groq", os.getenv("GROQ_MODEL")), ("groq", os.getenv(GROQ_FALLBACK_ENV))]
+    candidates += [("groq", m) for m in groq_extra_models()]
+    candidates.append(("gemini", PROVIDERS["gemini"].model))
     out = []
-    for name, model in (("groq", os.getenv("GROQ_MODEL")), ("groq", os.getenv(GROQ_FALLBACK_ENV)),
-                        ("gemini", PROVIDERS["gemini"].model)):
+    for name, model in candidates:
         if model and PROVIDERS[name].has_key and (name, model) not in out:
             out.append((name, model))
     return out
@@ -608,6 +616,8 @@ def check() -> int:
             continue
         configured = [m for m in (p.model, os.getenv(GROQ_FALLBACK_ENV) if p.name == "groq"
                                   else None) if m]
+        if p.name == "groq":
+            configured += groq_extra_models()
         for model in configured:
             warning = model_warning(model, ids)
             print(f"{p.name} configured model {model}: {warning or 'listed'}")

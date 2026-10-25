@@ -89,6 +89,12 @@ def test_default_chain_is_groq_big_then_groq_small_then_gemini(env):
     assert llm.agent_chain() == [("groq", "big"), ("groq", "small"), ("gemini", "gem")]
 
 
+def test_extra_groq_models_sit_between_fallback_and_gemini_deduplicated(env, monkeypatch):
+    monkeypatch.setenv("GROQ_EXTRA_MODELS", " x1, small ,x2,,x1 ")
+    assert llm.agent_chain() == [("groq", "big"), ("groq", "small"), ("groq", "x1"),
+                                 ("groq", "x2"), ("gemini", "gem")]
+
+
 def test_tool_call_is_parsed_and_logged_with_case_and_turn(env, monkeypatch):
     big = FakeClient([reply(model="big")])
     install(monkeypatch, {"big": big})
