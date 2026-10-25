@@ -32,3 +32,14 @@ linker:
   learn_range_hours: 6.0         # worker events farther than this from reported_at never teach a window
   window_pad_hours: 0.1          # padding around each learned window
   default_window: [-1.5, 2.5]    # window for templates with no learned samples
+
+# Price list used by evaluation/usage_report.py (USD per 1M tokens). Free-tier calls cost $0 in
+# reality; the report also shows what the same tokens would cost at these list prices.
+pricing:
+  source: provider list prices, retrieved 2026-10-25
+  date: "2026-10-25"
+  models:
+    "groq:openai/gpt-oss-120b": {input: 0.15, output: 0.60}
+    "groq:openai/gpt-oss-20b": {input: 0.07, output: 0.30}
+    "gemini:gemini-3.8-flash": {input: 0.75, output: 3.75}
+    "gemini:gemini-3.5-flash": {input: 1.50, output: 9.00}

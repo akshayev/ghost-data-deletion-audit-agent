@@ -296,3 +296,64 @@ branch=main
 repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
 worktree=main
 parent_agent=none
+
+## [2026-10-25T06:12:10Z] P9b decision recorded: confidence routing to Groq agent
+
+User Prompt (verbatim, secrets redacted):
+Decision: routing only ambiguous cases to the Groq agent, because the free quota is 200K tokens/day per model and the deterministic engine is already 100% on evidence-backed records.
+
+Agent Response Summary:
+Confirmed the decision matches what is being built: RouterAgent sends only cases with open linking decisions (tie_break, tie_lost, skip_multi, identity_conflict) to the CaseInvestigatorAgent; all others take the deterministic fast path. Clarified that the "100%" is the oracle-links measurement (state/policy/planner exact on all 32 samples given gold links), so the remaining sample error is linking, which is what the agent targets. Noted the budget consequence: ~8K tokens per agent case means roughly 25 cases per Groq model per day versus 252 routed full-split cases, so most full-split routed cases will end as FALLBACK_QUOTA (deterministic). Sample agent run still in progress.
+
+Actions:
+* none (decision acknowledged; background sample agent run continues)
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=HEAD
+repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
+worktree=main
+parent_agent=none
+
+## [2026-10-25T12:48:34+05:30] Add GROQ_EXTRA_MODELS to agent chain
+
+User Prompt (verbatim, secrets redacted):
+Small change, do not stop the background agent run. Add support for an optional env var GROQ_EXTRA_MODELS (comma-separated groq model ids) appended to the agent chain after GROQ_FALLBACK_MODEL and before gemini, deduplicated. Add a unit test for the chain order. Run `python -m ghost.llm --check` and report whether qwen/qwen3.8-27b passes the tool-call round trip. If it fails, remove it from the chain and tell me; do not add any other provider. When the current background run ends (quota or completion), relaunch the full-split agent run so it resumes from the checkpoints with the extended chain. It must keep the 15:00 IST stop time. Commit "agent chain: optional extra groq models".
+
+Agent Response Summary:
+Added groq_extra_models() and extended agent_chain() in ghost/llm.py, plus a chain-order test; --check shows qwen/qwen3.8-27b passes the tool-call round trip so it stays. Committed 652ff71. Started a background watcher that relaunches the full-split agent run under a timeout ending at 15:00 IST once the current run exits.
+
+Actions:
+* edited code/ghost/llm.py, code/tests/test_llm_tools.py
+* ran pytest, python -m ghost.llm --check, git commit
+* launched background relaunch watcher
+
+Context:
+tool=Claude Code
+model=claude-sonnet-5-5
+branch=main
+repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
+worktree=main
+parent_agent=none
+
+## [2026-10-25T07:27:58Z] P11: docs, report generators, Makefile, explain
+
+User Prompt (verbatim, secrets redacted):
+Continue logging per AGENTS.md. Spec is final: no brainstorming. Use superpowers verification-before-completion. The background full-split agent run keeps going; do NOT stop it, do NOT regenerate output.csv, and do NOT touch code/cache/agent_runs/. My decision: the full agent run is time-boxed. It stops at 15:00 IST or when the Groq daily quota is exhausted. Unfinished routed cases use FALLBACK_QUOTA (deterministic default). Final numbers are filled in P12, so every number in the docs comes from a generator script, never typed by hand. TASK = P11: documentation + report generators. [Sections 1-8: code/evaluation/report_numbers.py -> numbers.json and code/docs/render.py ({{key}} templates, test that no rendered .md contains the placeholder marker); code/evaluation/usage_report.py + config.yaml pricing (4 models, USD per 1M tokens, dated 2026-10-25), sections (a)-(d); README.md with 13 ordered sections incl. two Mermaid diagrams and the AI-use table; code/docs/ARCHITECTURE.md; code/docs/DECISIONS.md (19 decisions with Evidence / Alternatives / Where in code); code/evaluation/evaluation_report.md (rubric-complete); Makefile targets; explain command tested on case_05 and case_11. Finish: pytest, ruff, render with current (provisional) numbers, commit "P11: docs (README, ARCHITECTURE, DECISIONS), report generators, Makefile, explain"; paste back README, DECISIONS headings, explain case_11, usage_report (provisional), agent-run progress.] Earlier notes in the same message: build on the P9 architecture; golden lock stays byte-identical via --mode deterministic; stop appending cache-hit lines to usage_ledger.jsonl (done in P9b).
+
+Agent Response Summary:
+Committed the pending P9b code first (8c3f71d), then built the generators: report_numbers.py runs the pipeline offline (deterministic, agent replay, oracle), the custom cases, tie-break study, ledger and checkpoints (read-only) into numbers.json; render.py fills {{key}} templates strictly (a missing or non-scalar key aborts, nothing is written); usage_report.py prices the ledger from config.yaml. Wrote README, ARCHITECTURE, DECISIONS and evaluation_report templates, a Makefile, package.py and the explain command (ghost/explain.py). Verified in a fresh unzip with no keys and no .env: the deterministic run reproduces the golden sha256 and agent mode replays the checkpoints. One concurrent change by the user (GROQ_EXTRA_MODELS, commit 652ff71) leaked through the real .env into the full test run; fixed with a one-line delenv in the test fixture. The live agent run was not touched; it moved from gpt-oss-120b to gpt-oss-20b during this turn.
+
+Actions:
+* git commit 8c3f71d (P9b code); wrote code/evaluation/{report_numbers,usage_report}.py, code/docs/render.py, code/ghost/explain.py, code/package.py, code/tests/{test_reports,test_explain}.py, Makefile, .env.example, README.md.tmpl, code/docs/{ARCHITECTURE,DECISIONS}.md.tmpl, code/evaluation/evaluation_report.md.tmpl
+* git mv evaluation_report.md -> metrics_history.md (raw eval log); edited config.yaml (pricing), main.py (explain), evaluation/main.py, tests
+* pytest (349 passed, 1 skipped), ruff, fresh-unzip run (no keys), explain case_05/case_11/case_25; did not touch code/cache/agent_runs
+
+Context:
+tool=Claude Code
+model=claude-sonnet-5-5
+branch=HEAD
+repo_root=/home/akshay/Downloads/hackerrank-hackathon/hackerrank-orchestrate-october26-main
+worktree=main
+parent_agent=none

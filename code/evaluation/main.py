@@ -6,7 +6,7 @@
     python code/evaluation/main.py --oracle-links  # gold resource ids instead of the linker
 
 Sample answers are read only here; nothing in code/ghost imports from this module.
-Writes code/evaluation/latest_metrics.md, appends a row to evaluation_report.md and prints
+Writes code/evaluation/latest_metrics.md, appends a row to metrics_history.md and prints
 a short summary.
 """
 
@@ -31,7 +31,7 @@ from ghost.serialize import STATUSES, write_output  # noqa: E402
 GOLD = paths.DATASET / "sample_output.csv"
 METRICS_MD = paths.EVALUATION / "latest_metrics.md"
 SAMPLE_PRED = paths.EVAL_RUNS / "sample_output_pred.csv"
-EVAL_REPORT = paths.EVALUATION / "evaluation_report.md"
+EVAL_REPORT = paths.EVALUATION / "metrics_history.md"  # raw log; evaluation_report.md is rendered
 CUSTOM_DIR = paths.EVALUATION / "custom_cases"
 
 FULL_FIELDS = ("phase", "system_id", "resource_id", "operation", "state", "evidence_id")

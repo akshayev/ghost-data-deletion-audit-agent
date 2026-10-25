@@ -1,0 +1,140 @@
+# Design decisions
+
+Each entry: the decision, the evidence behind it, what was rejected and why, and where it lives. Figures are generated (`code/evaluation/runs/numbers.json`, {{generated_at}}); statements about dataset behavior that predate this file are verified facts recorded in [FINDINGS.md](FINDINGS.md).
+
+## 1. Deterministic core, narrow LLM
+
+- **Decision.** Matching, state reconstruction, policy, planning, ordering and serialization are plain Python. Models do three things only: label request intent, transcribe screenshots, and choose between link sets at open ambiguity points.
+- **Evidence.** Given the correct resource links, the deterministic stages reproduce every sample row: oracle-links step F1 {{sample.oracle.step_f1}}, sequence exact {{sample.oracle.seq_exact}}. All remaining sample error is linking (see the taxonomy in [evaluation_report.md](../evaluation/evaluation_report.md)). A deterministic full run takes {{wall.det_full_seconds}} s and is byte-reproducible (golden sha256 `{{golden.output_full.short}}`).
+- **Rejected.** One LLM call per case that writes the whole answer: not reproducible, cannot be gated against the output contract, and at about {{agent.checkpoints.avg_tokens_per_case}} tokens per routed case it would need about {{agent.if_all_cases_tokens}} tokens for all {{full.cases}} cases. Rules only: they handle the labels (see entry 15) but cannot read screenshots or arbitrate ties.
+- **Where.** `ghost/` domain modules; `ghost/orchestrator.py`; model calls only in `classifier.llm_labels`, `parsers/images.py`, `agents/case_investigator.py` (all through `ghost/llm.py`).
+
+## 2. Confidence routing
+
+- **Decision.** Only cases with an open linking decision (a tie-broken link, a candidate lost in a tie, a candidate left unassigned by `SKIP_MULTI`, an identity conflict) go to the LLM case agent; the rest take the deterministic fast path; non-deletion requests never enter the agent.
+- **Evidence.** {{router.full.agent}} of {{router.full.cases}} full-split cases are routed ({{router.full.fast}} fast, {{router.full.not_deletion}} of those non-deletion); reasons: tie_break {{router.full.reasons.tie_break}}, tie_lost {{router.full.reasons.tie_lost}}, skip_multi {{router.full.reasons.skip_multi}}, identity_conflict {{router.full.reasons.identity_conflict}}. On the sample, {{router.sample.agent}} of {{router.sample.cases}} are routed. Free-tier budgets make an all-cases agent infeasible (see [usage_report.md](../evaluation/usage_report.md)).
+- **Rejected.** Agent on every case: roughly {{agent.if_all_cases_tokens}} tokens, spent mostly on cases with nothing to decide. Routing by a score threshold: there is no calibrated score; the open decisions are exact and enumerable.
+- **Where.** `agents/router.py:route_case`; `ambiguity.py:case_ambiguities`; `linker.py` `tie_records`.
+
+## 3. Worker action type decides the treatment
+
+- **Decision.** The required treatment of a resource comes first from the deletion worker's action on it (DELETE, ANONYMIZE, REDACT, RETAIN, DISABLE_DATA_FLOW, BLOCK_RESTORE), then the ledger record type mapped through `deletion_rules.csv`, then the evidence shape, then the resource-type default.
+- **Evidence.** Treatment source on the full split: {{policy.full_sources.worker}} worker, {{policy.full_sources.ledger}} ledger, {{policy.full_sources.shape}} shape, {{policy.full_sources.prefix}} prefix default ({{policy.full_worker_share}} from the worker). On the sample: {{policy.sample_sources.worker}} worker, {{policy.sample_sources.ledger}} ledger, {{policy.sample_sources.shape}} shape, {{policy.sample_sources.prefix}} prefix; with correct links every sample treatment matches ({{sample.oracle.step_f1}} step F1). The prefix default alone is wrong for an analytics record whose worker action was DELETE (`tests/test_planner.py::test_case_12_worker_delete_beats_analytics_default`).
+- **Rejected.** Prefix defaults only (misclassifies such records); asking a model which treatment applies (the worker's action is a direct, checkable signal).
+- **Where.** `policy.py:_worker_action`, `policy.py:treatment`.
+
+## 4. Evidence citation rule
+
+- **Decision.** A finding cites the capture that shows the violation. A COMPLETE verification cites the resource's own latest capture at or before `audit_at`; if there is none, the latest file at or before `audit_at` that listed the resource's whole system (a complete coverage), skipping snapshots with no observations.
+- **Evidence.** Across the COMPLETE cases' verification steps: {{policy.citation.decisive}} cite a decisive capture and {{policy.citation.coverage}} a coverage listing. Sample cases whose records no file mentions cite the last populated listing, not the later empty inventory snapshot, which never proves anything (FINDINGS §6).
+- **Rejected.** Citing the latest file overall (breaks the time rule and cites empty snapshots); omitting verification steps with no direct capture (changes the plan shape).
+- **Where.** `planner.py:citation`, `planner.py:_coverage_index`.
+
+## 5. Later evidence may link a resource but never decide its state
+
+- **Decision.** Key links use every capture; state and citations use only captures at or before `audit_at`.
+- **Evidence.** In the sample, case_26 has a later capture showing an account ACTIVE after `audit_at`; the expected answer is COMPLETE (`tests/test_planner.py::test_case_26_complete_ignores_later_evidence`). On the full split {{linker.blind.only_after_audit}} linked resources are seen only after `audit_at`, and {{linker.blind.later_violation}} of those would look like violations in the later file: they are treated as compliant because nothing at or before `audit_at` says otherwise.
+- **Rejected.** Using the latest evidence (fails case_26 and the task's time contract); ignoring later evidence for linking too (loses links).
+- **Where.** `state.py:resource_state`; `linker.py:_key_links`.
+
+## 6. Query keys are not exposure
+
+- **Decision.** Identifier fields that are the search itself (`lookup_key`, `subject_key`, `match_key`, `correlation_key`) do not count as prohibited identifiers still present in a record.
+- **Evidence.** case_03: a lookup with a null `lookup_key` and a result line must not produce an exposure finding (`tests/test_planner.py::test_case_03_null_lookup_key_is_not_exposure`, `::test_query_key_alone_is_not_exposure`).
+- **Rejected.** Treating any non-null identifier-like field as exposure: produces false REPORT_EXPOSED_PII findings on lookups.
+- **Where.** `policy.py:prohibited`.
+
+## 7. Worker windows are learned from unambiguous links, not labels
+
+- **Decision.** For each activity template (event type + the first 40 characters with resource ids masked), the time window relative to `reported_at` is learned from worker events on resources already linked by keys, padded by 0.1 h; templates with no samples use the default window.
+- **Evidence.** {{linker.windows}} templates; for example the "submitted primary profile" event falls in {{policy.submitted_window}}. No sample answer is used: the windows come from identifier-linked resources, so the method applies unchanged to hidden cases.
+- **Rejected.** A fixed global window (too wide, many more ties); fitting windows to `sample_output.csv` (forbidden by the rules and would not generalize).
+- **Where.** `linker.py:_learn_windows`, `linker.py:in_window`; constants in `config.yaml` (`linker:`).
+
+## 8. Status mapping for account events
+
+- **Decision.** The worker's "submitted primary profile" `reported_result` must agree with the case's `reported_status` (COMPLETE→SUCCESS, NOT_STARTED→FAILED, PARTIALLY_COMPLETE→PARTIAL) for the account to be a candidate for that case.
+- **Evidence.** It is what keeps a FAILED-result account (account_7015) out of case_21 (FINDINGS §4). This uses the claim only to match events to cases; the claim never decides state.
+- **Rejected.** Ignoring the result (more window collisions among accounts).
+- **Where.** `linker.py:STATUS_RESULT`, `linker.py:_compatible`.
+
+## 9. Global assignment with `SKIP_MULTI`
+
+- **Decision.** Identifier-less worker resources are assigned to cases globally over both splits, by elimination; unresolved ties are broken in order for two candidates and left unassigned for three or more (`SKIP_MULTI`). Every tie group is recorded and later offered to the case agent as an ambiguity.
+- **Evidence** (measured on the sample, full-split columns against `ORDER`):
+
+{{tiebreak.table_md}}
+
+  `SKIP_MULTI` has the best sample step F1 ({{tiebreak.rows.SKIP_MULTI.step_f1}} vs {{tiebreak.rows.ORDER.step_f1}} for `ORDER`) and guesses {{tiebreak.rows.SKIP_MULTI.ties_full}} assignments on the full split instead of {{tiebreak.rows.ORDER.ties_full}}; `REQUESTED` ({{tiebreak.rows.REQUESTED.ties_sample_correct}} of {{tiebreak.rows.REQUESTED.ties_sample}} sample ties right) shows request order carries no signal.
+- **Rejected.** `ORDER` (more guesses), `SKIP_ALL` (loses recall), `REQUESTED`.
+- **Where.** `linker.py:_assign_workers`, `linker.py:TIEBREAKS`; `evaluation/tiebreak_report.py`.
+
+## 10. The stale filter
+
+- **Decision.** A linked resource is dropped when every observation of it predates the request and no worker event of the case's windows touches it; resources with no observation at all are never dropped as stale.
+- **Evidence.** The second clause is a fix: the first version was vacuously true for a resource with no observations and dropped legitimate propagation targets (see the failures list in the evaluation report).
+- **Rejected.** No filter (old leftover records of the same user would be reported for the wrong request).
+- **Where.** `linker.py:_stale`.
+
+## 11. Propagation as insurance
+
+- **Decision.** The target of a "repopulated downstream resource" sync/restore event is linked to a case when the event's source is linked to it, the event is at or before `audit_at`, and the target is not owned by another known user; state is still decided by evidence only.
+- **Evidence.** On the full split {{linker.propagation.sources}} such events have a linked source and in {{linker.propagation.already}} the target was already linked, so no output changes today. It is kept for hidden cases where the target is observed nowhere else.
+- **Rejected.** Dropping it (zero effect now, but a silent gap for unseen data); two-hop propagation (no evidence it is needed).
+- **Where.** `linker.py:_propagate`.
+
+## 12. Vision over OCR for screenshots
+
+- **Decision.** The {{evidence.families_md}} evidence mix includes PNG admin screens; a vision model transcribes each screen once into structured rows, detail panels and an activity feed, cached forever.
+- **Evidence.** The same resource appears as a table row and a panel, and the panel often carries fields the row lacks (for example a backup's account email in evidence_32); this needs structure, not text lines. Output is guarded: ids must match the resource-id regex (non-resource ids such as order refs are dropped), and emails within two edits of a known identity email are flagged as possible misreads (`images.suspect_match`, `MAX_EMAIL_EDITS`).
+- **Rejected.** OCR as the primary path: it keeps no row/panel structure, so a link can only be made within one text line (`test_ocr_fallback_links_only_within_the_same_line`); it remains as a fallback when no cached extraction exists.
+- **Where.** `parsers/images.py:convert`, `parsers/images.py:load_extraction`, `prompts/screenshot_extract.md`.
+
+## 13. Per-row link keys in screenshots
+
+- **Decision.** A screenshot record's link keys come only from its own row or panel, never from the page header, the search box or the activity feed.
+- **Evidence.** The activity feed shows other people's records, and the search box holds a query email, not a record. A decoy such as `g.silva76.jr@gmail.com` (three edits from `g.silva76@gmail.com`) appears on its own row and must not link to the other user (`tests/test_images.py`, the suspect-email table and `test_ocr_fallback_links_only_within_the_same_line`).
+- **Rejected.** Page-level keys (would link every record on the screen to one person).
+- **Where.** `parsers/images.py:convert`.
+
+## 14. Names never link
+
+- **Decision.** Names are collected for display and comparison but never create a link.
+- **Evidence.** People share names; the strong key set is user ids, emails, hashes and phones only.
+- **Rejected.** Name matching with a similarity threshold (false links between different users).
+- **Where.** `identity.py:SubjectIdentity.strong_keys`; `linker.py` skips `name:` keys when building the key index.
+
+## 15. Intake: rules and an LLM that agree
+
+- **Decision.** Every unique request text is labeled by the model (batches of 40) and independently by multilingual rules; the model's label is final, the rules are a cross-check, and rules decide alone when no model answer exists. Verification and audit requests ("tell me whether the data has been removed") are deletion cases.
+- **Evidence.** {{intake.agree}} of {{intake.llm_labelled}} unique texts ({{intake.requests}} requests) get the same label from rules and model; {{intake.non_deletion}} requests are NOT_DELETION, {{intake.non_deletion_in_sample}} of them in the sample, so the class cannot be learned from the sample at all. Each non-deletion text also carries an explicit keep-the-account sentence.
+- **Rejected.** Model only (no independent check); rules only (works today, but unseen phrasing is unprotected).
+- **Where.** `classifier.py:rule_label`, `classifier.py:decide`, `prompts/request_classify.md`.
+
+## 16. Groq free tier for the case agent
+
+- **Decision.** The case agent runs on Groq's `openai/gpt-oss-120b` with `openai/gpt-oss-20b` and Gemini as fallbacks, through the OpenAI-compatible API.
+- **Evidence.** The project has no budget; both Groq models answered a tool-call round trip (`python -m ghost.llm --check`). So far {{ledger.agent_calls}} agent calls and {{agent.checkpoints.checkpoints}} checkpointed cases cost $0.00 on free tiers.
+- **Rejected.** A paid Claude API (no budget), Mistral (not benchmarked here; no free tool-calling quota was arranged). Provider choice is configuration: the wrapper is provider-agnostic and the chain is read from the environment.
+- **Where.** `ghost/llm.py:agent_chain`, `ghost/llm.py:tool_chat`, `config.yaml` (`pricing:`, `agent:`).
+
+## 17. Golden lock for behavior-preserving refactors
+
+- **Decision.** Before the agent architecture refactor the full and sample outputs were committed as golden files with their sha256; the refactor had to reproduce them byte for byte.
+- **Evidence.** `output_full.csv` sha256 `{{golden.output_full.short}}…`, `output_sample.csv` `{{golden.output_sample.short}}…`; the lock test regenerates both through the CLI and compares bytes (`tests/test_golden_lock.py`).
+- **Rejected.** Comparing metrics only (can hide compensating changes).
+- **Where.** `code/evaluation/golden/`, `tests/test_golden_lock.py`.
+
+## 18. The agent may only change ambiguity points, and defaults reproduce the deterministic plan
+
+- **Decision.** `propose_plan` takes decisions for ambiguity ids only, rejects an EXCLUDE of a mandatory resource, builds the steps with the deterministic planner and validates them; omitted ids keep their default.
+- **Evidence.** `tests/test_agent_tools.py::test_default_decisions_reproduce_the_deterministic_plan` for every routed sample case. Over the replayed full split the agent changed {{agent.full_diff.rows_changed}} rows, adding {{agent.full_diff.steps_added}} steps and removing {{agent.full_diff.steps_removed}}; on the sample it raised step precision from {{sample.det.step_p}} to {{sample.agent.step_p}} (recall {{sample.det.step_r}} to {{sample.agent.step_r}}).
+- **Rejected.** Letting the model write steps or edit links freely (unverifiable, and the rubric credits behavior that is checkable in code).
+- **Where.** `tools/registry.py` (`propose_plan`, `submit_case`), `ambiguity.py`.
+
+## 19. A time-boxed, checkpointed agent run
+
+- **Decision.** The full-split agent run is resumable and stops at a deadline or when the quota ends; unfinished routed cases keep the deterministic plan.
+- **Evidence.** Free-tier limits and a 7K tokens/minute client limit give about one case per 100 seconds; {{agent.full.routed}} routed cases at about {{agent.checkpoints.avg_tokens_per_case}} tokens each is about {{agent.routed_tokens}} tokens. Status now: {{decision.status}}.
+- **Rejected.** Waiting for a full run (not possible in the time), or failing the run on missing agent answers (they have a safe default).
+- **Where.** `agents/case_investigator.py` (checkpoints), `orchestrator.py:_agent_phase`, `config.yaml` (`agent:`).

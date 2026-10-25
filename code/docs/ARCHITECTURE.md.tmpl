@@ -1,0 +1,82 @@
+# Architecture
+
+Every statement below points at a file or function; figures come from `code/evaluation/runs/numbers.json` ({{generated_at}}). The overview diagrams are in the [README](../../README.md); the tool table is also in [TOOLS.md](TOOLS.md).
+
+## 1. Layers
+
+```text
+orchestrator   ghost/orchestrator.py          phases, per-case isolation, the agent gate, writing
+agents         ghost/agents/*.py              {{arch.agents}} agents; reach the domain layer only through the registry
+tools          ghost/tools/registry.py        {{arch.tools}} tools ({{arch.agent_tools}} for the case agent): schema, validation, timing, tracing
+domain         ghost/{loaders,identity,parsers/,linker,state,policy,planner,classifier,
+                      ambiguity,serialize,llm,...}.py     plain Python: no agent knows how these work
+cross-cutting  ghost/{config,context,trace,paths,explain}.py
+```
+
+- **Domain** modules hold all decisions that can be right or wrong: parsing, identity, linking, state, policy, planning, serialization, the intake rules and the LLM wrapper. Their entry points are ordinary functions covered by tests built from real dataset rows.
+- **Tools** (`build_registry`) are thin wrappers over those functions with a JSON-Schema input and a one-line output description. `ToolRegistry.call` validates the input (`validate`), times the call, counts it and emits a trace event.
+- **Agents** declare `tools_used` and receive a `BoundTools` caller from `ToolRegistry.bind`; a call to an undeclared tool raises `PermissionError`.
+- **Import boundary.** `tests/test_agents.py::test_agents_never_import_domain_modules` parses every file in `ghost/agents/` and fails if one imports `ghost.linker`, `ghost.state`, `ghost.policy`, `ghost.planner` or `ghost.parsers`. `test_every_agent_declares_a_role_and_known_tools` checks that each agent's `tools_used` exist, and `test_orchestrator_sample_run_matches_golden_and_traces_only_declared_tools` checks that every traced tool call belongs to the calling agent's declared tools.
+- **Orchestrator** (`Orchestrator.run`): the global phase (Evidence, Intake, `InvestigatorAgent.global_assign`, then `RunContext.freeze`), the per-case phase, the agent phase (`_agent_phase`), then the writer.
+
+## 2. Agents
+
+| Agent | Role | `tools_used` | Reads | Produces |
+|---|---|---|---|---|
+| `EvidenceAgent` (`agents/evidence.py`) | Builds the evidence corpus from every manifest file and reports coverage | `load_evidence_corpus`, `extract_screenshot` | `dataset/`, cached screenshot extractions | `RunContext.corpus` (observations, coverages, file facts, stats) |
+| `IntakeAgent` (`agents/intake.py`) | Decides whether each request text authorizes deletion | `classify_request` | all request texts of both splits | `RunContext.intake`, `RunContext.non_deletion` |
+| `InvestigatorAgent` (`agents/investigator.py`) | Global worker-window assignment, then per-case linking | `assign_worker_windows`, `link_resources` | corpus, activities, non-deletion set | `RunContext.assignment` (the `Linker`); `CaseContext.linked` |
+| `IdentityAgent` (`agents/identity.py`) | Resolves the request email to the current and historical identity | `resolve_identity` | request email | `CaseContext.subject` |
+| `AssessorAgent` (`agents/assessor.py`) | Required treatment and true state at `audit_at` per linked resource | `assess_resource` | linked resources | `CaseContext.assessments`, display-only `confidence` |
+| `PlannerAgent` (`agents/planner.py`) | Findings, remediation and verification steps; `NOT_APPLICABLE` for non-deletion | `plan_steps` | assessments | `status`, `steps`, `plan_flags` (the deterministic default and fallback) |
+| `VerifierAgent` (`agents/verifier.py`) | Rejects any row that breaks the output contract | `validate_row` | status and steps | raises `InvalidRow` |
+| `RouterAgent` (`agents/router.py`) | Sends cases with open linking decisions to the case agent | `get_ambiguities` | ambiguity points | `route` (`FAST` or `AGENT`) and `route_reasons` |
+| `CaseInvestigatorAgent` (`agents/case_investigator.py`) | LLM tool loop that resolves a routed case's ambiguity points | `get_case_brief`, `get_ambiguities`, `list_candidate_resources`, `inspect_resource`, `propose_plan`, `submit_case`, `escalate_case` | tool results only | `CaseContext.agent` (outcome, rationale, tokens, transcript), an accepted plan |
+
+## 3. Tools
+
+{{arch.tools_table_md}}
+
+Input schemas of the case-agent tools (the other tools' inputs are in the table above):
+
+{{arch.agent_schemas_md}}
+
+`propose_plan`'s `decisions` items are narrowed to `{ambiguity_id, choice: INCLUDE|EXCLUDE}` when the schema is sent to the model (`case_investigator.tool_schemas`). Every agent-tool result is trimmed to about 900 tokens (`registry._fit`, `MAX_RESULT_CHARS`).
+
+## 4. Data model
+
+- **`Observation`** (`ghost/observation.py`): one sighting of one resource in one evidence file or log trace group: `file_id`, `captured_at` (manifest time), `observed_at` (row time if finer), `system_id` (canonical, from the id prefix), `source_system`, `resource_id`, `present` (`None` = mentioned, existence not stated), `copy` (`primary`, `replica:<table>`, `export`, `bundle`, `ledger`, `log`, `image`, `alias`, ...), `collection`, `fields` (raw identifier fields), `attrs`, `link_keys` (normalized identifiers), `raw_ref`.
+- **`Coverage`**: a file inspected a system; `complete=True` means it listed the whole collection, so a missing record is absent at `captured_at`. {{evidence.coverages}} entries.
+- **`FileFacts`**: identities in documents with no resource ids (retention registers, account history). {{evidence.file_facts}} entries.
+- **`LinkedResource`** (`ghost/linker.py`): `resource_id`, `system_id`, `via` (the link channel evidence: `("key", key, file_id)`, `("catalog", activity_id)`, `("worker_window", activity_id, tie)`, `("propagation", ...)`), `activity_ids`, `observations`, `flags` (for example `identity_conflict`).
+- **`Decision`** (`ghost/planner.py`): `treatment` (`policy.Treatment`: action, category, source), `state` (`state.ResourceState`: `decisive_file`, `present`, `exposed`, `active`, `risk`), `violation`, and for COMPLETE cases the `citation`.
+- **`Ambiguity`** (`ghost/ambiguity.py`): `id`, `kind` (`tie_break`, `tie_candidate`, `identity_conflict`), `resource_id`, `competing_case_ids`, `evidence_summary`, `default`, `source`, `options`.
+- **`RunContext`** (`ghost/context.py`): config, split, requests, tracer, corpus, intake, `non_deletion`, `assignment`; frozen after the global phase (`FrozenError` on any later write).
+- **`CaseContext`**: `request`, `authorized`, `subject`, `linked`, `assessments`, `steps`, `status`, `confidence`, `plan_flags`, `errors`, `route`, `route_reasons`, `agent`.
+
+## 5. Failure handling
+
+- **Per-case isolation and retry.** `Orchestrator.run` runs each case's agents in a `try`; a failure is recorded in `CaseContext.errors`, the case is retried once (`MAX_ATTEMPTS = 2`), and a second failure goes to `RunResult.failures`. If any case failed the run exits non-zero and writes no `output.csv`, so a partial or invalid output is never produced (`tests/test_agents.py::test_orchestrator_isolates_a_failing_case`, `..._retry_recovers_a_transient_failure`).
+- **Agent failures never fail a case.** `CaseInvestigatorAgent` ends in one of `AGENT_SUBMITTED`, `AGENT_ESCALATED`, `FALLBACK_TOOL_CAP`, `FALLBACK_REJECTED`, `FALLBACK_NO_TOOL_CALL`, `FALLBACK_QUOTA`, `FALLBACK_LLM_ERROR` or `FALLBACK_OFFLINE`, plus `FALLBACK_BUDGET` (`--max-agent-cases`), `FALLBACK_STALE_CHECKPOINT` and `FALLBACK_ERROR` (an unexpected exception in the agent phase). Every outcome except `AGENT_SUBMITTED` keeps the deterministic plan.
+- **Tool errors are information, not crashes.** Unknown ids, bad arguments, another case's id, a rejected plan or malformed JSON arguments come back to the model as `{"error": ...}` results (`CaseInvestigatorAgent._execute`, `llm.parse_tool_call`).
+- **The gate** (`propose_plan`, `submit_case`, `ambiguity.global_conflicts`, `VerifierAgent`) is described in the README; a plan whose verifier result is not ok cannot be submitted, and a submit needs a `plan_id` created for the same case in the same loop.
+- **Caps.** {{arch.max_tool_calls}} tool calls and {{arch.max_rejections}} rejections per case (`config.yaml`, `agent:`); {{agent.checkpoints.rejections}} rejections happened across the {{agent.checkpoints.checkpoints}} checkpointed cases so far.
+
+## 6. Rate limiting, retries and quotas
+
+`llm.tool_chat` tries the chain `groq:GROQ_MODEL`, `groq:GROQ_FALLBACK_MODEL`, any `groq:GROQ_EXTRA_MODELS`, then `gemini:GEMINI_MODEL` (`agent_chain`). Per model, `RateLimiter` keeps a 60-second sliding window of requests (25/min for Groq) and estimated tokens (7,000/min; `len(json)/4` before sending, replaced by the real count after the reply) and sleeps instead of sending (`config.yaml` `agent.rate_limits`). A 429 honours `Retry-After` (capped at 90 s) for up to `RATE_TRIES` attempts; a daily-quota error retires the model for the run (`EXHAUSTED`) and the chain moves on; when every model is retired `QuotaExhausted` becomes `FALLBACK_QUOTA`. The classifier and vision calls (`llm.chat`) retry 429/5xx/connection errors with exponential backoff (`MAX_TRIES = 3`) and fail over from Gemini to Groq for text.
+
+## 7. Caching and checkpointing
+
+- `llm.chat` entries are keyed on provider, model, purpose, messages and image hash and are also found under another model name (`_find_cached`), so a model switch never re-asks.
+- `llm.tool_chat` entries are keyed on purpose, the messages and the SHA-256 of the tool schemas; the file names are in `code/cache/llm/`.
+- Cache hits are counted (`llm.CALLS`) and shown in `run_summary.json` but never written to `usage_ledger.jsonl`, which therefore records real API calls only.
+- Case-agent results are checkpointed to `code/cache/agent_runs/<config_hash>/<case_id>.json`. The hash covers the system prompt, the tool schemas, the caps and the tie-break strategy, so a changed prompt or tool starts fresh. A replay does not trust the file: it re-runs the saved decisions through `propose_plan` and `submit_case` and falls back (`FALLBACK_STALE_CHECKPOINT`) if the gate now disagrees.
+
+## 8. Tracing
+
+`Tracer` (`ghost/trace.py`) records `TraceEvent(ts, case_id, agent, tool, summary, data)` for every tool call and agent conclusion, and writes one JSON-lines file per case to `<runs_dir>/traces/<case_id>.jsonl` (global-phase events in `_global.jsonl`). The case agent's own turns, tool calls and results are events too. `python code/main.py explain <case_id>` reads the same run to print identity, links, treatments, step reasons and the agent's calls. Tracing is on by default (`trace: true`, `GHOST_TRACE=0` turns it off); the deterministic full-split run takes {{wall.det_full_seconds}} s with {{wall.tool_calls_per_case}} tool calls per case.
+
+## 9. Configuration
+
+`code/config.yaml` > `ghost/config.py` (`DEFAULTS`, `ENV_KEYS`, `CLI_KEYS`): CLI flag, then environment variable, then yaml, then defaults (`tests/test_agents.py::test_config_precedence_cli_over_env_over_yaml_over_defaults`). `Config.mode` is `agent`, `deterministic` or `auto` (agent when a tool-capable key is set).

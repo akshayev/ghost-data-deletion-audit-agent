@@ -4,7 +4,7 @@
                             [--mode {agent,deterministic}] [--max-agent-cases N]
     python code/main.py eval [--oracle-links] [--custom]   # delegates to code/evaluation
     python code/main.py tools                             # tool registry (also code/docs/TOOLS.md)
-    python code/main.py explain <case_id>                 # per-case explanation (P10)
+    python code/main.py explain <case_id>                 # why the audit says what it says
 
 The old form `python code/main.py --split full ...` still works (it means `run`).
 full   -> reads dataset/deletion_requests.csv, writes <repo>/output.csv
@@ -142,8 +142,15 @@ def _cmd_tools(args, parser) -> int:
 
 
 def _cmd_explain(args, parser) -> int:
-    print(f"explain {args.case_id}: not implemented yet (planned for P10). "
-          f"Per-case traces are in code/evaluation/runs/traces/{args.case_id}.jsonl")
+    from ghost import explain
+    from ghost.config import load_config
+
+    config = load_config(cli={"mode": args.mode})
+    try:
+        print(explain.explain(args.case_id, config), end="")
+    except explain.UnknownCase as exc:
+        print(f"unknown case: {exc}", file=sys.stderr)
+        return 1
     return 0
 
 
@@ -170,8 +177,9 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--agent-cases", help="comma-separated case ids: only these go to the agent")
     sub.add_parser("eval", help="score the sample split (see code/evaluation/main.py --help)")
     sub.add_parser("tools", help="print the tool registry")
-    explain = sub.add_parser("explain", help="explain one case (P10)")
+    explain = sub.add_parser("explain", help="explain one case: identity, links, steps, agent")
     explain.add_argument("case_id")
+    explain.add_argument("--mode", choices=("agent", "deterministic"))
     args = parser.parse_args(argv)
     handler = {"run": _cmd_run, "tools": _cmd_tools, "explain": _cmd_explain}[args.command]
     return handler(args, parser)

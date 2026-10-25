@@ -199,8 +199,3 @@ def test_cli_run_subcommand_matches_golden(tmp_path):
     assert done.returncode == 0, done.stderr
     golden = paths.CODE / "evaluation" / "golden" / "output_sample.csv"
     assert out.read_bytes() == golden.read_bytes()
-
-
-def test_cli_explain_is_a_placeholder():
-    done = _cli("explain", "case_05")
-    assert done.returncode == 0 and "P10" in done.stdout

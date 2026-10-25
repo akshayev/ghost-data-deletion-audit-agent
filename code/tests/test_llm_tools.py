@@ -62,6 +62,7 @@ def env(tmp_path, monkeypatch):
     monkeypatch.setattr(llm, "_sleep", slept.append)
     monkeypatch.setattr(llm, "EXHAUSTED", set())
     monkeypatch.setattr(llm, "LIMITERS", {})
+    monkeypatch.delenv("GROQ_EXTRA_MODELS", raising=False)  # the real .env may define extras
     for k, v in {"GROQ_API_KEY": "k1", "GEMINI_API_KEY": "k2", "GROQ_MODEL": "big",
                  "GROQ_FALLBACK_MODEL": "small", "GEMINI_MODEL": "gem"}.items():
         monkeypatch.setenv(k, v)
