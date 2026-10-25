@@ -7,14 +7,14 @@ Every statement below points at a file or function; figures come from `code/eval
 ```text
 orchestrator   ghost/orchestrator.py          phases, per-case isolation, the agent gate, writing
 agents         ghost/agents/*.py              {{arch.agents}} agents; reach the domain layer only through the registry
-tools          ghost/tools/registry.py        {{arch.tools}} tools ({{arch.agent_tools}} for the case agent): schema, validation, timing, tracing
+tools          ghost/tools/{registry,domain_tools,agent_tools}.py   {{arch.tools}} tools ({{arch.agent_tools}} for the case agent): schema, validation, timing, tracing
 domain         ghost/{loaders,identity,parsers/,linker,state,policy,planner,classifier,
                       ambiguity,serialize,llm,...}.py     plain Python: no agent knows how these work
 cross-cutting  ghost/{config,context,trace,paths,explain}.py
 ```
 
 - **Domain** modules hold all decisions that can be right or wrong: parsing, identity, linking, state, policy, planning, serialization, the intake rules and the LLM wrapper. Their entry points are ordinary functions covered by tests built from real dataset rows.
-- **Tools** (`build_registry`) are thin wrappers over those functions with a JSON-Schema input and a one-line output description. `ToolRegistry.call` validates the input (`validate`), times the call, counts it and emits a trace event.
+- **Tools** are thin wrappers over those functions with a JSON-Schema input and a one-line output description: one registration function per tool in `tools/domain_tools.py` and `tools/agent_tools.py` (shared formatting in `tools/_format.py`), collected by `registry.build_registry`. `ToolRegistry.call` validates the input (`validate`), times the call, counts it and emits a trace event.
 - **Agents** declare `tools_used` and receive a `BoundTools` caller from `ToolRegistry.bind`; a call to an undeclared tool raises `PermissionError`.
 - **Import boundary.** `tests/test_agents.py::test_agents_never_import_domain_modules` parses every file in `ghost/agents/` and fails if one imports `ghost.linker`, `ghost.state`, `ghost.policy`, `ghost.planner` or `ghost.parsers`. `test_every_agent_declares_a_role_and_known_tools` checks that each agent's `tools_used` exist, and `test_orchestrator_sample_run_matches_golden_and_traces_only_declared_tools` checks that every traced tool call belongs to the calling agent's declared tools.
 - **Orchestrator** (`Orchestrator.run`): the global phase (Evidence, Intake, `InvestigatorAgent.global_assign`, then `RunContext.freeze`), the per-case phase, the agent phase (`_agent_phase`), then the writer.
@@ -41,7 +41,7 @@ Input schemas of the case-agent tools (the other tools' inputs are in the table 
 
 {{arch.agent_schemas_md}}
 
-`propose_plan`'s `decisions` items are narrowed to `{ambiguity_id, choice: INCLUDE|EXCLUDE}` when the schema is sent to the model (`case_investigator.tool_schemas`). Every agent-tool result is trimmed to about 900 tokens (`registry._fit`, `MAX_RESULT_CHARS`).
+`propose_plan`'s `decisions` items are narrowed to `{ambiguity_id, choice: INCLUDE|EXCLUDE}` when the schema is sent to the model (`case_investigator.tool_schemas`). Every agent-tool result is trimmed to about 900 tokens (`tools/_format.py`: `_fit`, `MAX_RESULT_CHARS`).
 
 ## 4. Data model
 

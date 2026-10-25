@@ -116,7 +116,7 @@ Everything else (identity resolution, parsing, linking, state, policy, planning,
 
 ## The deterministic gate
 
-- **Mandatory records.** `ambiguity.case_ambiguities` marks the only changeable resources; every other linked resource is mandatory, and `propose_plan` rejects an EXCLUDE of one (`registry._register_agent_tools`).
+- **Mandatory records.** `ambiguity.case_ambiguities` marks the only changeable resources; every other linked resource is mandatory, and `propose_plan` rejects an EXCLUDE of one (`tools/agent_tools.py`, `register_propose_plan`).
 - **Evidence time rule.** `inspect_resource` hides captures after `audit_at`; `state.resource_state` and `planner.citation` only use captures at or before `audit_at`; `serialize.validate_row` rejects any cited evidence captured later.
 - **Validator.** `VerifierAgent` runs `serialize.validate_row` on every row (phases, operations, states, step numbering, evidence rules), including rows changed by the agent; `write_output` validates again.
 - **Global consistency.** `ambiguity.global_conflicts`: a resource INCLUDEd by one case must not stay with another; on a conflict both cases revert to the deterministic plan.
@@ -164,7 +164,8 @@ code/
   package.py               builds code.zip
   ghost/                   domain layer: loaders, identity, parsers/, linker, state, policy, planner,
                            classifier, llm, serialize, ambiguity, explain
-    tools/registry.py      the tool registry (the only way agents reach the domain layer)
+    tools/                 registry.py (the only way agents reach the domain layer),
+                           domain_tools.py, agent_tools.py: one registration function per tool
     agents/                nine agents (evidence, intake, identity, investigator, assessor,
                            planner, verifier, router, case_investigator)
     orchestrator.py        global phase, per-case phase, agent phase, gate, writer

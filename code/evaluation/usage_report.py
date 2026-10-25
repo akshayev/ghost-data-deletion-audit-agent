@@ -204,7 +204,7 @@ def render_report(ledger: list[dict], summary: dict, numbers: dict, prices: dict
         f"other {router['fast']} ({router['fast_share']}) are fully deterministic. Non-deletion "
         "requests never enter the agent.",
         "- **Compact tool outputs.** Agent tool results are capped near 900 tokens "
-        "(`registry._fit`, `MAX_RESULT_CHARS`), the system prompt is about 500 tokens "
+        "(`tools/_format.py`: `_fit`, `MAX_RESULT_CHARS`), the system prompt is about 500 tokens "
         "(`prompts/case_agent_system.md`), and the model is told to batch calls in one turn.",
         "- **Only the ambiguity is delegated.** The model decides INCLUDE/EXCLUDE for open "
         "points; the planner writes the steps, so output tokens stay small "
