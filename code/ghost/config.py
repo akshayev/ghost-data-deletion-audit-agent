@@ -21,6 +21,15 @@ DEFAULTS: dict = {
     "runs_dir": "code/evaluation/runs",
     "cache_dir": "code/cache",
     "trace": True,
+    "mode": "auto",  # agent | deterministic | auto (= agent when a tool-capable key is set)
+    "agent": {
+        "max_tool_calls": 8,
+        "max_rejections": 2,
+        "max_agent_cases": None,
+        "only_cases": None,
+        "checkpoint_dir": "code/cache/agent_runs",
+        "rate_limits": {"groq": {"rpm": 25, "tpm": 7000}, "gemini": {"rpm": 10, "tpm": 250000}},
+    },
     "llm": {
         "providers": ["gemini", "groq"],
         "gemini_model": "gemini-3.8-flash",
@@ -40,6 +49,7 @@ ENV_KEYS = {
     "GHOST_DATASET": ("dataset",),
     "GHOST_TIEBREAK": ("linker", "tiebreak"),
     "GHOST_TRACE": ("trace",),
+    "GHOST_MODE": ("mode",),
     "GEMINI_MODEL": ("llm", "gemini_model"),
     "GEMINI_TEXT_MODEL": ("llm", "gemini_text_model"),
     "GROQ_MODEL": ("llm", "groq_model"),
@@ -52,6 +62,9 @@ CLI_KEYS = {
     "runs_dir": ("runs_dir",),
     "tiebreak": ("linker", "tiebreak"),
     "trace": ("trace",),
+    "mode": ("mode",),
+    "max_agent_cases": ("agent", "max_agent_cases"),
+    "agent_cases": ("agent", "only_cases"),
 }
 
 
@@ -66,6 +79,8 @@ class Config:
     llm: dict
     linker: dict
     no_llm: bool = False
+    mode: str = "deterministic"  # resolved: agent | deterministic
+    agent: dict = field(default_factory=dict)
     raw: dict = field(default_factory=dict, compare=False)
 
 
@@ -117,8 +132,23 @@ def load_config(path: Path | str | None = None, cli: dict | None = None) -> Conf
         llm=raw["llm"],
         linker=raw["linker"],
         no_llm=bool(cli.get("no_llm", False)),
+        mode=resolve_mode(str(raw["mode"]).lower()),
+        agent=raw["agent"],
         raw=raw,
     )
+
+
+def resolve_mode(mode: str) -> str:
+    """auto -> agent when a tool-capable key (GROQ_API_KEY / GEMINI_API_KEY) is set."""
+    if mode in ("agent", "deterministic"):
+        return mode
+    if mode != "auto":
+        raise ValueError(f"unknown mode {mode!r}; expected agent, deterministic or auto")
+    from ghost import llm
+
+    llm._load_env()
+    return "agent" if any(os.environ.get(k) for k in ("GROQ_API_KEY", "GEMINI_API_KEY")) \
+        else "deterministic"
 
 
 def apply(config: Config) -> None:
@@ -132,6 +162,10 @@ def apply(config: Config) -> None:
                      ("GROQ_MODEL", "groq_model")):
         if config.llm.get(key) and not os.environ.get(env):
             os.environ[env] = str(config.llm[key])
+    from ghost import llm
+
+    for provider, lim in (config.agent.get("rate_limits") or {}).items():
+        llm.RATE_LIMITS[provider] = (int(lim["rpm"]), int(lim["tpm"]))
     linker.LEARN_RANGE_HOURS = float(config.linker["learn_range_hours"])
     linker.WINDOW_PAD_HOURS = float(config.linker["window_pad_hours"])
     linker.DEFAULT_WINDOW = tuple(config.linker["default_window"])

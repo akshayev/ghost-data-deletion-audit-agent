@@ -427,6 +427,15 @@ class Linker:
         assigned: dict[str, dict[str, set[tuple]]] = defaultdict(dict)  # case -> rid -> via
         ties = 0
         skipped: set[str] = set()  # tie groups left unassigned by the strategy
+        # record of every tie group (read by the router; never feeds back into assignment):
+        # {"kind": "tie_break"|"skip_multi", "rids", "cases", "acts": {rid: {case: activity}}}
+        self.tie_records: list[dict] = []
+
+        def record(kind: str, rids: list[str], cases: tuple) -> None:
+            acts = {r: {c: compat[r][c].activity_id for c in cases if c in compat[r]}
+                    for r in rids}
+            self.tie_records.append({"kind": kind, "rids": tuple(rids), "cases": tuple(cases),
+                                     "acts": acts})
 
         def candidates(rid: str) -> list[str]:
             return [c for c in compat[rid] if rtype(rid) not in held[c]]
@@ -451,6 +460,7 @@ class Linker:
                         changed = True
             open_ties = [rid for rid in compat if rid not in skipped]
             if not open_ties or self.tiebreak == "SKIP_ALL":
+                skipped.update(open_ties)
                 break
             # one tie group: same type and same candidate set; earliest event first
             groups: dict[tuple, list[str]] = defaultdict(list)
@@ -470,12 +480,20 @@ class Linker:
                 case_order = tuple(
                     sorted(key[1], key=lambda c: (self.requests[c].requested_at, case_num(c)))
                 )
+            record("tie_break", rids, key[1])
             for case_id, rid in zip(case_order, rids, strict=False):
                 give(rid, case_id, tie=True)
                 ties += 1
             for rid in rids:  # leftovers of a saturated group stay free for other cases
                 if rid in compat and not candidates(rid):
                     del compat[rid]
+        # skipped groups that nobody received in the end, with their final candidates
+        left: dict[tuple, list[str]] = defaultdict(list)
+        for rid in sorted(skipped, key=_natural):
+            if rid in compat and (cands := candidates(rid)):
+                left[(rtype(rid), tuple(sorted(cands, key=case_num)))].append(rid)
+        for (_, cases), rids in sorted(left.items()):
+            record("skip_multi", rids, cases)
         return assigned, ties
 
     # ----- propagation (sync / restore repopulation) -----

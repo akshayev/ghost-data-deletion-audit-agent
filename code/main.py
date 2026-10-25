@@ -1,6 +1,7 @@
 """CLI entry point for the deletion-audit agent.
 
     python code/main.py run --split {full,sample} [--out PATH] [--no-llm] [--dataset DIR]
+                            [--mode {agent,deterministic}] [--max-agent-cases N]
     python code/main.py eval [--oracle-links] [--custom]   # delegates to code/evaluation
     python code/main.py tools                             # tool registry (also code/docs/TOOLS.md)
     python code/main.py explain <case_id>                 # per-case explanation (P10)
@@ -10,6 +11,9 @@ full   -> reads dataset/deletion_requests.csv, writes <repo>/output.csv
 sample -> reads dataset/sample_deletion_requests.csv,
           writes code/evaluation/runs/sample_output_pred.csv
 Runs go through ghost.orchestrator (agents + tool registry + traces).
+--mode agent (the default when GROQ_API_KEY or GEMINI_API_KEY is set) sends cases with open
+linking decisions to the LLM case investigator; --mode deterministic never does. With
+--no-llm, agent mode only replays checkpoints and caches (no network).
 """
 
 import argparse
@@ -75,12 +79,14 @@ def predict_case(request_row: dict[str, str], context: Context) -> tuple[str, li
     return result.status, result.steps
 
 
-def run_split(split: str, use_llm: bool = True) -> tuple[list[OutputRow], Context]:
+def run_split(split: str, use_llm: bool = True, mode: str | None = None
+              ) -> tuple[list[OutputRow], Context]:
     """Run the agent pipeline on a split without writing (used by the evaluation)."""
     from ghost.config import load_config
     from ghost.orchestrator import Orchestrator
 
-    result = Orchestrator(load_config(cli={"no_llm": not use_llm})).run(split, write=False)
+    config = load_config(cli={"no_llm": not use_llm, "mode": mode})
+    result = Orchestrator(config).run(split, write=False)
     if result.failures:
         raise RuntimeError(f"{len(result.failures)} case(s) failed: {result.failures}")
     return result.rows, Context(citable=load_citable_ids(), use_llm=use_llm)
@@ -95,7 +101,10 @@ def _cmd_run(args, parser) -> int:
 
     if args.dataset and not Path(args.dataset).is_dir():
         parser.error(f"dataset directory not found: {Path(args.dataset).resolve()}")
-    config = load_config(cli={"dataset": args.dataset, "no_llm": args.no_llm})
+    config = load_config(cli={"dataset": args.dataset, "no_llm": args.no_llm,
+                              "mode": args.mode, "max_agent_cases": args.max_agent_cases,
+                              "agent_cases": args.agent_cases.split(",") if args.agent_cases
+                              else None})
     result = Orchestrator(config).run(args.split, out=args.out)
     for f in result.failures:
         print(f"FAILED {f['case_id']} after {f['attempts']} attempts: {f['error']}",
@@ -109,6 +118,14 @@ def _cmd_run(args, parser) -> int:
     print(f"run {s['run_id']}: {s['wall_seconds']}s, tool calls {sum(s['tool_calls'].values())}, "
           f"llm fresh={s['llm_calls']['fresh']} cached={s['llm_calls']['cached']}, "
           f"summary {config.runs_dir / 'run_summary.json'}")
+    r = s["router"]
+    print(f"mode {s['mode']}: router FAST={r.get('FAST', 0)} AGENT={r.get('AGENT', 0)} "
+          + " ".join(f"{k}={v}" for k, v in r.items() if ":" in k))
+    if s["agent"]:
+        a = s["agent"]
+        print(f"agent outcomes {a['outcomes']}, applied {a['applied']}, changed "
+              f"{len(a['changed_cases'])}, conflicts {len(a['conflicts'])}, "
+              f"tokens {s['llm_tokens']}")
     return 0
 
 
@@ -147,6 +164,10 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--out", type=Path, help="output CSV (default depends on --split)")
     run.add_argument("--no-llm", action="store_true", help="rules and caches only")
     run.add_argument("--dataset", type=Path, help="dataset root (default: <repo>/dataset)")
+    run.add_argument("--mode", choices=("agent", "deterministic"),
+                     help="agent: LLM investigator on routed cases (default when a key is set)")
+    run.add_argument("--max-agent-cases", type=int, help="budget: at most N agent cases")
+    run.add_argument("--agent-cases", help="comma-separated case ids: only these go to the agent")
     sub.add_parser("eval", help="score the sample split (see code/evaluation/main.py --help)")
     sub.add_parser("tools", help="print the tool registry")
     explain = sub.add_parser("explain", help="explain one case (P10)")

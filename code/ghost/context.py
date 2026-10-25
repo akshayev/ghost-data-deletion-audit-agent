@@ -77,6 +77,9 @@ class CaseContext:
     plan_flags: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
     started: datetime | None = None
+    route: str | None = None  # FAST | AGENT (RouterAgent)
+    route_reasons: tuple[str, ...] = ()
+    agent: dict | None = None  # CaseInvestigatorAgent outcome (agent mode, routed cases)
 
     @property
     def case_id(self) -> str:

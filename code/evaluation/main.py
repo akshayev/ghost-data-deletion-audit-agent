@@ -367,6 +367,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--pred", type=Path, help="prediction CSV (default: predict sample split)")
     parser.add_argument("--custom", action="store_true", help="also run custom_cases/")
     parser.add_argument("--no-llm", action="store_true", help="predict without LLM calls")
+    parser.add_argument("--mode", choices=("agent", "deterministic"),
+                        help="pipeline mode (default: agent when a tool-capable key is set)")
     parser.add_argument("--out", type=Path, default=METRICS_MD)
     parser.add_argument("--oracle-links", action="store_true",
                         help="plan from gold resource ids (separates linker from state/policy)")
@@ -380,7 +382,10 @@ def main(argv: list[str] | None = None) -> int:
     elif args.oracle_links:
         pred, mode = oracle_predictions(), "oracle-links"
     else:
-        rows, context = _load_cli().run_split("sample", use_llm=not args.no_llm)
+        rows, context = _load_cli().run_split("sample", use_llm=not args.no_llm, mode=args.mode)
+        from ghost.config import load_config
+
+        mode = f"real:{load_config(cli={'mode': args.mode}).mode}"
         write_output(rows, SAMPLE_PRED, context.citable)
         pred = {r.case_id: (r.status, r.steps) for r in rows}
 

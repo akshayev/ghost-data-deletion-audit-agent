@@ -168,16 +168,17 @@ def test_provider_without_model_is_skipped(env, monkeypatch):
     assert made == []
 
 
-def test_ledger_line_is_written(env, monkeypatch):
+def test_ledger_line_is_written_for_fresh_calls_only(env, monkeypatch):
     install(monkeypatch, gemini=FakeClient([completion(OK, 123, 45)]))
+    before = llm.CALLS["cached"]
     llm.chat(MSGS, purpose="classify")
-    llm.chat(MSGS, purpose="classify")  # cache hit
-    first, second = ledger(env)
+    llm.chat(MSGS, purpose="classify")  # cache hit: counted, never written to the ledger
+    (first,) = ledger(env)
     assert first["provider"] == "gemini" and first["model"] == "gem-test"
     assert first["purpose"] == "classify" and first["cache_hit"] is False
     assert (first["prompt_tokens"], first["completion_tokens"]) == (123, 45)
     assert isinstance(first["latency_ms"], int) and first["run_id"] and first["ts"]
-    assert second["cache_hit"] is True and second["prompt_tokens"] == 0
+    assert llm.CALLS["cached"] == before + 1
 
 
 def test_missing_usage_is_recorded_as_none(env, monkeypatch):

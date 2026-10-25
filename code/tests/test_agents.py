@@ -103,7 +103,7 @@ def test_agents_never_import_domain_modules():
 
 def test_every_agent_declares_a_role_and_known_tools():
     tools = {t.name for t in build_registry().list()}
-    assert len(ALL_AGENTS) == 7
+    assert len(ALL_AGENTS) == 9
     for agent in ALL_AGENTS:
         assert agent.name and agent.role.endswith(".")
         assert agent.tools_used and set(agent.tools_used) <= tools, agent.name
@@ -114,7 +114,8 @@ def test_every_agent_declares_a_role_and_known_tools():
 
 @pytest.fixture
 def config(tmp_path):
-    return cfgmod.load_config(cli={"runs_dir": tmp_path / "runs", "no_llm": True})
+    return cfgmod.load_config(cli={"runs_dir": tmp_path / "runs", "no_llm": True,
+                                   "mode": "deterministic"})
 
 
 def test_orchestrator_sample_run_matches_golden_and_traces_only_declared_tools(config, tmp_path):
@@ -133,7 +134,8 @@ def test_orchestrator_sample_run_matches_golden_and_traces_only_declared_tools(c
                 assert event["tool"] in declared[event["agent"]], event
     summary = json.loads((config.runs_dir / "run_summary.json").read_text())
     assert summary["cases"] == 32 and summary["failures"] == []
-    assert {"statuses", "agent_seconds", "tool_calls", "llm_calls"} <= set(summary)
+    assert {"statuses", "agent_seconds", "tool_calls", "llm_calls", "router"} <= set(summary)
+    assert summary["mode"] == "deterministic" and summary["agent"] == {}
 
 
 def test_orchestrator_isolates_a_failing_case(config, tmp_path, monkeypatch):
@@ -192,7 +194,8 @@ def test_cli_tools_prints_and_writes_the_table():
 
 def test_cli_run_subcommand_matches_golden(tmp_path):
     out = tmp_path / "s.csv"
-    done = _cli("run", "--split", "sample", "--no-llm", "--out", str(out))
+    done = _cli("run", "--split", "sample", "--no-llm", "--mode", "deterministic",
+                "--out", str(out))
     assert done.returncode == 0, done.stderr
     golden = paths.CODE / "evaluation" / "golden" / "output_sample.csv"
     assert out.read_bytes() == golden.read_bytes()
