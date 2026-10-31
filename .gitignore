@@ -4,3 +4,7 @@ __pycache__/
 /output.csv
 code/evaluation/runs/
 code.zip
+
+# challenge material is not redistributed
+/dataset/
+/problem_statement.md
