@@ -192,6 +192,10 @@ code/
   tests/                   pytest suite
 ```
 
+## Contributing
+
+This is a public repository and suggestions are welcome. Open an [issue](../../issues/new/choose) with an idea or bug, or send a pull request; see [CONTRIBUTING.md](CONTRIBUTING.md) for the ground rules.
+
 ## Limitations and next steps
 
 - **Ties are undecidable without more evidence.** When several cases fit a worker event equally, `SKIP_MULTI` leaves the resource unassigned (60 such groups on the full split); on the sample this leaves 4 gold steps missing, and the 3 wrong steps are tie-break guesses (5 of 8 sample tie-breaks were right).
